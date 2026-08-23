@@ -794,16 +794,49 @@ select{
             }
 
             .footer {
-                grid-template-columns: 1fr;
-                text-align: center;
+                grid-template-columns: 1fr 1fr;
+                gap: 25px 16px;
+                padding: 25px 20px;
             }
 
-            .footer-left,
+            .footer-left {
+                grid-column: 1 / -1;
+                text-align: center;
+                align-items: center;
+                justify-content: center;
+            }
+
             .footer-links {
+                grid-column: 1 / 2;
+                text-align: left;
+                align-items: flex-start;
+            }
+
+            .footer-contact {
+                grid-column: 2 / 3;
+                text-align: left;
+            }
+
+            .footer-contact p {
+                justify-content: flex-start;
+                font-size: 13px;
+                word-break: break-word;
+            }
+
+            .footer-links a {
+                font-size: 13px;
+            }
+
+            .footer-social {
+                grid-column: 1 / -1;
+                text-align: center;
                 align-items: center;
             }
 
-            .footer-contact p,
+            .footer-social h4 {
+                text-align: center;
+            }
+
             .social-icons {
                 justify-content: center;
             }
@@ -811,11 +844,43 @@ select{
             .footer-bottom {
                 flex-direction: column;
                 text-align: center;
+                gap: 10px;
+                padding: 16px 20px;
             }
 
             .footer-bottom-links {
                 justify-content: center;
                 flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .footer {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px 12px;
+                padding: 20px 14px;
+            }
+
+            .footer h4 {
+                font-size: 15px;
+                margin-bottom: 10px;
+            }
+
+            .footer-links a,
+            .footer-contact p {
+                font-size: 12px;
+                line-height: 1.4;
+            }
+
+            .footer-contact p {
+                gap: 6px;
+                margin-bottom: 10px;
+            }
+
+            .footer-contact svg {
+                width: 14px;
+                height: 14px;
+                margin-top: 2px;
             }
         }
 
@@ -997,16 +1062,27 @@ select{
                 </div>
 
                 <section class="dashboard-card">
-                    <div class="notif-actions">
-                        <button class="btn-action-text" onclick="markAllAsRead()"><i data-lucide="check-check"></i> Mark all as read</button>
-                        <button class="btn-action-text" style="color: var(--red-dark);" onclick="clearAllNotifications()"><i data-lucide="trash-2"></i> Clear all</button>
+                    <div class="notif-actions" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button class="btn-action-text" onclick="markAllAsRead()"><i data-lucide="check-check"></i> Mark all as read</button>
+                            <button class="btn-action-text" style="color: var(--red-dark);" onclick="clearAllNotifications()"><i data-lucide="trash-2"></i> Clear all</button>
+                        </div>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <button class="btn-action-text" id="pushNotifBtn" onclick="toggleWebPushNotification()" style="background:var(--primary-light); color:var(--primary); padding:6px 12px; border-radius:8px; font-weight:600;">
+                                <i data-lucide="bell-ring" style="width:14px;height:14px;"></i> <span>Enable Push Alerts</span>
+                            </button>
+                            <button class="btn-action-text" onclick="exportNotificationsCSV()" style="background:var(--success-bg); color:var(--success); padding:6px 12px; border-radius:8px; font-weight:600;">
+                                <i data-lucide="download" style="width:14px;height:14px;"></i> Export CSV
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="notification-tabs">
+                    <div class="notification-tabs" style="margin-top:16px;">
                         <button class="notif-tab active" data-filter="all" onclick="filterNotifs('all')">All</button>
                         <button class="notif-tab" data-filter="unread" onclick="filterNotifs('unread')">Unread</button>
-                        <button class="notif-tab" data-filter="message" onclick="filterNotifs('message')">Messages</button>
-                        <button class="notif-tab" data-filter="event" onclick="filterNotifs('event')">Events</button>
+                        <button class="notif-tab" data-filter="course" onclick="filterNotifs('course')">🎓 Course Updates</button>
+                        <button class="notif-tab" data-filter="mentor" onclick="filterNotifs('mentor')">👤 Mentors</button>
+                        <button class="notif-tab" data-filter="event" onclick="filterNotifs('event')">📅 Events</button>
                     </div>
 
                     <div class="notifications-container" id="notifsContainer"></div>
@@ -1031,31 +1107,8 @@ select{
 
                 <div class="footer-contact">
                     <h4>Contact Us</h4>
-                    <p>
-                        <i data-lucide="phone"></i>
-                        +852 6708 2503
-                    </p>
-                    <p>
-                        <i data-lucide="mail"></i>
-                        info@pyshk.com
-                    </p>
-                    <p>
-                        <i data-lucide="map-pin"></i>
-                        1303-04, 13/F Tak Woo House,<br>
-                        1-3 Wo On Lane, Central,<br>
-                        Hong Kong
-                    </p>
-                </div>
-
-                <div class="footer-social">
-                    <h4>Follow Us</h4>
-                    <div class="social-icons">
-                        <a href="https://www.facebook.com/pragyahk"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://www.instagram.com/pragyahk"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.linkedin.com/company/pyshk/"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="https://www.youtube.com/@pys_hk"><i class="fab fa-youtube"></i></a>
-                        <a href="https://x.com/pragyahk"><i class="fab fa-x-twitter"></i></a>
-                    </div>
+                    <p><i data-lucide="phone"></i> +852 6708 2503</p>
+                    <p><i data-lucide="mail"></i> info@pyshk.com</p>
                 </div>
             </footer>
 
@@ -1093,6 +1146,62 @@ select{
             });
         }
 
+        // Web Push Notification Permission Handler
+        function toggleWebPushNotification() {
+            if (!("Notification" in window)) {
+                alert("This browser does not support desktop notifications.");
+                return;
+            }
+
+            if (Notification.permission === "granted") {
+                new Notification("Pragya Connect Alerts Enabled", {
+                    body: "You will now receive course and event push notifications directly.",
+                    icon: "assets/logo.png"
+                });
+                alert("✅ Push notifications are active!");
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification("Pragya Connect Alerts Enabled", {
+                            body: "You will now receive course and event push notifications.",
+                            icon: "assets/logo.png"
+                        });
+                        document.getElementById("pushNotifBtn").innerHTML = '<i data-lucide="check"></i> <span>Push Enabled</span>';
+                        lucide.createIcons();
+                    }
+                });
+            } else {
+                alert("Push notifications were denied. Please enable them in browser settings.");
+            }
+        }
+
+        // Export CSV Functionality
+        async function exportNotificationsCSV() {
+            const notifs = await AppService.getNotifications();
+            if (!notifs || notifs.length === 0) {
+                alert("No notifications available to export.");
+                return;
+            }
+
+            const headers = ["Title", "Content", "Type", "Status", "Date"];
+            const rows = notifs.map(n => [
+                `"${(n.title || '').replace(/"/g, '""')}"`,
+                `"${(n.content || '').replace(/"/g, '""')}"`,
+                `"${n.type || 'general'}"`,
+                `"${n.is_read ? 'Read' : 'Unread'}"`,
+                `"${formatNotificationTime(n.createdAt)}"`
+            ]);
+
+            const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `pragya_notifications_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
         async function renderNotifications() {
             const container = document.getElementById('notifsContainer');
             if (!container) return;
@@ -1103,8 +1212,12 @@ select{
 
             if (currentFilter === 'unread') {
                 filtered = notifs.filter(n => !n.is_read);
-            } else if (currentFilter !== 'all') {
-                filtered = notifs.filter(n => n.type === currentFilter);
+            } else if (currentFilter === 'course') {
+                filtered = notifs.filter(n => (n.type === 'course' || (n.title || '').toLowerCase().includes('course') || (n.content || '').toLowerCase().includes('ytt') || (n.content || '').toLowerCase().includes('therapy')));
+            } else if (currentFilter === 'mentor') {
+                filtered = notifs.filter(n => (n.type === 'message' || (n.title || '').toLowerCase().includes('mentor') || (n.title || '').toLowerCase().includes('dr.') || (n.title || '').toLowerCase().includes('akhilesh')));
+            } else if (currentFilter === 'event') {
+                filtered = notifs.filter(n => n.type === 'event' || (n.title || '').toLowerCase().includes('event') || (n.title || '').toLowerCase().includes('workshop'));
             }
 
             if (filtered.length === 0) {
@@ -1122,6 +1235,7 @@ select{
                 let iconName = 'bell';
                 if (n.type === 'message') iconName = 'message-square';
                 else if (n.type === 'event') iconName = 'calendar';
+                else if (n.type === 'course') iconName = 'graduation-cap';
 
                 const card = document.createElement('div');
                 card.className = `notification-card ${!n.is_read ? 'unread' : ''}`;
@@ -1152,9 +1266,7 @@ select{
         async function markAllAsRead() {
             await AppService.markNotificationsRead();
             renderNotifications();
-        }
-
-        async function clearAllNotifications() {
+          async function clearAllNotifications() {
             if (confirm('Are you sure you want to clear all notifications?')) {
                 await AppService.clearNotifications();
                 renderNotifications();
@@ -1163,9 +1275,13 @@ select{
 
         document.addEventListener('DOMContentLoaded', () => {
             renderNotifications();
-            // Show event popup + promo banner
+            if (window.Notification && Notification.permission === "granted") {
+                const btn = document.getElementById("pushNotifBtn");
+                if (btn) btn.innerHTML = '<i data-lucide="check"></i> <span>Push Enabled</span>';
+            }
             AdminSync.init({ popup: true, promoBanner: true, notifBadge: false });
         });
     </script>
+    <script src="common.js"></script>
 </body>
 </html>

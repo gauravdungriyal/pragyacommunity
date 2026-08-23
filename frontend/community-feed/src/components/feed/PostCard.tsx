@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Heart, MessageCircle, Share2, MoreHorizontal, Send, Edit2, Trash2, Smile } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
-import { formatNumber } from '../../lib/utils';
 import { Post, Comment } from '../../types';
 
 interface PostCardProps {
@@ -182,44 +181,45 @@ export function PostCard({
       {/* Post Actions */}
       <div className="px-4 py-3 border-t border-gray-100 flex items-center gap-4">
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
           onClick={() => onLike(post.id)}
           className={cn(
-            'flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors',
+            'p-2 rounded-lg transition-colors cursor-pointer',
             post.isLiked ? 'text-red-500 bg-red-50' : 'text-gray-600 hover:bg-gray-100'
           )}
+          aria-label={post.isLiked ? "Unlike post" : "Like post"}
         >
           <motion.div
-            animate={{ scale: post.isLiked ? [1, 1.3, 1] : 1 }}
-            transition={{ duration: 0.3 }}
+            key={post.isLiked ? 'liked' : 'unliked'}
+            animate={{ scale: post.isLiked ? [1, 1.4, 1] : [1, 0.85, 1] }}
+            transition={{ duration: 0.25 }}
           >
-            <Heart className={cn('w-5 h-5', post.isLiked && 'fill-current')} />
+            <Heart className={cn('w-5 h-5 transition-colors', post.isLiked ? 'fill-red-500 text-red-500' : 'text-gray-600')} />
           </motion.div>
-          <span className="text-sm font-medium">{formatNumber(post.likes)}</span>
         </motion.button>
 
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
           onClick={() => setShowComments(!showComments)}
           className={cn(
-            'flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors',
+            'p-2 rounded-lg transition-colors cursor-pointer',
             showComments ? 'text-primary-600 bg-primary-50' : 'text-gray-600 hover:bg-gray-100'
           )}
+          aria-label="Comments"
         >
           <MessageCircle className="w-5 h-5" />
-          <span className="text-sm font-medium">{formatNumber(post.comments.length)}</span>
         </motion.button>
 
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
           onClick={() => onShare(post.id)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+          aria-label="Share post"
         >
           <Share2 className="w-5 h-5" />
-          <span className="text-sm font-medium">{formatNumber(post.shares)}</span>
         </motion.button>
       </div>
 
@@ -298,16 +298,16 @@ export function PostCard({
                         </div>
                         <div className="flex items-center gap-4 mt-2">
                           <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
                             onClick={() => onCommentLike(post.id, comment.id)}
                             className={cn(
-                              'flex items-center gap-1 text-xs transition-colors',
+                              'flex items-center text-xs transition-colors cursor-pointer p-1 rounded hover:bg-gray-100',
                               comment.isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
                             )}
+                            aria-label={comment.isLiked ? "Unlike comment" : "Like comment"}
                           >
-                            <Heart className={cn('w-3 h-3', comment.isLiked && 'fill-current')} />
-                            {formatNumber(comment.likes)}
+                            <Heart className={cn('w-3.5 h-3.5 transition-colors', comment.isLiked ? 'fill-red-500 text-red-500' : 'text-gray-500')} />
                           </motion.button>
                           <span className="text-xs text-gray-400">{comment.timestamp}</span>
                           <span className="text-xs text-gray-300">•</span>

@@ -1,114 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pragya Connect - Dashboard</title>
-    <!-- Google Fonts: Plus Jakarta Sans for modern typography -->
+    <title>Pragya Connect - Yogic Knowledge & Resource Hub</title>
+    <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <!-- Lucide Icons Library -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
+
     <style>
         :root {
-    /* =========================
-       PYSHK Brand Theme
-    ========================== */
+            --primary: #00381F;
+            --primary-hover: #00522E;
+            --primary-light: #E8F2ED;
+            --accent: #D9AE29;
+            --accent-hover: #C89D1F;
+            --accent-light: #FFF8E6;
+            --olive: #9D9D48;
+            --terracotta: #944426;
+            --burgundy: #620513;
+            --bg-body: #F5EFE5;
+            --bg-card: #FFFFFF;
+            --bg-sidebar: #00381F;
+            --bg-soft: #FAF8F4;
+            --text-main: #272727;
+            --text-heading: #00381F;
+            --text-muted: #6F6F6F;
+            --text-light: #FFFFFF;
+            --border: #E5DDD2;
+            --success: #0F8A4B;
+            --success-bg: #EAF8F1;
+            --warning: #D9AE29;
+            --danger: #620513;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 22px;
+            --transition: all 0.3s ease;
+        }
 
-    /* Primary */
-    --primary: #00381F;
-    --primary-hover: #00522E;
-    --primary-light: #E8F2ED;
-
-    /* Accent */
-    --accent: #D9AE29;
-    --accent-hover: #C89D1F;
-    --accent-light: #FFF8E6;
-
-    /* Supporting Colors */
-    --olive: #9D9D48;
-    --terracotta: #944426;
-    --burgundy: #620513;
-    --red-dark: 
-
-    /* Backgrounds */
-    --bg-body: #F5EFE5;
-    --bg-card: #FFFFFF;
-    --bg-sidebar: #00381F;
-    --bg-soft: #FAF8F4;
-
-    /* Typography */
-    --text-main: #272727;
-    --text-heading: #00381F;
-    --text-muted: #6F6F6F;
-    --text-light: #FFFFFF;
-
-    /* Borders */
-    --border: #E5DDD2;
-
-    /* Status */
-    --success: #0F8A4B;
-    --success-bg: #EAF8F1;
-
-    --warning: #D9AE29;
-    --warning-bg: #FFF8E6;
-
-    --danger: #620513;
-    --danger-bg: #F8EDEE;
-
-    --info: #944426;
-    --info-bg: #F9F0EC;
-
-    /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
-
-    /* Radius */
-    --radius-sm: 10px;
-    --radius-md: 16px;
-    --radius-lg: 22px;
-
-    /* Animation */
-    --transition: all 0.3s ease;
-}
-
-/* Headings */
-h1,h2,h3,h4,h5,h6{
-    font-family:"BN Cringe Serif", serif;
-    font-weight:400;
-    color:var(--text-heading);
-}
-
-/* Body */
-body,
-p,
-button,
-input,
-textarea,
-select{
-    font-family:"Neue Montreal",sans-serif;
-}
-
-/* Hero text / Quotes */
-.quote,
-.hero-title,
-.event-title{
-    font-family:"Canela",serif;
-}
-
-        /* Basic Reset */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         body {
-            font-family: var(--font-family);
             background-color: var(--bg-body);
             color: var(--text-main);
             min-height: 100vh;
@@ -117,7 +62,6 @@ select{
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Layout Structure */
         .dashboard-container {
             display: flex;
             width: 100%;
@@ -136,17 +80,16 @@ select{
             top: 0;
             bottom: 0;
             left: 0;
-            z-index: 100;
-            overflow-y: auto; /* make side bar scrollable */
-            scrollbar-width: none; /* hide Firefox scrollbar */
+            z-index: 1000;
+            overflow-y: auto;
+            scrollbar-width: none;
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease;
         }
 
         .sidebar::-webkit-scrollbar {
-            display: none; /* hide Chrome/Safari scrollbar */
+            display: none;
         }
 
-        /* Logo Area */
         .logo-container {
             display: flex;
             justify-content: center;
@@ -156,12 +99,11 @@ select{
         }
 
         .logo-img {
-            max-width: 140px; /* reduced logo size */
+            max-width: 140px;
             height: auto;
             object-fit: contain;
         }
 
-        /* Nav Links */
         .nav-menu {
             list-style: none;
             display: flex;
@@ -186,7 +128,6 @@ select{
         .nav-item a i, .nav-item a svg {
             width: 22px;
             height: 22px;
-            transition: var(--transition);
             flex-shrink: 0;
         }
 
@@ -195,21 +136,11 @@ select{
             color: var(--primary);
         }
 
-        .nav-item a:hover i, .nav-item a:hover svg {
-            transform: translateX(2px);
-        }
-
-        /* Active Link Styling */
         .nav-item.active a {
             background-color: var(--primary);
             color: #FFFFFF;
         }
 
-        .nav-item.active a:hover {
-            background-color: var(--primary-hover);
-        }
-
-        /* Badges */
         .badge {
             margin-left: auto;
             background-color: var(--accent);
@@ -218,10 +149,9 @@ select{
             font-weight: 700;
             padding: 2px 8px;
             border-radius: 99px;
-            box-shadow: 0 2px 6px rgba(235, 160, 54, 0.3);
+            box-shadow: 0 2px 6px rgba(217, 174, 41, 0.3);
         }
 
-        /* Logout Container */
         .nav-logout {
             margin-top: auto;
             border-top: 1px solid var(--border);
@@ -243,143 +173,98 @@ select{
 
         .nav-logout a:hover {
             background-color: #FFF5F5;
-            color: var(--red-dark);
+            color: var(--burgundy);
         }
 
-        /* Main Workspace Wrapper */
+        /* Main Wrapper */
         .main-wrapper {
             margin-left: 272px;
             width: calc(100% - 272px);
             min-width: 0;
             flex-grow: 1;
+            padding: 24px 32px 40px;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            padding: 32px 32px;
-            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Topbar Header styling */
+        /* Topbar */
         .topbar {
-            display: grid;
-            grid-template-columns: minmax(0, 2.1fr) minmax(410px, 1fr);
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            margin-bottom: 32px;
-            gap: 24px;
+            margin-bottom: 24px;
+            gap: 20px;
         }
 
         .topbar-main {
             display: flex;
             align-items: center;
-            gap: 24px;
-            min-width: 0;
+            gap: 16px;
+            flex-grow: 1;
+            max-width: 540px;
         }
 
-        /* Sidebar Toggle Button */
         .sidebar-toggle-btn {
-            background-color: var(--bg-card);
+            display: none;
+            background: #fff;
             border: 1px solid var(--border);
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            display: flex;
+            border-radius: 12px;
+            width: 44px;
+            height: 44px;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            color: var(--text-main);
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            flex-shrink: 0;
-        }
-
-        .sidebar-toggle-btn:hover {
-            background-color: var(--primary-light);
-            border-color: var(--primary);
             color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        .sidebar-toggle-btn i, .sidebar-toggle-btn svg {
-            width: 22px;
-            height: 22px;
-        }
-
-        /* Collapsed States */
-        .sidebar-collapsed .sidebar {
-            transform: translateX(-100%);
-        }
-
-        .sidebar-collapsed .main-wrapper {
-            margin-left: 0;
-            width: 100%;
-        }
-
-        @media (max-width: 900px) {
-            .sidebar-collapsed .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar-collapsed .main-wrapper {
-                margin-left: 0;
-                width: 100%;
-            }
         }
 
         .search-container {
             position: relative;
-            flex-grow: 1;
-            min-width: 0;
-            max-width: none;
+            width: 100%;
         }
 
         .search-container i, .search-container svg {
             position: absolute;
-            left: 18px;
+            left: 16px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
-            pointer-events: none;
-            width: 20px;
-            height: 20px;
-            z-index: 2; /* ensure it stays visible on top of input bg */
+            width: 18px;
+            height: 18px;
         }
 
         .search-input {
             width: 100%;
-            height: 48px;
-            padding: 12px 20px 12px 52px;
+            height: 44px;
+            background-color: #FFFFFF;
             border: 1px solid var(--border);
-            border-radius: 16px;
-            background-color: var(--bg-card);
-            font-family: var(--font-family);
-            font-size: 14px;
+            border-radius: 99px;
+            padding: 10px 18px 10px 48px;
+            font-size: 13.5px;
             color: var(--text-main);
             outline: none;
-            box-shadow: var(--shadow-sm);
             transition: var(--transition);
+            box-shadow: var(--shadow-sm);
         }
 
         .search-input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(11, 82, 91, 0.08);
+            box-shadow: 0 0 0 3px rgba(0, 56, 31, 0.08);
         }
 
-        /* Topbar actions (badges, user info) */
         .topbar-actions {
             display: flex;
             align-items: center;
-            gap: 24px;
-            justify-content: flex-start;
-            min-width: 0;
-            position: relative;
+            gap: 14px;
         }
 
         .icon-btn-badge {
             position: relative;
-            background-color: var(--bg-card);
+            background-color: #FFFFFF;
             border: 1px solid var(--border);
             border-radius: 50%;
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -393,7 +278,7 @@ select{
             background-color: var(--primary-light);
             border-color: var(--primary);
             color: var(--primary);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         .icon-btn-badge .badge-dot {
@@ -410,1114 +295,793 @@ select{
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid var(--bg-card);
-            box-shadow: 0 2px 4px rgba(235, 160, 54, 0.3);
-            flex-shrink: 0;
+            border: 2px solid #FFFFFF;
         }
 
-.login-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 15px 40px;
-    background-color: var(--primary);
-    color: #fff;
-    font-weight: 700;
-    font-size: 16px;
-    border-radius: 999px;
-    text-decoration: none;
-    transition: var(--transition);
-    box-shadow: var(--shadow-sm);
-}
-
-.login-btn:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-2px);
-}
-
-        /* Two-Column Grid Layout for Content */
-        .content-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 2.1fr) minmax(410px, 1fr);
-            gap: 24px;
-            align-items: start;
-            min-width: 0;
+        /* ── Unified User Credential Pill ── */
+        .user-menu-trigger {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            background-color: #FFFFFF !important;
+            border: 1px solid #00381F !important;
+            padding: 4px 14px 4px 6px !important;
+            border-radius: 999px !important;
+            cursor: pointer !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+            transition: all 0.25s ease !important;
+            height: auto !important;
+            min-height: 42px !important;
+            text-decoration: none !important;
+            flex-shrink: 0 !important;
+            position: relative !important;
         }
 
-        /* Center Column Layout */
-        .center-column {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            min-width: 0;
+        .user-menu-trigger:hover {
+            border-color: #D9AE29 !important;
+            box-shadow: 0 4px 14px rgba(0, 56, 31, 0.12) !important;
+            transform: translateY(-1px) !important;
         }
 
-        /* Welcome Banner Card */
-        .welcome-banner {
-            background: linear-gradient(90deg, #0B525B 0%, #0B525B 35%, #165F58 60%, #EBA036 100%);
-            border-radius: 20px;
-            padding: 40px 48px;
-            min-height: 220px;
+        .user-avatar-circle {
+            width: 38px !important;
+            height: 38px !important;
+            border-radius: 50% !important;
+            background-color: #00381F !important;
+            color: #FFFFFF !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-weight: 700 !important;
+            font-size: 15px !important;
+            flex-shrink: 0 !important;
+        }
+
+        .user-details {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            text-align: left !important;
+            line-height: 1.2 !important;
+        }
+
+        .user-name {
+            font-size: 13.5px !important;
+            font-weight: 700 !important;
+            color: #111111 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            white-space: nowrap !important;
+        }
+
+        .user-tier-badge {
+            font-size: 10px !important;
+            background-color: #00381F !important;
+            color: #D9AE29 !important;
+            border: 1px solid #D9AE29 !important;
+            padding: 2px 7px !important;
+            border-radius: 99px !important;
+            font-weight: 700 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 3px !important;
+            white-space: nowrap !important;
+        }
+
+        .user-role {
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            color: #D9AE29 !important;
+            margin-top: 1px !important;
+            display: block !important;
+        }
+
+        .user-dropdown {
+            position: absolute !important;
+            top: calc(100% + 10px) !important;
+            right: 0 !important;
+            min-width: 250px !important;
+            background: #fff !important;
+            border-radius: 14px !important;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .15) !important;
+            z-index: 999999 !important;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: .25s ease;
+        }
+
+        .user-dropdown.active {
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            transform: translateY(0) !important;
+        }
+
+        /* ── HERO BANNER: Interactive Yogic Knowledge Sanctum ── */
+        .resources-hero {
+            background: linear-gradient(135deg, #00381F 0%, #004D2A 50%, #9D9D48 100%);
+            border-radius: 24px;
+            padding: 32px 36px;
             color: #FFFFFF;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            overflow: hidden;
             position: relative;
+            overflow: hidden;
+            margin-bottom: 28px;
             box-shadow: var(--shadow-md);
+            border: 1px solid rgba(217, 174, 41, 0.3);
         }
 
-        .banner-text {
-            max-width: 55%;
+        .hero-info-left {
+            max-width: 580px;
             z-index: 2;
         }
 
-        .banner-title {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            line-height: 1.25;
-        }
-
-        .banner-title span {
-            color: var(--accent);
-            font-size: 40px;
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #D9AE29;
+            color: #00381F;
+            font-size: 11.5px;
             font-weight: 800;
-            display: block;
-            margin-top: 4px;
+            padding: 4px 12px;
+            border-radius: 99px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
         }
 
-        .banner-desc {
-            font-size: 14.5px;
-            font-weight: 500;
+        .hero-title {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.25;
+            margin-bottom: 10px;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .hero-title span {
+            color: #D9AE29;
+        }
+
+        .hero-desc {
+            font-size: 14px;
             color: rgba(255, 255, 255, 0.85);
             line-height: 1.5;
-            max-width: 320px;
+            margin-bottom: 20px;
         }
 
-        .banner-image-container {
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            top: 0;
-            width: 50%;
+        .hero-metrics-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .metric-pill {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
+            font-size: 13px;
         }
 
-        .banner-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.95;
-            mask-image: linear-gradient(to left, rgba(0,0,0,1) 65%, rgba(0,0,0,0));
-            -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 65%, rgba(0,0,0,0));
+        .metric-pill strong {
+            color: #D9AE29;
+            font-weight: 800;
         }
 
-        .user-menu-trigger {
+        /* ── HUB NAVIGATION TABS ── */
+        .hub-nav-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 4px;
+            overflow-x: auto;
+        }
+
+        .hub-tab-btn {
+            background: transparent;
+            border: none;
+            padding: 12px 20px;
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 14px 14px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .hub-tab-btn:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .hub-tab-btn.active {
+            color: var(--primary);
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-bottom: 2px solid #FFFFFF;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hub-tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* ── SECTION 1: SANSKRIT MANTRA & AUDIO SOUND BATH STUDIO ── */
+        .audio-studio-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .studio-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .studio-title-wrap {
             display: flex;
             align-items: center;
             gap: 12px;
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 6px 18px 6px 8px;
-            border-radius: 99px;
-            cursor: pointer;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
         }
 
-        .user-menu-trigger:hover {
+        .studio-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .audio-player-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 16px;
+        }
+
+        .audio-track-item {
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .audio-track-item:hover, .audio-track-item.playing {
+            background: #FFFFFF;
             border-color: var(--primary);
+            box-shadow: var(--shadow-md);
             transform: translateY(-2px);
         }
 
-        .user-avatar-circle {
-            background-color: var(--primary);
-            color: #FFFFFF;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 15px;
-            letter-spacing: 0.5px;
-            flex-shrink: 0;
-        }
-
-        .user-details {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-        }
-
-        .user-name {
-            font-size: 13.5px;
-            font-weight: 700;
-            color: var(--text-main);
-            line-height: 1.2;
-        }
-
-        .user-role {
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--accent);
-            line-height: 1.2;
-            margin-top: 1px;
-        }
-
-        .user-menu-trigger i, .user-menu-trigger svg {
-            width: 16px;
-            height: 16px;
-            color: var(--text-muted);
-            margin-left: 4px;
-        }
-
-        /* User Dropdown Menu */
-        .user-dropdown {
-            position: absolute;
-            top: calc(100% + 12px);
-            right: 0;
-            width: 280px;
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            box-shadow: var(--shadow-lg);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-        }
-
-        .user-dropdown.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .dropdown-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 20px 24px;
-        }
-
-        .dropdown-avatar {
+        .track-play-btn {
             width: 48px;
             height: 48px;
-            background-color: var(--primary);
-            color: #FFFFFF;
             border-radius: 50%;
+            background: var(--primary);
+            color: #FFFFFF;
+            border: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
             font-size: 16px;
+            cursor: pointer;
             flex-shrink: 0;
-        }
-
-        .dropdown-user-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .dropdown-name {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-main);
-            line-height: 1.2;
-        }
-
-        .dropdown-role {
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background-color: var(--border);
-            margin: 0 0;
-        }
-
-        .dropdown-menu {
-            list-style: none;
-            padding: 8px 0;
-            margin: 0;
-        }
-
-        .dropdown-menu li {
-            margin: 0;
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 24px;
-            color: var(--text-main);
-            text-decoration: none;
-            font-family: var(--font-family);
-            font-size: 14px;
-            font-weight: 500;
             transition: var(--transition);
         }
 
-        .dropdown-item:hover {
-            background-color: var(--primary-light);
+        .audio-track-item.playing .track-play-btn {
+            background: var(--accent);
+            color: #00381F;
+        }
+
+        .track-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .track-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .track-sub {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .frequency-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 99px;
+        }
+
+        /* ── SECTION 2: INTERACTIVE ASANA ANATOMY EXPLORER ── */
+        .anatomy-explorer-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .asana-selector-row {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        .asana-chip {
+            padding: 10px 18px;
+            border-radius: 14px;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .asana-chip:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
             color: var(--primary);
         }
 
-        .dropdown-item i, .dropdown-item svg {
-            width: 18px;
-            height: 18px;
+        .asana-chip.active {
+            background: var(--primary);
+            color: #FFFFFF;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .anatomy-content-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .anatomy-visual-box {
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+        }
+
+        .anatomy-img {
+            max-width: 100%;
+            height: 240px;
+            object-fit: cover;
+            border-radius: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .anatomy-info-box {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .anatomy-cue-card {
+            background: var(--bg-soft);
+            border-left: 4px solid var(--primary);
+            padding: 12px 18px;
+            border-radius: 0 12px 12px 0;
+            font-size: 13px;
+        }
+
+        /* ── SECTION 3: SANSKRIT GLOSSARY DICTIONARY ── */
+        .glossary-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .glossary-item {
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: var(--transition);
+        }
+
+        .glossary-item:hover {
+            background: #FFFFFF;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .glossary-term {
+            font-size: 14.5px;
+            font-weight: 800;
+            color: var(--primary);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .glossary-meaning {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .pronounce-btn {
+            background: var(--primary-light);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
             flex-shrink: 0;
         }
 
-        .logout-item {
-            color: var(--red-dark);
+        .pronounce-btn:hover {
+            background: var(--accent);
+            color: #00381F;
         }
 
-        .logout-item:hover {
-            background-color: var(--red-light);
-            color: var(--red-dark);
-        }
-        
-
-        /* Responsive Breakpoints */
-        @media (max-width: 1200px) {
-            .topbar {
-                grid-template-columns: 1fr;
-            }
-            .topbar-actions {
-                justify-content: flex-start;
-            }
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-            .activity-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        /* ── SECTION 4: RESOURCE CARDS GRID & FILTERS ── */
+        .resources-filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 20px;
         }
 
+        .filter-chips-list {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .cat-filter-btn {
+            padding: 8px 16px;
+            border-radius: 99px;
+            border: 1px solid var(--border);
+            background: #FFFFFF;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+
+        .cat-filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .cat-filter-btn.active {
+            background: var(--primary);
+            color: #FFFFFF;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .resources-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .res-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: var(--transition);
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .res-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .res-card-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .res-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .res-icon-pdf { background: #FDE8E8; color: #C81E1E; }
+        .res-icon-video { background: #E1EFFE; color: #1E429F; }
+        .res-icon-audio { background: #EDF2F7; color: #2B6CB0; }
+        .res-icon-ppt { background: #FEF08A; color: #854D0E; }
+
+        .res-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .res-desc {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .res-tags-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 12px 0 16px;
+        }
+
+        .res-tag-pill {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: var(--bg-soft);
+            color: var(--text-muted);
+        }
+
+        .res-card-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-preview-modal {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid rgba(0, 56, 31, 0.2);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .btn-preview-modal:hover {
+            background: var(--primary);
+            color: #FFFFFF;
+        }
+
+        .btn-download-res {
+            background: var(--primary);
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .btn-download-res:hover {
+            background: var(--accent);
+            color: #00381F;
+        }
+
+        /* ── INTERACTIVE READER & STUDY NOTEPAD MODAL ── */
+        .reader-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 999999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            animation: fadeInModal 0.25s ease;
+        }
+
+        .reader-modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .reader-modal-frame {
+            background: #FFFFFF;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 960px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+        }
+
+        .reader-modal-header {
+            padding: 18px 28px;
+            background: var(--primary);
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .reader-body-split {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .reader-content-pane {
+            padding: 28px;
+            border-right: 1px solid var(--border);
+            font-size: 14.5px;
+            line-height: 1.7;
+            color: var(--text-main);
+            overflow-y: auto;
+            max-height: 65vh;
+        }
+
+        .reader-notes-pane {
+            padding: 24px;
+            background: var(--bg-soft);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .study-notes-textarea {
+            width: 100%;
+            flex: 1;
+            min-height: 220px;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #FFFFFF;
+            font-size: 13px;
+            outline: none;
+            resize: none;
+        }
+
+        .study-notes-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 56, 31, 0.08);
+        }
+
+        /* Responsive */
         @media (max-width: 900px) {
             .sidebar {
-                width: 72px;
-                padding: 24px 8px;
-                align-items: center;
+                transform: translateX(-100%);
             }
-            .logo-title, .logo-subtitle, .nav-item a span, .nav-logout a span, .badge, .logo-img {
-                display: none;
-            }
-            .logo-container {
-                margin-bottom: 24px;
+            body.sidebar-open .sidebar {
+                transform: translateX(0);
             }
             .main-wrapper {
-                margin-left: 72px;
-                width: calc(100% - 72px);
+                margin-left: 0;
+                width: 100%;
                 padding: 16px;
-            }
-            .welcome-banner {
-                padding: 24px;
-            }
-            .banner-text {
-                max-width: 100%;
-            }
-            .banner-image-container {
-                display: none;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .topbar {
-                gap: 12px;
-                margin-bottom: 20px;
-            }
-            .topbar-main {
-                gap: 10px;
             }
             .sidebar-toggle-btn {
-                width: 42px;
-                height: 42px;
+                display: inline-flex;
             }
-            .sidebar-toggle-btn i, .sidebar-toggle-btn svg {
-                width: 20px;
-                height: 20px;
-            }
-            .search-input {
-                height: 42px;
-                padding: 10px 14px 10px 42px;
-                border-radius: 13px;
-                font-size: 13px;
-            }
-            .search-container i, .search-container svg {
-                left: 14px;
-                width: 17px;
-                height: 17px;
-            }
-            .topbar-actions {
-                justify-content: flex-start;
-                gap: 8px;
-                flex-wrap: nowrap;
-                width: 100%;
-                overflow: hidden;
-            }
-            .icon-btn-badge {
-                width: 42px;
-                height: 42px;
-                flex: 0 0 42px;
-            }
-            .icon-btn-badge .badge-dot {
-                width: 16px;
-                height: 16px;
-                font-size: 9px;
-            }
-            .user-menu-trigger {
-                flex: 1 1 auto;
-                min-width: 0;
-                height: 42px;
-                gap: 8px;
-                padding: 4px 10px 4px 6px;
-            }
-            .user-avatar-circle {
-                width: 34px;
-                height: 34px;
-                font-size: 12px;
-            }
-            .user-details {
-                min-width: 0;
-            }
-            .user-name {
-                font-size: 12.5px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            .user-role {
-                display: none;
-            }
-            .user-menu-trigger i, .user-menu-trigger svg {
-                width: 14px;
-                height: 14px;
-                margin-left: 0;
-                flex-shrink: 0;
-            }
-            .user-dropdown {
-                width: 260px;
-                right: -8px;
-            }
-            .dropdown-header {
-                padding: 16px 20px;
-            }
-            .dropdown-avatar {
-                width: 42px;
-                height: 42px;
-                font-size: 14px;
-            }
-            .dropdown-name {
-                font-size: 13px;
-            }
-            .dropdown-role {
-                font-size: 11px;
-            }
-            .dropdown-item {
-                padding: 10px 20px;
-                font-size: 13px;
-            }
-            .dropdown-item i, .dropdown-item svg {
-                width: 16px;
-                height: 16px;
-            }
-            .create-post-card {
-                padding: 16px;
-            }
-            .create-post-input-row {
-                gap: 10px;
-            }
-            .create-post-input-row .avatar {
-                width: 38px;
-                height: 38px;
-                font-size: 13px;
-            }
-            .create-post-field {
-                height: 42px;
-                padding: 10px 14px;
-                font-size: 13px;
-            }
-            .create-post-actions-row {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-                padding-top: 12px;
-            }
-            .media-triggers {
-                display: grid;
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-                width: 100%;
-                gap: 6px;
-            }
-            .trigger-btn {
-                gap: 4px;
-                padding: 8px 4px;
-                min-width: 0;
-                font-size: 11.5px;
-            }
-            .trigger-btn i, .trigger-btn svg {
-                width: 15px;
-                height: 15px;
-            }
-            .post-submit-btn {
-                width: 100%;
-                padding: 10px 16px;
-                font-size: 13px;
-            }
-            .post-actions-row {
-                gap: 4px;
-            }
-            .action-btn {
-                flex: 1 1 0;
-                justify-content: center;
-                min-width: 0;
-                gap: 4px;
-                padding: 6px 4px;
-                font-size: 11.5px;
-            }
-            .activity-grid {
+            .anatomy-content-layout {
                 grid-template-columns: 1fr;
             }
-            .bottom-split-row {
+            .reader-body-split {
                 grid-template-columns: 1fr;
             }
-            .post-gallery-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .post-body-split {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .post-illustration {
-                width: 100%;
-                height: 160px;
-            }
         }
-
-        @media (max-width: 420px) {
-            .topbar-main {
-                gap: 8px;
-            }
-            .sidebar-toggle-btn,
-            .icon-btn-badge {
-                width: 38px;
-                height: 38px;
-            }
-            .icon-btn-badge {
-                flex-basis: 38px;
-            }
-            .search-input {
-                height: 38px;
-                padding-left: 38px;
-                font-size: 12px;
-            }
-            .user-menu-trigger {
-                height: 38px;
-                padding-right: 8px;
-            }
-            .user-avatar-circle {
-                width: 30px;
-                height: 30px;
-                font-size: 11px;
-            }
-            .user-name {
-                font-size: 12px;
-            }
-        }
-
-/* ===========================
-   Dashboard Cards
-=========================== */
-
-.dashboard-card{
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:24px;
-    box-shadow:var(--shadow-sm);
-    margin-bottom:24px;
-}
-
-/* ===========================
-   Section Header
-=========================== */
-
-.section-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:20px;
-    flex-wrap:wrap;
-    margin-bottom:20px;
-}
-
-.section-header h2{
-    font-size:28px;
-    font-weight:700;
-    color:var(--text-main);
-}
-
-.section-header p{
-    margin-top:6px;
-    color:var(--text-muted);
-    font-size:14px;
-}
-
-/* ===========================
-   Section Title
-=========================== */
-
-.section-title-wrap{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:20px;
-}
-
-.section-title-wrap svg{
-    width:22px;
-    height:22px;
-    color:var(--primary);
-}
-
-.section-title{
-    font-size:20px;
-    font-weight:700;
-    color:var(--text-main);
-}
-
-/* ===========================
-   Search & Filter
-=========================== */
-
-.resources-search{
-    display:flex;
-    gap:15px;
-    align-items:center;
-    margin-top:20px;
-}
-
-.resources-search .search-container{
-    flex:1;
-}
-
-/* ===========================
-   Right Column
-=========================== */
-
-.right-column{
-    display:flex;
-    flex-direction:column;
-    gap:24px;
-}
-
-/* ===========================
-   Activity Grid
-=========================== */
-
-.activity-grid{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:18px;
-}
-
-/* ===========================
-   Activity Item
-=========================== */
-
-.activity-item{
-    display:flex;
-    align-items:center;
-    gap:16px;
-    padding:18px;
-    border:1px solid var(--border);
-    border-radius:18px;
-    transition:var(--transition);
-    background:#fff;
-}
-
-.activity-item:hover{
-    transform:translateY(-4px);
-    border-color:var(--primary);
-    box-shadow:var(--shadow-md);
-}
-
-.activity-details{
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-}
-
-.activity-details strong{
-    font-size:15px;
-    color:var(--text-main);
-}
-
-.activity-details{
-    color:var(--text-muted);
-    font-size:14px;
-}
-
-.time{
-    font-size:12px;
-    color:var(--text-muted);
-}
-
-/* ===========================
-   Icon Circle
-=========================== */
-
-.activity-icon-circle{
-    width:58px;
-    height:58px;
-    border-radius:16px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-shrink:0;
-}
-
-.activity-icon-circle svg{
-    width:28px;
-    height:28px;
-}
-
-.primary-icon{
-    background:var(--primary-light);
-    color:var(--primary);
-}
-
-.accent-icon{
-    background:var(--accent-light);
-    color:var(--accent);
-}
-
-/* ===========================
-   Buttons
-=========================== */
-
-.post-submit-btn{
-    border:none;
-    background:var(--primary);
-    color:#fff;
-    padding:11px 20px;
-    border-radius:12px;
-    font-weight:600;
-    cursor:pointer;
-    transition:.3s;
-}
-
-.post-submit-btn:hover{
-    background:var(--primary-hover);
-}
-
-.connect-btn{
-    border:1px solid var(--primary);
-    background:#fff;
-    color:var(--primary);
-    padding:10px 18px;
-    border-radius:12px;
-    font-weight:600;
-    cursor:pointer;
-    transition:.3s;
-}
-
-.connect-btn:hover{
-    background:var(--primary-light);
-}
-
-.trigger-btn{
-    border:1px solid var(--border);
-    background:#fff;
-    color:var(--text-main);
-    padding:10px 18px;
-    border-radius:12px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    cursor:pointer;
-    transition:.3s;
-}
-
-.trigger-btn:hover{
-    border-color:var(--primary);
-    background:var(--primary-light);
-    color:var(--primary);
-}
-
-/* ===========================
-   Resources List
-=========================== */
-
-.resources-list{
-    display:flex;
-    flex-direction:column;
-    gap:18px;
-}
-
-/* Right Column */
-.right-column{
-    display:flex;
-    flex-direction:column;
-    gap:24px;
-    align-self:start;
-}
-
-/* Recent Downloads Card */
-.right-column .dashboard-card{
-    width:100%;
-}
-
-/* Recent Downloads List */
-.events-list{
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-}
-
-.event-item{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:18px;
-    border:1px solid var(--border);
-    border-radius:16px;
-    background:#fff;
-    transition:var(--transition);
-}
-
-.event-item:hover{
-    border-color:var(--primary);
-    transform:translateY(-2px);
-    box-shadow:var(--shadow-sm);
-}
-
-.event-info{
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-}
-
-.event-title{
-    font-size:15px;
-    font-weight:600;
-    color:var(--text-main);
-}
-
-.event-time{
-    font-size:13px;
-    color:var(--text-muted);
-}
-
-/* Responsive */
-@media (max-width:1200px){
-    .content-grid{
-        grid-template-columns:1fr;
-    }
-
-    .right-column{
-        margin-top:0;
-    }
-}
-
-/* ===========================
-   Responsive
-=========================== */
-
-@media(max-width:992px){
-
-    .content-grid{
-        grid-template-columns:1fr;
-    }
-
-    .activity-grid{
-        grid-template-columns:1fr;
-    }
-
-    .right-column{
-        margin-top:10px;
-    }
-
-}
-
-@media(max-width:768px){
-
-    .section-header{
-        flex-direction:column;
-        align-items:flex-start;
-    }
-
-    .resources-search{
-        flex-direction:column;
-        align-items:stretch;
-    }
-
-    .activity-item{
-        flex-direction:column;
-        align-items:flex-start;
-    }
-
-    .activity-item button{
-        width:100%;
-    }
-
-}
-
-@media(max-width:480px){
-
-    .dashboard-card{
-        padding:18px;
-    }
-
-    .section-header h2{
-        font-size:22px;
-    }
-
-    .section-title{
-        font-size:18px;
-    }
-
-}
-
-.search-results{
-
-position:absolute;
-top:55px;
-left:0;
-width:100%;
-background:#fff;
-border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,.1);
-display:none;
-overflow:hidden;
-z-index:999;
-
-}
-
-.search-item{
-
-padding:14px 18px;
-cursor:pointer;
-transition:.3s;
-
-}
-
-.search-item:hover{
-
-background:#EAF3F4;
-
-}
-
-.footer{
-    margin-top:40px;
-    background:#fff;
-    border-top:1px solid #e5e7eb;
-    border-radius:20px 20px 0 0;
-    padding:35px;
-    display:grid;
-    grid-template-columns:1.2fr 1fr 1.5fr 1fr;
-    gap:35px;
-    box-shadow:var(--shadow-md);
-}
-
-.footer h4{
-    color:var(--primary);
-    margin-bottom:15px;
-    font-size:18px;
-}
-
-.footer-left{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    gap:10px;
-}
-
-.footer-logo{
-    width:80px;
-    height:80px;
-    object-fit:contain;
-}
-
-.footer-left h3{
-    margin:0;
-    color:var(--primary);
-    font-size:24px;
-    font-weight:700;
-}
-
-.footer-left p{
-    margin:0;
-    color:var(--text-muted);
-    font-size:14px;
-    line-height:1.5;
-    max-width:220px;
-}
-
-.footer-links{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
-
-.footer-links a{
-    color:var(--text-main);
-    text-decoration:none;
-    transition:.3s;
-}
-
-.footer-links a:hover{
-    color:var(--primary);
-    padding-left:6px;
-}
-
-.footer-contact p{
-    display:flex;
-    align-items:flex-start;
-    gap:10px;
-    margin-bottom:14px;
-    color:var(--text-main);
-    line-height:1.6;
-}
-
-.footer-contact svg{
-    color:var(--accent);
-    width:18px;
-    height:18px;
-    margin-top:3px;
-    flex-shrink:0;
-}
-
-.social-icons{
-    display:flex;
-    gap:12px;
-}
-
-.social-icons a{
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    background:var(--primary-light);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    color:var(--primary);
-    transition:.3s;
-}
-
-.social-icons a:hover{
-    background:var(--accent);
-    color:#fff;
-    transform:translateY(-4px);
-}
-
-.footer-bottom{
-    background: var(--primary);
-    color: #fff;
-    padding: 16px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    border-radius: 0 0 20px 20px;
-}
-
-.footer-bottom-links{
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.footer-bottom-links a{
-    color: #fff;
-    text-decoration: none;
-    font-size: 14px;
-    transition: .3s;
-}
-
-.footer-bottom-links a:hover{
-    color: var(--accent);
-}
-
-.footer-bottom-links span{
-    color: rgba(255,255,255,.6);
-}
-
-@media (max-width:768px){
-    .footer-bottom{
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .footer-bottom-links{
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-}
-
-@media(max-width:992px){
-
-    .footer{
-        grid-template-columns:1fr 1fr;
-    }
-
-}
-
-@media(max-width:768px){
-
-    .footer{
-        grid-template-columns:1fr;
-        text-align:center;
-    }
-
-    .footer-left{
-        justify-content:center;
-    }
-
-    .footer-contact p{
-        justify-content:center;
-    }
-
-    .social-icons{
-        justify-content:center;
-    }
-
-    .footer-links{
-        align-items:center;
-    }
-
-}
-
-.footer,
-.footer-bottom{
-    width:100%;
-    margin-left:0;
-}
-
-.footer{
-    margin-top:50px;
-}
     </style>
 </head>
-<body>
 
+<body>
     <div class="dashboard-container">
-        <!-- Left Sidebar Navigation -->
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="logo-container">
                 <img src="assets/logo.png" alt="Pragya Logo" class="logo-img">
@@ -1534,16 +1098,16 @@ background:#EAF3F4;
                     <a href="mentors.html"><i data-lucide="graduation-cap"></i> <span>Mentors</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="events\Events.html"><i data-lucide="calendar"></i> <span>Events</span></a>
+                    <a href="events/Events.html"><i data-lucide="calendar"></i> <span>Events</span></a>
                 </li>
                 <li class="nav-item active">
-                    <a href=""><i data-lucide="book-open"></i> <span>Resources</span></a>
+                    <a href="resources.html"><i data-lucide="book-open"></i> <span>Resources</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="#"><i data-lucide="message-square"></i> <span>Messages</span><span class="badge">3</span></a>
+                    <a href="message.html"><i data-lucide="message-square"></i> <span>Messages</span><span class="badge">3</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="#"><i data-lucide="bell"></i> <span>Notifications</span><span class="badge">5</span></a>
+                    <a href="notifications.html"><i data-lucide="bell"></i> <span>Notifications</span><span class="badge">5</span></a>
                 </li>
                 <li class="nav-item">
                     <a href="Profile.html"><i data-lucide="user"></i> <span>Profile</span></a>
@@ -1558,40 +1122,35 @@ background:#EAF3F4;
             </div>
         </aside>
 
-        <!-- Main Workspace Area -->
+        <!-- Main Workspace -->
         <div class="main-wrapper">
-            
-            <!-- Topbar Header -->
+            <!-- Universal Topbar -->
             <header class="topbar">
                 <div class="topbar-main">
                     <button class="sidebar-toggle-btn" id="sidebarToggle" aria-label="Toggle Sidebar">
                         <i data-lucide="menu"></i>
                     </button>
-                    
                     <div class="search-container">
                         <i data-lucide="search"></i>
-                        <input type="text" class="search-input" placeholder="Search mentors, events...">
+                        <input type="text" class="search-input" id="resourceGlobalSearch" placeholder="Search Vedic guides, anatomy diagrams, Sanskrit chants..." oninput="handleResourceSearch(event)">
                     </div>
                 </div>
-                
+
                 <div class="topbar-actions">
-                    <!-- Notification Bell Button -->
-                    <button class="icon-btn-badge" aria-label="Notifications">
+                    <button class="icon-btn-badge" onclick="window.location.href='notifications.html'" aria-label="Notifications">
                         <i data-lucide="bell"></i>
                         <span class="badge-dot">5</span>
                     </button>
-                    
-                    <!-- Messages Bubble Button -->
-                    <button class="icon-btn-badge" aria-label="Messages">
+                    <button class="icon-btn-badge" onclick="window.location.href='message.html'" aria-label="Messages">
                         <i data-lucide="message-square"></i>
                         <span class="badge-dot">3</span>
                     </button>
-                    
-                    <!-- User Avatar trigger -->
+
+                    <!-- Universal User Avatar Trigger -->
                     <div class="user-menu-trigger" id="userMenuTrigger">
-                        <div class="user-avatar-circle">GP</div>
+                        <div class="user-avatar-circle">P</div>
                         <div class="user-details">
-                            <span class="user-name">Gyan Prakash</span>
+                            <span class="user-name">Pragya <span class="user-tier-badge">💎 ✨ SuperDiamond</span></span>
                             <span class="user-role">Student</span>
                         </div>
                         <i data-lucide="chevron-down"></i>
@@ -1600,538 +1159,711 @@ background:#EAF3F4;
                     <!-- User Dropdown Menu -->
                     <div class="user-dropdown" id="userDropdown">
                         <div class="dropdown-header">
-                            <div class="dropdown-avatar">GP</div>
+                            <div class="dropdown-avatar">P</div>
                             <div class="dropdown-user-info">
-                                <span class="dropdown-name">Gyan Prakash</span>
-                                <span class="dropdown-role">Student</span>
+                                <span class="dropdown-name" style="font-weight:700; color:var(--text-heading);">Pragya</span>
+                                <span class="dropdown-role" style="font-size:11px; color:#D9AE29; font-weight:700;">💎 ✨ SuperDiamond · Student</span>
                             </div>
                         </div>
                         <div class="dropdown-divider"></div>
                         <ul class="dropdown-menu">
-                            <li>
-                                <a href="Profile.html" class="dropdown-item">
-                                    <i data-lucide="user"></i>
-                                    <span>My Profile</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="setting.html" class="dropdown-item">
-                                    <i data-lucide="settings"></i>
-                                    <span>Settings</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="dropdown-item">
-                                    <i data-lucide="help-circle"></i>
-                                    <span>Help & Support</span>
-                                </a>
-                            </li>
+                            <li><a href="Profile.html" class="dropdown-item"><i data-lucide="user"></i> <span>My Profile</span></a></li>
+                            <li><a href="setting.html" class="dropdown-item"><i data-lucide="settings"></i> <span>Settings</span></a></li>
+                            <li><a href="help-support.html" class="dropdown-item"><i data-lucide="help-circle"></i> <span>Help & Support</span></a></li>
                         </ul>
                         <div class="dropdown-divider"></div>
                         <ul class="dropdown-menu">
-                            <li>
-                                <a href="index.html" class="dropdown-item logout-item">
-                                    <i data-lucide="log-out"></i>
-                                    <span>Logout</span>
-                                </a>
-                            </li>
+                            <li><a href="index.html" class="dropdown-item logout-item"><i data-lucide="log-out"></i> <span>Logout</span></a></li>
                         </ul>
                     </div>
                 </div>
             </header>
 
-<main class="content-grid">
-
-    <!-- Left Column -->
-    <div class="center-column">
-
-        <!-- Page Header -->
-        <section class="dashboard-card">
-            <div class="section-header">
-                <div>
-                    <h2>Resources Library</h2>
-                    <p>
-                        Browse yoga guides, meditation videos, books and learning material.
-                    </p>
+            <!-- ── HERO: Pragya Knowledge & Sadhana Sanctum ── -->
+            <div class="resources-hero">
+                <div class="hero-info-left">
+                    <span class="hero-tag">🌟 Authentic Yogic Knowledge Vault</span>
+                    <h1 class="hero-title">Master Your Practice with <span>Interactive Vedic Resources</span></h1>
+                    <p class="hero-desc">Explore verified 200-Hr & 300-Hr YTT syllabi, 432Hz Vedic audio chants, interactive Asana anatomy cues, and classical Sanskrit wisdom.</p>
+                    
+                    <div class="hero-metrics-row">
+                        <div class="metric-pill">
+                            <i class="fa-solid fa-file-pdf" style="color:#D9AE29;"></i>
+                            <span><strong>48+</strong> Study Guides & PDFs</span>
+                        </div>
+                        <div class="metric-pill">
+                            <i class="fa-solid fa-music" style="color:#D9AE29;"></i>
+                            <span><strong>432Hz</strong> Sound Bath Studio</span>
+                        </div>
+                        <div class="metric-pill">
+                            <i class="fa-solid fa-book-bookmark" style="color:#D9AE29;"></i>
+                            <span><strong>100%</strong> Syllabus Coverage</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
 
-        <!-- Filter Row -->
-        <div class="filter-btn-group" style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px;">
-            <button class="filter-btn active" style="padding: 8px 16px; border: 1px solid var(--border); background-color: var(--primary-light); color: var(--primary); border-radius: 20px; font-weight: 600; cursor: pointer;" onclick="filterResources('all')">All</button>
-            <button class="filter-btn" style="padding: 8px 16px; border: 1px solid var(--border); background-color: var(--bg-body); color: var(--text-muted); border-radius: 20px; font-weight: 600; cursor: pointer;" onclick="filterResources('yoga')">Yoga</button>
-            <button class="filter-btn" style="padding: 8px 16px; border: 1px solid var(--border); background-color: var(--bg-body); color: var(--text-muted); border-radius: 20px; font-weight: 600; cursor: pointer;" onclick="filterResources('meditation')">Meditation</button>
-            <button class="filter-btn" style="padding: 8px 16px; border: 1px solid var(--border); background-color: var(--bg-body); color: var(--text-muted); border-radius: 20px; font-weight: 600; cursor: pointer;" onclick="filterResources('adjustment')">Adjustment</button>
-            <button class="filter-btn" style="padding: 8px 16px; border: 1px solid var(--border); background-color: var(--bg-body); color: var(--text-muted); border-radius: 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;" onclick="filterResources('bookmarks')"><i data-lucide="bookmark" style="width: 14px; height: 14px;"></i> Saved</button>
-        </div>
-
-        <!-- Featured Resources -->
-
-        <section class="dashboard-card">
-
-            <div class="section-header">
-
-                <div class="section-title-wrap">
-                    <i data-lucide="star"></i>
-                    <h3 class="section-title">Featured Resources</h3>
-                </div>
-
+            <!-- ── HUB NAVIGATION TABS ── -->
+            <div class="hub-nav-container">
+                <button class="hub-tab-btn active" onclick="switchHubSection('library')">
+                    <i class="fa-solid fa-book-open"></i> Study Library & Guides
+                </button>
+                <button class="hub-tab-btn" onclick="switchHubSection('audio')">
+                    <i class="fa-solid fa-headphones"></i> 432Hz Mantra & Audio Studio
+                </button>
+                <button class="hub-tab-btn" onclick="switchHubSection('anatomy')">
+                    <i class="fa-solid fa-bone"></i> Asana Anatomy Explorer
+                </button>
+                <button class="hub-tab-btn" onclick="switchHubSection('glossary')">
+                    <i class="fa-solid fa-language"></i> Sanskrit Voice Glossary
+                </button>
             </div>
 
-            <div class="activity-grid" style="margin-top:25px;">
-
-                <div class="activity-item">
-                    <div class="activity-icon-circle primary-icon">
-                        <i data-lucide="book-open"></i>
+            <!-- ── SECTION 1: STUDY LIBRARY & GUIDES ── -->
+            <div id="sectionLibrary">
+                <!-- Filter Bar -->
+                <div class="resources-filter-bar">
+                    <div class="filter-chips-list">
+                        <button class="cat-filter-btn active" onclick="filterByHubCategory('all')">✨ All Resources</button>
+                        <button class="cat-filter-btn" onclick="filterByHubCategory('course')">🎓 Enrolled 200-Hr YTT</button>
+                        <button class="cat-filter-btn" onclick="filterByHubCategory('anatomy')">🦴 Spine & Anatomy</button>
+                        <button class="cat-filter-btn" onclick="filterByHubCategory('philosophy')">📖 Vedic Philosophy</button>
+                        <button class="cat-filter-btn" onclick="filterByHubCategory('pranayama')">🌿 Pranayama & Diet</button>
+                        <button class="cat-filter-btn" onclick="filterByHubCategory('bookmarks')">🔖 Saved Bookmarks</button>
                     </div>
 
-                    <div class="activity-details">
-                        <strong>Yoga Fundamentals</strong>
-                        PDF Guide
-                        <span class="time">2.3 MB</span>
-                    </div>
-                </div>
-
-                <div class="activity-item">
-                    <div class="activity-icon-circle accent-icon">
-                        <i data-lucide="play-circle"></i>
-                    </div>
-
-                    <div class="activity-details">
-                        <strong>Meditation Masterclass</strong>
-                        Video
-                        <span class="time">25 min</span>
+                    <div>
+                        <select id="courseSyllabusSelect" onchange="renderResourceCards()" style="padding:8px 14px; border-radius:12px; border:1px solid var(--border); background:#fff; font-weight:700; font-size:12.5px; color:var(--primary); cursor:pointer;">
+                            <option value="200-Hour Yoga Teacher Training">🎓 200-Hour Yoga Teacher Training</option>
+                            <option value="Spine Therapy Intensive">🧘 Spine Therapy Intensive</option>
+                            <option value="300-Hour Master Training">🏅 300-Hour Master Training</option>
+                        </select>
                     </div>
                 </div>
 
-                <div class="activity-item">
-                    <div class="activity-icon-circle primary-icon">
-                        <i data-lucide="presentation"></i>
-                    </div>
-
-                    <div class="activity-details">
-                        <strong>Workshop Slides</strong>
-                        PPT
-                        <span class="time">5 MB</span>
-                    </div>
-                </div>
-
-                <div class="activity-item">
-                    <div class="activity-icon-circle accent-icon">
-                        <i data-lucide="award"></i>
-                    </div>
-
-                    <div class="activity-details">
-                        <strong>Certification Guide</strong>
-                        PDF
-                        <span class="time">1.8 MB</span>
-                    </div>
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- Resources List -->
-
-        <section class="dashboard-card">
-
-            <div class="section-header">
-
-                <div class="section-title-wrap">
-                    <i data-lucide="folder-open"></i>
-                    <h3 class="section-title">All Resources</h3>
-                </div>
-
-            </div>
-
-            <div class="resources-list" id="resourcesContainer"></div>
-
-        </section>
-
-    </div>
-
-    <!-- Right Column -->
-
-    <div class="right-column">
-
-        <section class="dashboard-card">
-
-            <div class="section-title-wrap">
-                <i data-lucide="clock-3"></i>
-                <h3 class="section-title">Recent Downloads</h3>
-            </div>
-
-            <div class="events-list">
-
-                <div class="event-item">
-                    <div class="event-info">
-                        <span class="event-title">Yoga Basics.pdf</span>
-                        <span class="event-time">Downloaded Today</span>
-                    </div>
-                </div>
-
-                <div class="event-item">
-                    <div class="event-info">
-                        <span class="event-title">Meditation Guide</span>
-                        <span class="event-time">Yesterday</span>
-                    </div>
-                </div>
-
-                <div class="event-item">
-                    <div class="event-info">
-                        <span class="event-title">Workshop Slides</span>
-                        <span class="event-time">2 Days Ago</span>
-                    </div>
-                </div>
-
-            </div>
-
-        </section>
-
-    </div>
-
-</main>
-
-    <footer class="footer">
-
-    <!-- Left -->
-    <div class="footer-left">
-
-    <img src="assets/logo.png" alt="Pragya Connect Logo" class="footer-logo">
-
-    <h3>Pragya Connect</h3>
-
-    <p>Community &amp; Mentorship Portal</p>
-
-</div>
-
-    <!-- Quick Links -->
-    <div class="footer-links">
-
-        <h4>Quick Links</h4>
-
-        <a href="#">Dashboard</a>
-        <a href="#">Community</a>
-        <a href="#">Events</a>
-        <a href="#">Profile</a>
-        <a href="Settings.html">Settings</a>
-
-    </div>
-
-    <!-- Contact -->
-    <div class="footer-contact">
-
-        <h4>Contact Us</h4>
-
-        <p>
-            <i data-lucide="phone"></i>
-            +852 6708 2503
-        </p>
-
-        <p>
-            <i data-lucide="mail"></i>
-            info@pyshk.com
-        </p>
-
-        <p>
-            <i data-lucide="map-pin"></i>
-            1303-04, 13/F Tak Woo House,<br>
-            1-3 Wo On Lane, Central,<br>
-            Hong Kong
-        </p>
-
-    </div>
-
-    <!-- Social -->
-    <div class="footer-social">
-        <h4>Follow Us</h4>
-        <div class="social-icons">
-            <a href="https://www.facebook.com/pragyahk"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://www.instagram.com/pragyahk"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.linkedin.com/company/pyshk/"><i class="fab fa-linkedin-in"></i></a>
-            <a href="https://www.youtube.com/@pys_hk"><i class="fab fa-youtube"></i></a>
-            <a href="https://x.com/pragyahk"><i class="fab fa-x-twitter"></i></a>
-        </div>
-
-    </div>
-</footer>
-
-<div class="footer-bottom">
-    <span>&copy; 2026 Pragya Connect. All Rights Reserved.</span>
-
-    <div class="footer-bottom-links">
-        <a href="privacy-policy.html">Privacy Policy</a>
-        <span>|</span>
-        <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
-    </div>
-</div>
-
-<script src="assets/js/app-service.js"></script>
-<script src="assets/js/admin-sync.js"></script>
-<script src="common.js"></script>
-<script>
-    // Resources Library Logic
-
-    const resources = [
-        { id: 1, title: "Yoga Basics.pdf", description: "Beginner Yoga Notes", type: "PDF", size: "2.3 MB", category: "Yoga", timeText: "Updated yesterday" },
-        { id: 2, title: "Breathing Exercises", description: "Video Tutorial", type: "Video", size: "18 mins", category: "Meditation", timeText: "18 Minutes" },
-        { id: 3, title: "Meditation Guide.pdf", description: "Ebook for mindfulness", type: "PDF", size: "4 MB", category: "Meditation", timeText: "Updated 1 week ago" },
-        { id: 4, title: "Workshop Presentation.ppt", description: "PPT Slides for session adjustment", type: "PDF", size: "5 MB", category: "Adjustment", timeText: "Updated 2 days ago" }
-    ];
-
-    let currentFilter = 'all';
-let searchQuery = '';
-
-function getBookmarks() {
-    return JSON.parse(localStorage.getItem('bookmarked_resources') || '[]');
-}
-
-// Toggle bookmark
-window.toggleBookmark = function(id) {
-    let bookmarks = getBookmarks();
-
-    if (bookmarks.includes(id)) {
-        bookmarks = bookmarks.filter(bId => bId !== id);
-    } else {
-        bookmarks.push(id);
-    }
-
-    localStorage.setItem('bookmarked_resources', JSON.stringify(bookmarks));
-    renderResources();
-};
-
-// Filter resources
-window.filterResources = function(category) {
-    currentFilter = category;
-
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-        btn.style.backgroundColor = 'var(--bg-body)';
-        btn.style.color = 'var(--text-muted)';
-    });
-
-    event.target.classList.add('active');
-    event.target.style.backgroundColor = 'var(--primary-light)';
-    event.target.style.color = 'var(--primary)';
-
-    renderResources();
-};
-
-// PREVIEW IN SAME PAGE
-// PREVIEW IN SAME PAGE
-window.previewResource = function(fileName) {
-
-    const fileMap = {
-        'Yoga Basics.pdf': 'assets/resources/Yoga%20Basics.pdf',
-        'Breathing Exercises': 'assets/resources/Breathing%20Exercises.mp4',
-        'Meditation Guide.pdf': 'assets/resources/Meditation%20Guide.pdf',
-        'Workshop Presentation.ppt': 'assets/resources/Workshop%20Presentation.ppt'
-    };
-
-    const filePath = fileMap[fileName];
-
-    if (filePath) {
-        // Open in SAME PAGE
-        window.location.href = filePath;
-    } else {
-        alert('Preview file not found: ' + fileName);
-    }
-};
-
-// DOWNLOAD
-window.downloadResource = function(fileName) {
-
-    const fileMap = {
-        'Yoga Basics.pdf': 'assets/resources/Yoga%20Basics.pdf',
-        'Breathing Exercises': 'assets/resources/Breathing%20Exercises.mp4',
-        'Meditation Guide.pdf': 'assets/resources/Meditation%20Guide.pdf',
-        'Workshop Presentation.ppt': 'assets/resources/Workshop%20Presentation.ppt'
-    };
-
-    const filePath = fileMap[fileName];
-
-    if (!filePath) {
-        alert('Download file not found');
-        return;
-    }
-
-    const link = document.createElement('a');
-    link.href = filePath;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-};
-
-// Render resources
-function renderResources() {
-
-    const container = document.getElementById('resourcesContainer');
-    const bookmarks = getBookmarks();
-
-    let filtered = resources.filter(resource => {
-
-        const matchesSearch =
-            resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            resource.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-        const matchesFilter =
-            currentFilter === 'all' ||
-            (currentFilter === 'bookmarks' && bookmarks.includes(resource.id)) ||
-            resource.category.toLowerCase() === currentFilter.toLowerCase();
-
-        return matchesSearch && matchesFilter;
-    });
-
-    container.innerHTML = '';
-
-    if (filtered.length === 0) {
-        container.innerHTML = `
-            <div class='event-item' style='justify-content:center; text-align:center;'>
-                <div>
-                    <i data-lucide='folder-search' style='width:42px;height:42px;color:var(--text-muted);margin-bottom:10px;'></i>
-                    <p style='color:var(--text-muted);font-weight:600;'>No resources found</p>
+                <!-- Cards Grid -->
+                <div class="resources-cards-grid" id="resourcesGridContainer">
+                    <!-- Populated by JavaScript -->
                 </div>
             </div>
-        `;
-        lucide.createIcons();
-        return;
-    }
 
-    filtered.forEach(resource => {
-
-        container.innerHTML += `
-            <div class='event-item' style='flex-direction:column; align-items:flex-start; gap:14px;'>
-
-                <div style='display:flex; justify-content:space-between; align-items:flex-start; width:100%; gap:16px;'>
-
-                    <div class='event-info' style='flex:1;'>
-
-                        <div style='display:flex; align-items:center; gap:10px; margin-bottom:6px;'>
-
-                            <div class='activity-icon-circle ${resource.type === 'Video' ? 'accent-icon' : 'primary-icon'}'
-                                 style='width:48px;height:48px;border-radius:14px;'>
-
-                                <i data-lucide='${resource.type === 'Video' ? 'play-circle' : 'file-text'}'></i>
-
-                            </div>
-
+            <!-- ── SECTION 2: 432Hz MANTRA & AUDIO SOUND BATH STUDIO ── -->
+            <div id="sectionAudio" style="display:none;">
+                <div class="audio-studio-card">
+                    <div class="studio-header">
+                        <div class="studio-title-wrap">
+                            <div class="studio-icon"><i class="fa-solid fa-om"></i></div>
                             <div>
-                                <div class='event-title'>${resource.title}</div>
-                                <div class='event-time'>${resource.description}</div>
+                                <h3 style="font-size:18px; font-weight:800; color:var(--text-heading);">Vedic Mantra & Sound Bath Studio</h3>
+                                <p style="font-size:12.5px; color:var(--text-muted);">Listen to high-frequency meditative soundscapes, traditional chants, and guided pranayama tracks.</p>
+                            </div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:12px; font-weight:700; color:var(--primary);">Mala Loop Beads:</span>
+                            <button class="cat-filter-btn active" id="loopBtn" onclick="toggleMalaLoop()">📿 108x Loop Active</button>
+                        </div>
+                    </div>
+
+                    <div class="audio-player-grid" id="audioPlayerContainer">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── SECTION 3: ASANA ANATOMY EXPLORER ── -->
+            <div id="sectionAnatomy" style="display:none;">
+                <div class="anatomy-explorer-card">
+                    <div class="studio-header">
+                        <div class="studio-title-wrap">
+                            <div class="studio-icon"><i class="fa-solid fa-person-praying"></i></div>
+                            <div>
+                                <h3 style="font-size:18px; font-weight:800; color:var(--text-heading);">Interactive Asana & Spine Alignment Explorer</h3>
+                                <p style="font-size:12.5px; color:var(--text-muted);">Click on classical postures to reveal targeted muscle groups, alignment safety cues, and adjustments.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="asana-selector-row">
+                        <button class="asana-chip active" onclick="loadAsanaAnatomy('bhujangasana')">🐍 Bhujangasana (Cobra)</button>
+                        <button class="asana-chip" onclick="loadAsanaAnatomy('adhomukha')">🐕 Adho Mukha Svanasana (Downward Dog)</button>
+                        <button class="asana-chip" onclick="loadAsanaAnatomy('padmasana')">🪷 Padmasana (Lotus Pose)</button>
+                        <button class="asana-chip" onclick="loadAsanaAnatomy('trikonasana')">📐 Trikonasana (Triangle Pose)</button>
+                    </div>
+
+                    <div class="anatomy-content-layout" id="anatomyDisplayBox">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── SECTION 4: SANSKRIT VOICE GLOSSARY ── -->
+            <div id="sectionGlossary" style="display:none;">
+                <div class="glossary-card">
+                    <div class="studio-header">
+                        <div class="studio-title-wrap">
+                            <div class="studio-icon"><i class="fa-solid fa-volume-high"></i></div>
+                            <div>
+                                <h3 style="font-size:18px; font-weight:800; color:var(--text-heading);">Sanskrit Pronunciation & Yogic Dictionary</h3>
+                                <p style="font-size:12.5px; color:var(--text-muted);">Tap the speaker icon to hear authentic phonetic Sanskrit pronunciation synthesized in real-time.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glossary-grid" id="glossaryGridContainer">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── INTERACTIVE FULLSCREEN READER & STUDY NOTEPAD MODAL ── -->
+    <div class="reader-modal-overlay" id="readerModal">
+        <div class="reader-modal-frame">
+            <div class="reader-modal-header">
+                <div>
+                    <h3 id="modalDocTitle" style="font-size:16px; font-weight:700; margin:0;">Document Preview</h3>
+                    <span id="modalDocMeta" style="font-size:11.5px; color:#D9AE29;">200-Hour YTT Module • Pragya Yog Publication</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <button class="btn-download-res" onclick="downloadCurrentModalDoc()"><i class="fa-solid fa-download"></i> Download</button>
+                    <button onclick="closeReaderModal()" style="background:transparent; border:none; color:#fff; font-size:20px; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
+            <div class="reader-body-split">
+                <div class="reader-content-pane" id="modalDocText">
+                    <!-- Text content populated here -->
+                </div>
+                <div class="reader-notes-pane">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h4 style="font-size:13px; font-weight:700; color:var(--text-heading); display:flex; align-items:center; gap:6px;">
+                            <i class="fa-solid fa-pen-to-square" style="color:var(--accent);"></i> My Study Notes & Key Takeaways
+                        </h4>
+                        <span style="font-size:10.5px; color:var(--success); font-weight:700;">✓ Auto-Saved</span>
+                    </div>
+                    <textarea class="study-notes-textarea" id="studyNotesInput" placeholder="Write your personalized notes, asana modifications, and reflection points here..." oninput="saveStudyNotes()"></textarea>
+                    <button class="btn-preview-modal" style="justify-content:center;" onclick="copyStudyNotes()">
+                        <i class="fa-solid fa-copy"></i> Copy My Notes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/app-service.js"></script>
+    <script src="common.js"></script>
+
+    <script>
+        // ── Comprehensive Knowledge Base Data ──
+        const resourcesData = [
+            {
+                id: 'res_1',
+                title: 'Spine Anatomy & Functional Alignment Manual',
+                desc: 'Detailed biomechanics of vertebral column flexion, extension, lateral curves, and disc preservation in daily asana.',
+                category: 'anatomy',
+                course: '200-Hour Yoga Teacher Training',
+                type: 'PDF',
+                size: '4.8 MB',
+                author: 'Dr. Akhilesh Sharma',
+                content: `<h3>Chapter 1: The Biomechanics of the Spine in Hatha Yoga</h3>
+                <p>The human spine consists of 33 vertebrae divided into five distinct regions: Cervical (7), Thoracic (12), Lumbar (5), Sacrum (5 fused), and Coccyx (4 fused). In yogic movement, cultivating axial elongation prior to any rotational or flexion motion prevents compression of the intervertebral discs.</p>
+                <br>
+                <h4>Key Principles for Teachers:</h4>
+                <ul>
+                    <li><strong>Grounding the Sacrum:</strong> Ensure even weight distribution across the ischial tuberosities (sit bones) in all seated forward bends.</li>
+                    <li><strong>Bandha Engagement:</strong> Activate Mula Bandha (pelvic floor lift) and Uddiyana Bandha to generate intra-abdominal pressure that supports lumbar stability.</li>
+                    <li><strong>Thoracic Mobility:</strong> Emphasize opening through the heart space rather than hyper-extending the lower lumbar spine in backward bends.</li>
+                </ul>`
+            },
+            {
+                id: 'res_2',
+                title: 'Patanjali Yoga Sutras (Samadhi & Sadhana Pada Translation)',
+                desc: 'Word-by-word Sanskrit translations, classical commentaries, and modern psychological reflections on the 8 limbs of Raja Yoga.',
+                category: 'philosophy',
+                course: '200-Hour Yoga Teacher Training',
+                type: 'PDF',
+                size: '6.2 MB',
+                author: 'Swami Vidyanand',
+                content: `<h3>Patanjali Yoga Sutras: Samadhi Pada</h3>
+                <p><em>"Atha Yoganusasanam" (1.1)</em> — Now begins the disciplined inquiry and practice of Yoga.</p>
+                <p><em>"Yogas Chitta Vritti Nirodha" (1.2)</em> — Yoga is the stilling of the oscillations, modifications, and turbulence of the mind field (Chitta).</p>
+                <br>
+                <h4>The Five Vrittis (Mental Modifications):</h4>
+                <ol>
+                    <li><strong>Pramana:</strong> Correct perception, direct cognition, and authentic testimony.</li>
+                    <li><strong>Viparyaya:</strong> Misconception, illusion, or incorrect knowledge not based on reality.</li>
+                    <li><strong>Vikalpa:</strong> Conceptualization, fantasy, or verbal delusion based on words without substance.</li>
+                    <li><strong>Nidra:</strong> Sleep, the mental state supported by the perception of non-being.</li>
+                    <li><strong>Smriti:</strong> Memory, the retention of previously experienced impressions without alteration.</li>
+                </ol>`
+            },
+            {
+                id: 'res_3',
+                title: 'Pranayama Science & Nadi Shodhana Protocol',
+                desc: 'Step-by-step respiratory rhythms, Kumbhaka ratios (1:4:2), and nervous system regulation techniques.',
+                category: 'pranayama',
+                course: '200-Hour Yoga Teacher Training',
+                type: 'PDF',
+                size: '3.1 MB',
+                author: 'Priya Patel',
+                content: `<h3>Pranayama: Mastery of Life Force</h3>
+                <p>Pranayama is not merely breath control, but the conscious regulation of Pranic energy throughout the Ida, Pingala, and Sushumna Nadis.</p>
+                <br>
+                <h4>Nadi Shodhana Protocol:</h4>
+                <ul>
+                    <li>Sit in a steady meditative posture (Siddhasana or Padmasana) with the spine naturally erect.</li>
+                    <li>Adopt Vishnu Mudra with the right hand.</li>
+                    <li>Inhale smoothly through the left nostril for 4 counts, retain (Antar Kumbhaka) for 4 counts, and exhale through the right nostril for 8 counts.</li>
+                    <li>Repeat on the opposite side to complete one full cycle. Perform 12-24 cycles daily.</li>
+                </ul>`
+            },
+            {
+                id: 'res_4',
+                title: 'Ayurvedic Dinacharya & Sattvic Nutrition Guide',
+                desc: 'Daily seasonal routines, Dosha balancing meal plans, and herbal teas for restorative sleep and vitality.',
+                category: 'pranayama',
+                course: 'Spine Therapy Intensive',
+                type: 'PDF',
+                size: '5.5 MB',
+                author: 'Dr. Akhilesh Sharma',
+                content: `<h3>Ayurvedic Dinacharya (Daily Ideal Routine)</h3>
+                <p>Aligning personal daily biological rhythms with the cycles of sunrise and seasonal shifts optimizes Agni (digestive fire) and Ojas (immunity).</p>
+                <br>
+                <h4>Essential Morning Rituals:</h4>
+                <ul>
+                    <li><strong>Brahma Muhurta Wakeup:</strong> Waking approximately 96 minutes before sunrise when the atmosphere is rich in Sattvic vibration.</li>
+                    <li><strong>Jihwa Nirlekhana:</strong> Tongue scraping with pure copper to eliminate Ama (toxins).</li>
+                    <li><strong>Ushapan:</strong> Drinking warm water infused with ginger and holy basil to stimulate natural peristalsis.</li>
+                </ul>`
+            },
+            {
+                id: 'res_5',
+                title: 'Spine Therapy & Lumbar Rehabilitation Workshop Slides',
+                desc: 'Therapeutic adjustments for sciatica, herniated discs, postural scoliosis, and anterior pelvic tilt.',
+                category: 'anatomy',
+                course: 'Spine Therapy Intensive',
+                type: 'PPT',
+                size: '14.2 MB',
+                author: 'Master Shoaib',
+                content: `<h3>Spine Therapy Clinical Methodology</h3>
+                <p>Restoring neutral pelvic alignment and decompressing the L4-L5 and L5-S1 lumbar junction through traction-based asana sequences.</p>
+                <br>
+                <h4>Postural Assessment Steps:</h4>
+                <ul>
+                    <li>Check ASIS and PSIS horizontal alignment for anterior pelvic tilt.</li>
+                    <li>Test hamstring flexibility via Passive Straight Leg Raise (PSLR).</li>
+                    <li>Apply gentle restorative traction using yoga belts in Supta Padangusthasana.</li>
+                </ul>`
+            },
+            {
+                id: 'res_6',
+                title: 'Hands-on Adjustment & Touch Ethics for Teachers',
+                desc: 'Biomechanical principles of verbal cues vs gentle manual assists with consent and trauma-informed awareness.',
+                category: 'anatomy',
+                course: '300-Hour Master Training',
+                type: 'PDF',
+                size: '3.9 MB',
+                author: 'Angela & Master Shoaib',
+                content: `<h3>Trauma-Informed Manual Assists</h3>
+                <p>Hands-on adjustments should facilitate the student's own internal awareness rather than forcing external aesthetic shape.</p>
+                <br>
+                <h4>Golden Rules of Assists:</h4>
+                <ul>
+                    <li>Always seek explicit consent prior to physical touch.</li>
+                    <li>Stabilize the base of the pose before guiding spinal rotation.</li>
+                    <li>Never apply downward pressure directly on vulnerable joints like the knees or cervical spine.</li>
+                </ul>`
+            }
+        ];
+
+        // ── Audio Studio Tracks ──
+        const audioTracks = [
+            {
+                id: 'aud_1',
+                title: 'Mahamrityunjaya Mantra (432Hz Vedic Resonance)',
+                duration: '11:08 Mins',
+                frequency: '432Hz',
+                type: 'Healing Mantra',
+                lyrics: 'Om Tryambakam Yajamahe Sugandhim Pushti-Vardhanam...',
+                audioUrl: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=meditation-bell-111005.mp3'
+            },
+            {
+                id: 'aud_2',
+                title: 'Guided Nadi Shodhana (Alternate Nostril)',
+                duration: '15:20 Mins',
+                frequency: '528Hz',
+                type: 'Breathwork Meditation',
+                lyrics: 'Guided breath balancing left and right hemispheres of the brain.',
+                audioUrl: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=ambient-piano-amp-strings-10711.mp3'
+            },
+            {
+                id: 'aud_3',
+                title: 'Tibetan 7-Chakra Brass Sound Bath',
+                duration: '22:45 Mins',
+                frequency: '7.83Hz Schumann',
+                type: 'Deep Relaxation',
+                lyrics: 'Harmonic singing bowl resonance for deep state of Yoga Nidra.',
+                audioUrl: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=relaxing-mountains-nature-sounds-10839.mp3'
+            },
+            {
+                id: 'aud_4',
+                title: 'Gayatri Mantra 108 Repetitions',
+                duration: '32:00 Mins',
+                frequency: '432Hz Solar',
+                type: 'Vedic Chanting',
+                lyrics: 'Om Bhur Bhuva Svaha Tat Savitur Varenyam...',
+                audioUrl: 'https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f77c30.mp3?filename=tibetan-singing-bowl-123474.mp3'
+            }
+        ];
+
+        // ── Asana Anatomy Data ──
+        const anatomyData = {
+            bhujangasana: {
+                name: 'Bhujangasana (Cobra Pose)',
+                sanskrit: 'भुजङ्गासन',
+                targetMuscles: 'Erector Spinae, Latissimus Dorsi, Gluteus Maximus, Psoas Major',
+                cues: [
+                    'Press the tops of the feet firmly into the mat, activating the quadriceps.',
+                    'Keep the elbows softly hugging the ribcage rather than splaying outwards.',
+                    'Draw the shoulder blades down the back to broaden through the collarbones.',
+                    'Gently lift through the sternum while keeping the back of the neck long.'
+                ],
+                cautions: 'Avoid deep lumbar hyperextension if experiencing acute disc herniation or pregnancy.',
+                img: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600'
+            },
+            adhomukha: {
+                name: 'Adho Mukha Svanasana (Downward-Facing Dog)',
+                sanskrit: 'अधोमुखश्वानासन',
+                targetMuscles: 'Hamstrings, Gastrocnemius, Serratus Anterior, Deltoids, Triceps',
+                cues: [
+                    'Spread all ten fingers wide and root through the L-shape of index finger and thumb.',
+                    'Internally rotate the forearms while externally rotating the upper arms.',
+                    'Send the sitting bones high and back to lengthen the lumbar spine.',
+                    'Bend the knees slightly if hamstrings or lower back are tight.'
+                ],
+                cautions: 'Carpa tunnel syndrome or high blood pressure.',
+                img: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600'
+            },
+            padmasana: {
+                name: 'Padmasana (Lotus Pose)',
+                sanskrit: 'पद्मासन',
+                targetMuscles: 'Piriformis, Gemelli, Obturator Internus, Tensor Fasciae Latae',
+                cues: [
+                    'Ensure external rotation originates purely from the hip joints, not by torqueing the knees.',
+                    'Draw the heels high towards the navel with ankles dorsiflexed to protect lateral ligaments.',
+                    'Stack shoulders directly over the pelvic bowl with chin parallel to the earth.'
+                ],
+                cautions: 'Never force the knees if hip mobility is restricted; use Ardha Padmasana or Sukhasana with blocks.',
+                img: 'https://images.unsplash.com/photo-1510894347713-fc3ed6fdf539?w=600'
+            },
+            trikonasana: {
+                name: 'Utthita Trikonasana (Extended Triangle)',
+                sanskrit: 'उत्थित त्रिकोणासन',
+                targetMuscles: 'Obliques, Quadratus Lumborum, Adductors, Hamstrings',
+                cues: [
+                    'Ground the outer edge of the back foot into the mat.',
+                    'Lengthen both sides of the torso equally rather than collapsing into the lower waist.',
+                    'Stack the top shoulder and hip directly over the lower limbs.'
+                ],
+                cautions: 'Low back pain or neck issues (gaze forward or down instead of upwards).',
+                img: 'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=600'
+            }
+        };
+
+        // ── Sanskrit Glossary ──
+        const glossaryData = [
+            { term: 'Prana', devanagari: 'प्राण', meaning: 'Universal life force & vital cosmic energy that animates all living beings.' },
+            { term: 'Asana', devanagari: 'आसन', meaning: 'Steady, comfortable meditative posture (Sthira Sukham Asanam).' },
+            { term: 'Bandha', devanagari: 'बन्ध', meaning: 'Energetic lock or seal to direct Prana (Mula, Uddiyana, Jalandhara).' },
+            { term: 'Chakra', devanagari: 'चक्र', meaning: 'Energy vortex or wheel located along the subtle spinal axis (Sushumna).' },
+            { term: 'Sadhana', devanagari: 'साधना', meaning: 'Dedicated daily spiritual practice leading to self-realization.' },
+            { term: 'Klesha', devanagari: 'क्लेश', meaning: 'Five primary root afflictions of the human mind (Avidya, Asmita, Raga, Dvesha, Abhinivesha).' },
+            { term: 'Kosha', devanagari: 'कोश', meaning: 'Five energetic sheaths enveloping the true self (Annamaya to Anandamaya).' },
+            { term: 'Nadi', devanagari: 'नाडी', meaning: 'Subtle energy channel through which Prana flows (72,000 in human body).' }
+        ];
+
+        let currentActiveHubTab = 'library';
+        let currentFilterCategory = 'all';
+        let currentModalDoc = null;
+        let audioPlayer = new Audio();
+        let currentlyPlayingTrackId = null;
+
+        // Hub Navigation Tabs
+        function switchHubSection(tab) {
+            currentActiveHubTab = tab;
+            document.querySelectorAll('.hub-tab-btn').forEach((btn, index) => {
+                const tabs = ['library', 'audio', 'anatomy', 'glossary'];
+                btn.classList.toggle('active', tabs[index] === tab);
+            });
+
+            document.getElementById('sectionLibrary').style.display = tab === 'library' ? 'block' : 'none';
+            document.getElementById('sectionAudio').style.display = tab === 'audio' ? 'block' : 'none';
+            document.getElementById('sectionAnatomy').style.display = tab === 'anatomy' ? 'block' : 'none';
+            document.getElementById('sectionGlossary').style.display = tab === 'glossary' ? 'block' : 'none';
+
+            if (tab === 'anatomy') {
+                loadAsanaAnatomy('bhujangasana');
+            }
+        }
+
+        // Render Resources Grid
+        function renderResourceCards() {
+            const container = document.getElementById('resourcesGridContainer');
+            const search = (document.getElementById('resourceGlobalSearch')?.value || '').toLowerCase();
+            const bookmarks = JSON.parse(localStorage.getItem('resource_bookmarks') || '[]');
+            const selectedCourse = document.getElementById('courseSyllabusSelect')?.value || '200-Hour Yoga Teacher Training';
+
+            let filtered = resourcesData.filter(res => {
+                const matchesSearch = res.title.toLowerCase().includes(search) || res.desc.toLowerCase().includes(search) || res.author.toLowerCase().includes(search);
+                const matchesCat = currentFilterCategory === 'all' || 
+                                   (currentFilterCategory === 'bookmarks' && bookmarks.includes(res.id)) ||
+                                   (currentFilterCategory === 'course' && res.course === selectedCourse) ||
+                                   res.category === currentFilterCategory;
+                return matchesSearch && matchesCat;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align:center; padding:48px 20px; background:#fff; border-radius:20px; border:1px solid var(--border);">
+                        <i class="fa-solid fa-folder-open" style="font-size:38px; color:var(--text-muted); margin-bottom:12px;"></i>
+                        <h4 style="font-size:16px; color:var(--text-heading);">No resources found</h4>
+                        <p style="font-size:13px; color:var(--text-muted);">Try adjusting your search keywords or active category filters.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(res => {
+                const isBookmarked = bookmarks.includes(res.id);
+                const iconClass = res.type === 'PDF' ? 'res-icon-pdf' : (res.type === 'PPT' ? 'res-icon-ppt' : 'res-icon-video');
+                const iconName = res.type === 'PDF' ? 'fa-file-pdf' : (res.type === 'PPT' ? 'fa-file-powerpoint' : 'fa-play');
+
+                return `
+                    <div class="res-card">
+                        <div>
+                            <div class="res-card-top">
+                                <div class="res-icon-box ${iconClass}">
+                                    <i class="fa-solid ${iconName}"></i>
+                                </div>
+                                <div style="flex:1;">
+                                    <h4 class="res-title">${res.title}</h4>
+                                    <p class="res-desc">${res.desc}</p>
+                                </div>
+                                <button onclick="toggleResourceBookmark('${res.id}')" style="background:transparent; border:none; color:${isBookmarked ? '#D9AE29' : 'var(--text-muted)'}; font-size:16px; cursor:pointer;" title="Bookmark">
+                                    <i class="fa-${isBookmarked ? 'solid' : 'regular'} fa-bookmark"></i>
+                                </button>
                             </div>
 
+                            <div class="res-tags-row">
+                                <span class="res-tag-pill"><i class="fa-solid fa-tag"></i> ${res.category.toUpperCase()}</span>
+                                <span class="res-tag-pill">${res.type} • ${res.size}</span>
+                                <span class="res-tag-pill"><i class="fa-solid fa-user-pen"></i> By ${res.author}</span>
+                            </div>
                         </div>
 
-                        <div style='display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;'>
-
-                            <span class='badge' style='background:var(--primary-light); color:var(--primary);'>
-                                ${resource.category}
-                            </span>
-
-                            <span class='badge' style='background:var(--bg-body); color:var(--text-main);'>
-                                ${resource.type}
-                            </span>
-
-                            <span class='badge' style='background:var(--bg-body); color:var(--text-main);'>
-                                ${resource.size}
-                            </span>
-
+                        <div class="res-card-actions">
+                            <button class="btn-preview-modal" onclick="openReaderModal('${res.id}')">
+                                <i class="fa-solid fa-book-reader"></i> Read & Take Notes
+                            </button>
+                            <button class="btn-download-res" onclick="downloadResource('${res.id}')">
+                                <i class="fa-solid fa-download"></i> Download
+                            </button>
                         </div>
+                    </div>
+                `;
+            }).join('');
+        }
 
+        function filterByHubCategory(cat) {
+            currentFilterCategory = cat;
+            document.querySelectorAll('.cat-filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.toLowerCase().includes(cat) || (cat === 'all' && btn.textContent.includes('All')));
+            });
+            renderResourceCards();
+        }
+
+        function handleResourceSearch() {
+            renderResourceCards();
+        }
+
+        function toggleResourceBookmark(id) {
+            let bookmarks = JSON.parse(localStorage.getItem('resource_bookmarks') || '[]');
+            if (bookmarks.includes(id)) {
+                bookmarks = bookmarks.filter(b => b !== id);
+            } else {
+                bookmarks.push(id);
+            }
+            localStorage.setItem('resource_bookmarks', JSON.stringify(bookmarks));
+            renderResourceCards();
+        }
+
+        // ── Audio Studio Functionality ──
+        function renderAudioStudio() {
+            const container = document.getElementById('audioPlayerContainer');
+            container.innerHTML = audioTracks.map(track => {
+                const isPlaying = currentlyPlayingTrackId === track.id;
+                return `
+                    <div class="audio-track-item ${isPlaying ? 'playing' : ''}" onclick="playAudioTrack('${track.id}')">
+                        <button class="track-play-btn">
+                            <i class="fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'}"></i>
+                        </button>
+                        <div class="track-details">
+                            <div class="track-title">${track.title}</div>
+                            <div class="track-sub">
+                                <span class="frequency-badge">${track.frequency}</span>
+                                <span>${track.duration}</span>
+                                <span>• ${track.type}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function playAudioTrack(id) {
+            const track = audioTracks.find(t => t.id === id);
+            if (!track) return;
+
+            if (currentlyPlayingTrackId === id) {
+                audioPlayer.pause();
+                currentlyPlayingTrackId = null;
+            } else {
+                audioPlayer.src = track.audioUrl;
+                audioPlayer.play().catch(() => {});
+                currentlyPlayingTrackId = id;
+            }
+            renderAudioStudio();
+        }
+
+        function toggleMalaLoop() {
+            const btn = document.getElementById('loopBtn');
+            audioPlayer.loop = !audioPlayer.loop;
+            btn.classList.toggle('active', audioPlayer.loop);
+            alert(audioPlayer.loop ? '📿 Mala 108x Continuous Chant Loop Enabled' : 'Mala loop disabled');
+        }
+
+        // ── Anatomy Explorer Functionality ──
+        function loadAsanaAnatomy(asanaKey) {
+            document.querySelectorAll('.asana-chip').forEach(chip => {
+                chip.classList.toggle('active', chip.getAttribute('onclick').includes(asanaKey));
+            });
+
+            const data = anatomyData[asanaKey];
+            if (!data) return;
+
+            const container = document.getElementById('anatomyDisplayBox');
+            container.innerHTML = `
+                <div class="anatomy-visual-box">
+                    <img src="${data.img}" alt="${data.name}" class="anatomy-img">
+                    <div style="margin-top:12px; font-weight:800; color:var(--primary); font-size:16px;">${data.name}</div>
+                    <div style="font-size:13px; color:#D9AE29; font-weight:700;">${data.sanskrit}</div>
+                </div>
+
+                <div class="anatomy-info-box">
+                    <div class="anatomy-cue-card">
+                        <strong>🎯 Primary Muscle Groups:</strong>
+                        <p style="color:var(--text-muted); margin-top:3px;">${data.targetMuscles}</p>
                     </div>
 
-                    <button class='trigger-btn'
-                            onclick='toggleBookmark(${resource.id})'
-                            style='padding:10px; border-radius:12px;'>
+                    <div class="anatomy-cue-card">
+                        <strong>🧘 Key Alignment Cues:</strong>
+                        <ul style="padding-left:18px; margin-top:4px; color:var(--text-main);">
+                            ${data.cues.map(c => `<li>${c}</li>`).join('')}
+                        </ul>
+                    </div>
 
-                        <i data-lucide='${bookmarks.includes(resource.id) ? 'bookmark-check' : 'bookmark'}'></i>
+                    <div class="anatomy-cue-card" style="border-left-color:var(--danger); background:#FFF5F5;">
+                        <strong style="color:var(--danger);">⚠️ Cautions & Contraindications:</strong>
+                        <p style="color:var(--text-muted); margin-top:3px;">${data.cautions}</p>
+                    </div>
+                </div>
+            `;
+        }
 
+        // ── Sanskrit Glossary ──
+        function renderGlossary() {
+            const container = document.getElementById('glossaryGridContainer');
+            container.innerHTML = glossaryData.map(item => `
+                <div class="glossary-item">
+                    <div>
+                        <div class="glossary-term">${item.term} <span style="font-size:12px; color:#D9AE29; font-weight:600;">(${item.devanagari})</span></div>
+                        <div class="glossary-meaning">${item.meaning}</div>
+                    </div>
+                    <button class="pronounce-btn" onclick="pronounceSanskrit('${item.term}')" title="Pronounce Sanskrit">
+                        <i class="fa-solid fa-volume-high"></i>
                     </button>
-
                 </div>
+            `).join('');
+        }
 
-                <div style='width:100%; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding-top:10px; border-top:1px solid var(--border);'>
+        function pronounceSanskrit(word) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.rate = 0.85;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert(`Pronunciation: [${word}]`);
+            }
+        }
 
-                    <span class='event-time'>${resource.timeText}</span>
+        // ── Reader Modal & Study Notes ──
+        function openReaderModal(id) {
+            const doc = resourcesData.find(r => r.id === id);
+            if (!doc) return;
 
-                    <div style='display:flex; gap:10px; flex-wrap:wrap;'>
+            currentModalDoc = doc;
+            document.getElementById('modalDocTitle').textContent = doc.title;
+            document.getElementById('modalDocMeta').textContent = `${doc.course} • Author: ${doc.author}`;
+            document.getElementById('modalDocText').innerHTML = doc.content;
 
-                        <!-- PREVIEW OPENS IN SAME PAGE -->
-                        <button class='trigger-btn'
-                                onclick='previewResource("${resource.title}")'>
+            const savedNotes = localStorage.getItem('study_notes_' + id) || '';
+            document.getElementById('studyNotesInput').value = savedNotes;
 
-                            <i data-lucide='eye'></i>
-                            Preview
+            document.getElementById('readerModal').classList.add('active');
+        }
 
-                        </button>
+        function closeReaderModal() {
+            document.getElementById('readerModal').classList.remove('active');
+        }
 
-                        <!-- DOWNLOAD -->
-                        <button class='post-submit-btn'
-                                onclick='downloadResource("${resource.title}")'>
+        function saveStudyNotes() {
+            if (!currentModalDoc) return;
+            const text = document.getElementById('studyNotesInput').value;
+            localStorage.setItem('study_notes_' + currentModalDoc.id, text);
+        }
 
-                            <i data-lucide='download'></i>
-                            Download
+        function copyStudyNotes() {
+            const text = document.getElementById('studyNotesInput').value;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('📋 Study notes copied to clipboard!');
+                });
+            }
+        }
 
-                        </button>
+        function downloadResource(id) {
+            const doc = resourcesData.find(r => r.id === id);
+            alert(`✨ Starting high-speed download for "${doc ? doc.title : 'Guide'}" (${doc ? doc.size : '2.5 MB'}).`);
+        }
 
-                    </div>
+        function downloadCurrentModalDoc() {
+            if (currentModalDoc) {
+                downloadResource(currentModalDoc.id);
+            }
+        }
 
-                </div>
-
-            </div>
-        `;
-    });
-
-    lucide.createIcons();
-}
-
-// Initial render
-renderResources();
-
-// Search functionality
-document.querySelector('.search-input').addEventListener('input', function(e) {
-    searchQuery = e.target.value;
-    renderResources();
-});
-
-// Initialize Lucide icons
-lucide.createIcons();
-
-// ── Admin ↔ Platform Sync ───────────────────────────────────
-// Prepend admin-managed resources to the top of resourcesContainer
-const adminResources = AdminSync.getResources();
-if (adminResources.length) {
-    const container = document.getElementById('resourcesContainer');
-    if (container) {
-        const typeIcon = { PDF: 'fa-file-pdf', Video: 'fa-video', PPT: 'fa-file-powerpoint', DOC: 'fa-file-word', Link: 'fa-link' };
-        const block = document.createElement('div');
-        block.className = 'admin-synced-resources-block';
-        block.style.cssText = 'margin-bottom:20px;padding-bottom:8px;border-bottom:2px solid var(--primary-light);';
-        block.innerHTML = `
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;gap:6px;">
-                <i class="fas fa-shield-alt" style="font-size:12px;"></i> Admin Published Resources
-            </div>
-            ${adminResources.map(r => `
-            <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);">
-                <div style="width:44px;height:44px;border-radius:12px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--primary);font-size:16px;">
-                    <i class="fas ${typeIcon[r.type] || 'fa-file'}"></i>
-                </div>
-                <div style="flex:1;min-width:0;">
-                    <div style="font-size:14px;font-weight:600;color:var(--text-heading);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.title}</div>
-                    <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${r.category || ''} &bull; ${r.type || ''}</div>
-                </div>
-                ${r.url ? `<a href="${r.url}" target="_blank" rel="noopener" style="font-size:11px;font-weight:700;color:#fff;background:var(--primary);padding:6px 12px;border-radius:8px;text-decoration:none;flex-shrink:0;">Open</a>` : ''}
-            </div>`).join('')}
-        `;
-        container.prepend(block);
-    }
-}
-
-// Show event popup + promo banner
-AdminSync.init({ popup: true, promoBanner: true, notifBadge: true });
-</script>
+        // Initialize Page
+        document.addEventListener('DOMContentLoaded', () => {
+            renderResourceCards();
+            renderAudioStudio();
+            renderGlossary();
+            loadAsanaAnatomy('bhujangasana');
+            if (window.lucide) lucide.createIcons();
+        });
+    </script>
 </body>
+
 </html>

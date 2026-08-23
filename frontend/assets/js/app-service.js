@@ -4,7 +4,7 @@ const AppService = {
     API_BASE: window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:5000/api" : "/api",
     isOnline: true,
 
-    // Session Management
+    // Session Management & Profile Sync
     initSession() {
         if (!localStorage.getItem("loggedIn")) {
             const path = window.location.pathname;
@@ -13,24 +13,52 @@ const AppService = {
             }
         }
         
-        // Ensure default profile exists
-        if (!localStorage.getItem("profile")) {
+        const currentName = localStorage.getItem("userName") || "Pragya";
+        const isPragya = currentName.toLowerCase().includes("pragya");
+        const defaultBadge = isPragya ? "Super Diamond 💎✨" : "Diamond Member 💎";
+        const defaultPackage = isPragya ? "Master 300-Hr YTT & Spine Therapy" : "200-Hour Yoga Teacher Training";
+        const defaultStreak = isPragya ? 36 : 18;
+
+        if (!localStorage.getItem("userBadge")) localStorage.setItem("userBadge", defaultBadge);
+        if (!localStorage.getItem("userPackage")) localStorage.setItem("userPackage", defaultPackage);
+        if (!localStorage.getItem("userStreak")) localStorage.setItem("userStreak", defaultStreak.toString());
+
+        // Keep profile object synced with active logged-in user
+        let profile = null;
+        try {
+            profile = JSON.parse(localStorage.getItem("profile") || "null");
+        } catch (e) { }
+
+        if (!profile || profile.name !== currentName) {
             localStorage.setItem("profile", JSON.stringify({
-                name: "Gyan Prakash",
-                role: "Student � Pragya Yog School",
-                email: "gyan@gmail.com",
-                phone: "+91 9876543210",
-                location: "Haridwar",
-                bio: "Passionate about Yoga and Community Development.",
-                skills: ["HTML", "CSS", "JavaScript", "Leadership"],
-                interests: ["Yoga", "Meditation", "Reading", "Nature"],
-                achievements: ["Camp Volunteer", "Meditation Badge", "Completed 5-Day Challenge"],
-                activities: ["Completed Yoga Workshop", "Joined Meditation Group", "Uploaded Workshop Photos"]
+                name: currentName,
+                role: localStorage.getItem("userRole") || (isPragya ? "VIP Member • Pragya Yog School" : "Student • Pragya Yog School"),
+                email: localStorage.getItem("userEmail") || (isPragya ? "pragya@pyshk.com" : "student@pyshk.com"),
+                phone: "+852 6708 2503",
+                location: "Hong Kong / Haridwar",
+                package: localStorage.getItem("userPackage") || defaultPackage,
+                streak: parseInt(localStorage.getItem("userStreak") || defaultStreak.toString(), 10),
+                badge: localStorage.getItem("userBadge") || defaultBadge,
+                bio: isPragya ? "Devoted Practitioner & Community Leader at Pragya Yog School." : "Passionate about Yoga, Mindfulness, and Spiritual Wellness.",
+                skills: ["Hatha Yoga", "Asana Alignment", "Pranayama", "Meditation"],
+                interests: ["Yoga Anatomy", "Sound Healing", "Ayurveda"],
+                achievements: [(isPragya ? "Super Diamond Member" : "Diamond Member"), "Maintained Streak", "Pragya Certified"],
+                activities: ["Attended Master Workshop", "Active Community Contributor", "Downloaded Guides"]
             }));
-            localStorage.setItem("userName", "Gyan Prakash");
-            localStorage.setItem("userRole", "Student");
-            localStorage.setItem("userInitials", "GP");
         }
+    },
+
+    getCurrentUser() {
+        const name = localStorage.getItem("userName") || "Pragya";
+        const isPragya = name.toLowerCase().includes("pragya");
+        return {
+            name: name,
+            role: localStorage.getItem("userRole") || (isPragya ? "VIP Member" : "Student"),
+            badge: localStorage.getItem("userBadge") || (isPragya ? "Super Diamond 💎✨" : "Diamond Member 💎"),
+            streak: localStorage.getItem("userStreak") || (isPragya ? "36" : "18"),
+            package: localStorage.getItem("userPackage") || (isPragya ? "Master 300-Hr YTT" : "200-Hour YTT"),
+            avatar: localStorage.getItem("profileImage") || null
+        };
     },
 
     // Check API connectivity
@@ -64,21 +92,98 @@ const AppService = {
     // --- POSTS SERVICE ---
     async getPosts() {
         const apiPosts = await this.apiCall("/posts");
-        if (apiPosts) {
+        if (apiPosts && apiPosts.length > 0) {
             localStorage.setItem("cached_posts", JSON.stringify(apiPosts));
             return apiPosts;
         }
-        const localPosts = localStorage.getItem("local_posts");
-        return localPosts ? JSON.parse(localPosts) : [];
+        
+        let localPosts = null;
+        try {
+            localPosts = JSON.parse(localStorage.getItem("local_posts") || "null");
+        } catch(e) {}
+
+        if (!localPosts || localPosts.length === 0) {
+            localPosts = [
+                {
+                    _id: "post_pragya_seed",
+                    userName: "Pragya",
+                    userRole: "Master Practitioner",
+                    userBadge: "Super Diamond 💎✨",
+                    userStreak: "36",
+                    userPackage: "Master 300-Hr YTT & Spine Therapy",
+                    userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pragya",
+                    content: "Namaste community family! 🙏 Delighted to complete our 36th consecutive morning Pranayama & Meditation practice today. Consistency is the true essence of Yoga. Keep maintaining your streaks everyone! 🧘‍♀️✨ #YogaLife #SuperDiamond #PragyaConnect",
+                    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=600&fit=crop",
+                    likes: 58,
+                    comments: [
+                        {
+                            _id: "c_akh_1",
+                            userName: "Dr. Akhilesh Sharma",
+                            userAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
+                            comment_text: "Wonderful dedication Pragya! Your energy inspires the entire batch.",
+                            createdAt: new Date(Date.now() - 3600000).toISOString()
+                        },
+                        {
+                            _id: "c_priya_1",
+                            userName: "Priya Sharma",
+                            userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",
+                            comment_text: "Such a grounding session today! Loved the breathwork sequence.",
+                            createdAt: new Date(Date.now() - 1800000).toISOString()
+                        }
+                    ],
+                    createdAt: new Date(Date.now() - 7200000).toISOString()
+                },
+                {
+                    _id: "post_akhilesh_seed",
+                    userName: "Dr. Akhilesh Sharma",
+                    userRole: "Faculty Mentor • Ayurveda & Hatha Anatomy",
+                    userBadge: "Master Faculty 🌿",
+                    userStreak: "120",
+                    userPackage: "Spine Therapy Faculty",
+                    userAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
+                    content: "Upcoming spine anatomy case studies have been updated in the Resources Library. Remember: Asana is not about forcing the pose, it is about aligning the spine with breath awareness.",
+                    image: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=800&h=600&fit=crop",
+                    likes: 84,
+                    comments: [
+                        {
+                            _id: "c_rahul_1",
+                            userName: "Rahul Verma",
+                            userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul",
+                            comment_text: "Reviewing the spine diagrams now Dr. Akhilesh, extremely helpful!",
+                            createdAt: new Date(Date.now() - 1200000).toISOString()
+                        }
+                    ],
+                    createdAt: new Date(Date.now() - 14400000).toISOString()
+                },
+                {
+                    _id: "post_priya_seed",
+                    userName: "Priya Sharma",
+                    userRole: "200-Hr YTT Cohort",
+                    userBadge: "Diamond Member 💎",
+                    userStreak: "18",
+                    userPackage: "200-Hour Yoga Teacher Training",
+                    userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",
+                    content: "Completed day 18 of the alignment series! Practicing with props and straps has completely deepened my forward folds. Grateful for our mentor team. 🌿✨",
+                    likes: 46,
+                    comments: [],
+                    createdAt: new Date(Date.now() - 21600000).toISOString()
+                }
+            ];
+            localStorage.setItem("local_posts", JSON.stringify(localPosts));
+        }
+        return localPosts;
     },
 
     async createPost(content, image = null) {
-        const user = JSON.parse(localStorage.getItem("profile"));
+        const user = this.getCurrentUser();
         const savedImage = localStorage.getItem("profileImage");
         const postData = {
             user_id: "60d0fe4f5311236168a109ca",
             userName: user.name,
             userRole: user.role,
+            userBadge: user.badge,
+            userStreak: user.streak,
+            userPackage: user.package,
             userAvatar: savedImage || null,
             content,
             image
@@ -101,6 +206,9 @@ const AppService = {
             user_id: { name: user.name, role: user.role },
             userName: user.name,
             userRole: user.role,
+            userBadge: user.badge,
+            userStreak: user.streak,
+            userPackage: user.package,
             userAvatar: savedImage || null,
             content,
             image,
@@ -115,21 +223,54 @@ const AppService = {
     },
 
     async likePost(postId) {
+        let likedPosts = JSON.parse(localStorage.getItem("liked_posts") || "[]");
+        const isCurrentlyLiked = likedPosts.includes(postId);
+        const action = isCurrentlyLiked ? "unlike" : "like";
+
+        if (isCurrentlyLiked) {
+            likedPosts = likedPosts.filter(id => id !== postId);
+        } else {
+            likedPosts.push(postId);
+        }
+        localStorage.setItem("liked_posts", JSON.stringify(likedPosts));
+
         if (this.isOnline && !postId.startsWith("post_")) {
-            const res = await this.apiCall(`/posts/like/${postId}`, { method: "PUT" });
-            if (res) return res;
+            const res = await this.apiCall(`/posts/like/${postId}`, {
+                method: "PUT",
+                body: JSON.stringify({ action })
+            });
+            if (res) {
+                window.dispatchEvent(new Event("postsUpdated"));
+                return { ...res, isLiked: !isCurrentlyLiked };
+            }
         }
 
         let localPosts = JSON.parse(localStorage.getItem("local_posts")) || [];
         localPosts = localPosts.map(p => {
             if (p._id === postId || p.id === postId) {
-                return { ...p, likes: (p.likes || 0) + 1 };
+                const currentLikes = p.likes || 0;
+                return { ...p, likes: action === "like" ? currentLikes + 1 : Math.max(0, currentLikes - 1) };
             }
             return p;
         });
         localStorage.setItem("local_posts", JSON.stringify(localPosts));
+
+        let cachedPosts = JSON.parse(localStorage.getItem("cached_posts") || "[]");
+        if (cachedPosts.length > 0) {
+            cachedPosts = cachedPosts.map(p => {
+                if (p._id === postId || p.id === postId) {
+                    const currentLikes = p.likes || 0;
+                    return { ...p, likes: action === "like" ? currentLikes + 1 : Math.max(0, currentLikes - 1) };
+                }
+                return p;
+            });
+            localStorage.setItem("cached_posts", JSON.stringify(cachedPosts));
+        }
+
         window.dispatchEvent(new Event("postsUpdated"));
-        return { likes: (localPosts.find(p => p._id === postId || p.id === postId)?.likes || 0) };
+        const finalLikes = (localPosts.find(p => p._id === postId || p.id === postId)?.likes) ??
+                           (cachedPosts.find(p => p._id === postId || p.id === postId)?.likes || 0);
+        return { likes: finalLikes, isLiked: !isCurrentlyLiked };
     },
 
     async addComment(postId, commentText) {

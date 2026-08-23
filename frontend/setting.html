@@ -1164,17 +1164,40 @@ input:checked + .slider:before {
 
                 <!-- Appearance Section -->
                 <div class="settings-section-header">
-                    <h2><i data-lucide="palette"></i> Appearance</h2>
-                    <p>Customize how Pragya Connect looks on your device</p>
+                    <h2><i data-lucide="palette"></i> Appearance &amp; Dark Mode</h2>
+                    <p>Customize your visual ambiance and spiritual reading themes</p>
                 </div>
                 <div class="settings-card">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin-bottom:18px;">
+                        <div id="themeCardLight" onclick="selectPragyaTheme('light')" style="border:2px solid var(--primary); border-radius:14px; padding:14px 16px; background:#F5EFE5; cursor:pointer; transition:all 0.2s; position:relative;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                                <span style="font-weight:700; color:#00381F; font-size:14px; display:flex; align-items:center; gap:6px;">
+                                    <span>☀️</span> Sattvic Light
+                                </span>
+                                <span id="lightCheck" style="font-size:14px; color:#00381F; font-weight:800;">✓ Active</span>
+                            </div>
+                            <p style="font-size:12px; color:#6F6F6F; margin:0; line-height:1.4;">Warm cream canvas, natural forest green headers &amp; gold highlights.</p>
+                        </div>
+
+                        <div id="themeCardDark" onclick="selectPragyaTheme('dark')" style="border:2px solid transparent; border-radius:14px; padding:14px 16px; background:#071710; color:#F5EFE5; cursor:pointer; transition:all 0.2s; position:relative;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                                <span style="font-weight:700; color:#E5BE38; font-size:14px; display:flex; align-items:center; gap:6px;">
+                                    <span>🌙</span> Mystic Yogic Dark
+                                </span>
+                                <span id="darkCheck" style="font-size:14px; color:#E5BE38; font-weight:800; display:none;">✓ Active</span>
+                            </div>
+                            <p style="font-size:12px; color:#9EBAAA; margin:0; line-height:1.4;">Deep obsidian green theme, reduced eye strain &amp; glowing gold accents.</p>
+                        </div>
+                    </div>
+
+                    <div class="setting-divider"></div>
                     <div class="setting-row">
                         <div class="setting-info">
-                            <h4>Dark Mode</h4>
-                            <p>Enable a darker color palette for reduced eye strain at night.</p>
+                            <h4>Dark Mode Toggle</h4>
+                            <p>Instantly switch between Sattvic Light and Mystic Yogic Dark Mode across all platform pages.</p>
                         </div>
                         <label class="switch">
-                            <input type="checkbox" id="darkMode">
+                            <input type="checkbox" id="darkMode" onchange="handleDarkModeToggle(this.checked)">
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -1343,16 +1366,63 @@ input:checked + .slider:before {
         }
     });
 
-    // Dark Mode Toggle
-    document.getElementById("darkMode").addEventListener("change", function() {
-        if (window.AppService) {
-            AppService.setDarkMode(this.checked);
-        } else {
-            localStorage.setItem("darkMode", this.checked ? "true" : "false");
-            document.body.classList.toggle("dark-mode", this.checked);
-            document.documentElement.classList.toggle("dark", this.checked);
+    // =============================
+    // THEME & DARK MODE CONTROLLER
+    // =============================
+    function updateThemeUI(theme) {
+        const isDark = theme === "dark";
+        const darkModeToggle = document.getElementById("darkMode");
+        if (darkModeToggle) darkModeToggle.checked = isDark;
+
+        const lightCard = document.getElementById("themeCardLight");
+        const darkCard = document.getElementById("themeCardDark");
+        const lightCheck = document.getElementById("lightCheck");
+        const darkCheck = document.getElementById("darkCheck");
+
+        if (lightCard && darkCard) {
+            if (isDark) {
+                darkCard.style.borderColor = "#D9AE29";
+                darkCard.style.boxShadow = "0 0 0 2px #D9AE29";
+                if (darkCheck) darkCheck.style.display = "inline";
+
+                lightCard.style.borderColor = "transparent";
+                lightCard.style.boxShadow = "none";
+                if (lightCheck) lightCheck.style.display = "none";
+            } else {
+                lightCard.style.borderColor = "var(--primary)";
+                lightCard.style.boxShadow = "0 0 0 2px var(--primary)";
+                if (lightCheck) lightCheck.style.display = "inline";
+
+                darkCard.style.borderColor = "transparent";
+                darkCard.style.boxShadow = "none";
+                if (darkCheck) darkCheck.style.display = "none";
+            }
         }
-    });
+    }
+
+    window.selectPragyaTheme = function(theme) {
+        if (window.setPragyaTheme) {
+            window.setPragyaTheme(theme);
+        } else {
+            localStorage.setItem("pragya_theme", theme);
+            if (theme === "dark") {
+                document.documentElement.setAttribute("data-theme", "dark");
+                document.body.classList.add("dark-theme");
+            } else {
+                document.documentElement.removeAttribute("data-theme");
+                document.body.classList.remove("dark-theme");
+            }
+        }
+        updateThemeUI(theme);
+    };
+
+    window.handleDarkModeToggle = function(checked) {
+        const theme = checked ? "dark" : "light";
+        selectPragyaTheme(theme);
+    };
+
+    const currentSavedTheme = localStorage.getItem("pragya_theme") || "light";
+    updateThemeUI(currentSavedTheme);
 
     // Language Select
     document.getElementById("language").addEventListener("change", function() {
@@ -1407,5 +1477,6 @@ input:checked + .slider:before {
         }
     }
 </script>
+<script src="common.js"></script>
 </body>
 </html>

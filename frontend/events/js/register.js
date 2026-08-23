@@ -33,6 +33,7 @@ if (form) {
             venue:     event ? event.venue : "Pragya Hall",
             status:    "Registered",
             date:      new Date().toLocaleDateString(),
+            assignedMentors: [],
             registeredAt: new Date().toISOString()
         };
 
@@ -55,7 +56,8 @@ if (form) {
         });
         localStorage.setItem("local_notifications", JSON.stringify(localNotifs));
 
-        // Redirect to beautiful confirmation page within MyRegistrations.html with the regId
-        window.location.href = `MyRegistrations.html?regId=${encodeURIComponent(registration.id)}&success=true`;
+        // Confirmation and redirect to Events page
+        alert(`🎉 Registration successful for ${registration.event}!`);
+        window.location.href = `Events.html?registered=true`;
     });
 }

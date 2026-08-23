@@ -24,6 +24,7 @@
       <li><a href="users.html"><i data-lucide="users"></i> Users</a></li>
       <li><a href="community.html"><i data-lucide="message-square"></i> Community</a></li>
       <li><a href="events.html"><i data-lucide="calendar"></i> Events</a></li>
+      <li><a href="package-edit.html"><i data-lucide="package"></i> Package Edit</a></li>
       <li><a href="promotions.html"><i data-lucide="megaphone"></i> Promotions</a></li>
       <li><a href="mentors.html"><i data-lucide="graduation-cap"></i> Mentors</a></li>
       <li class="active"><a href="resources.html"><i data-lucide="book-open"></i> Resources</a></li>
@@ -32,7 +33,8 @@
       <li><a href="settings.html"><i data-lucide="settings"></i> Settings</a></li>
     </ul>
     <div class="admin-sidebar-footer">
-      <a href="../dashboard.html" class="platform-link"><i data-lucide="external-link"></i> Platform</a>
+      <a href="../events/Events.html" class="platform-link"><i data-lucide="external-link"></i> User Events Page</a>
+      <a href="../dashboard.html" class="platform-link"><i data-lucide="layout-dashboard"></i> Platform</a>
       <a href="#" onclick="adminLogout()" class="logout-link"><i data-lucide="log-out"></i> Logout</a>
     </div>
   </aside>
@@ -83,27 +85,35 @@
       </div>
 
       <!-- Toolbar -->
-      <div class="toolbar">
-        <div class="toolbar-search">
-          <i data-lucide="search"></i>
-          <input type="text" id="resSearch" placeholder="Search resources..." oninput="renderResources()">
+      <div class="toolbar" style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; flex:1;">
+          <div class="toolbar-search">
+            <i data-lucide="search"></i>
+            <input type="text" id="resSearch" placeholder="Search resources..." oninput="renderResources()">
+          </div>
+          <select id="courseFilter" onchange="renderResources()">
+            <option value="all">All Courses / Subjects</option>
+            <option value="200-Hour Yoga Teacher Training">200-Hour Yoga Teacher Training</option>
+            <option value="300-Hour Master Training">300-Hour Master Training</option>
+            <option value="Spine Therapy Intensive">Spine Therapy Intensive</option>
+            <option value="General Resource">General Resource</option>
+          </select>
+          <select id="catFilter" onchange="renderResources()">
+            <option value="all">All Categories</option>
+          </select>
+          <select id="typeFilter" onchange="renderResources()">
+            <option value="all">All Types</option>
+            <option value="PDF">PDF</option>
+            <option value="PPT">PPT</option>
+            <option value="DOC">DOC</option>
+            <option value="Video">Video</option>
+            <option value="Link">External Link</option>
+          </select>
         </div>
-        <select id="catFilter" onchange="renderResources()">
-          <option value="all">All Categories</option>
-          <option value="Yoga">Yoga</option>
-          <option value="Meditation">Meditation</option>
-          <option value="Research">Research</option>
-          <option value="Books">Books</option>
-          <option value="Courses">Courses</option>
-        </select>
-        <select id="typeFilter" onchange="renderResources()">
-          <option value="all">All Types</option>
-          <option value="PDF">PDF</option>
-          <option value="PPT">PPT</option>
-          <option value="DOC">DOC</option>
-          <option value="Video">Video</option>
-          <option value="Link">External Link</option>
-        </select>
+        <button class="btn btn-outline" onclick="openModal('filterModal')" style="gap:6px;">
+          <i data-lucide="plus-circle" style="width:15px;height:15px;"></i>
+          <span>Add Custom Filter</span>
+        </button>
       </div>
 
       <!-- Table Card -->
@@ -113,6 +123,7 @@
             <thead>
               <tr>
                 <th>Resource Title</th>
+                <th>Course / Program</th>
                 <th>Category</th>
                 <th>Type</th>
                 <th>Uploaded By</th>
@@ -129,11 +140,11 @@
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Resource Upload/Edit Modal -->
 <div class="modal-overlay" id="resModal">
   <div class="modal">
     <div class="modal-header">
-      <h3 class="modal-title" id="resModalTitle">Upload Resource</h3>
+      <h3 class="modal-title" id="resModalTitle">Upload Course Resource</h3>
       <button class="modal-close" onclick="closeModal('resModal')"><i data-lucide="x"></i></button>
     </div>
     <form id="resForm" onsubmit="saveResource(event)">
@@ -143,16 +154,20 @@
           <label>Title</label>
           <input type="text" id="rsTitle" class="form-control" placeholder="e.g. Complete Pranayama Guide" required>
         </div>
+        <div class="form-group">
+          <label>Course / Program Tag</label>
+          <select id="rsCourse" class="form-control">
+            <option value="200-Hour Yoga Teacher Training">200-Hour Yoga Teacher Training</option>
+            <option value="300-Hour Master Training">300-Hour Master Training</option>
+            <option value="Spine Therapy Intensive">Spine Therapy Intensive</option>
+            <option value="General Resource">General Resource (Open Library)</option>
+          </select>
+          <small style="color:var(--text-muted);font-size:12px;margin-top:4px;display:block;">Assigned course students will see this at the top of their resources page.</small>
+        </div>
         <div class="form-grid">
           <div class="form-group">
-            <label>Category</label>
-            <select id="rsCat" class="form-control">
-              <option value="Yoga">Yoga</option>
-              <option value="Meditation">Meditation</option>
-              <option value="Research">Research</option>
-              <option value="Books">Books</option>
-              <option value="Courses">Courses</option>
-            </select>
+            <label>Category Filter</label>
+            <select id="rsCat" class="form-control"></select>
           </div>
           <div class="form-group">
             <label>Type</label>
@@ -167,7 +182,7 @@
         </div>
         <div class="form-group">
           <label>Resource URL or File Path</label>
-          <input type="text" id="rsUrl" class="form-control" placeholder="https://..." required>
+          <input type="text" id="rsUrl" class="form-control" placeholder="https://... or file name" required>
         </div>
         <div class="form-group">
           <label>Description</label>
@@ -182,25 +197,116 @@
   </div>
 </div>
 
+<!-- Custom Filter Modal -->
+<div class="modal-overlay" id="filterModal">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Create Resource Filter</h3>
+      <button class="modal-close" onclick="closeModal('filterModal')"><i data-lucide="x"></i></button>
+    </div>
+    <form onsubmit="saveCustomFilter(event)">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Filter / Category Name</label>
+          <input type="text" id="newFilterName" class="form-control" placeholder="e.g. Anatomy & Physiology, Sutras" required>
+        </div>
+        <div class="form-group">
+          <label>Existing Filters</label>
+          <div id="existingFiltersList" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('filterModal')">Close</button>
+        <button type="submit" class="btn btn-primary">Add Filter</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="toast-container"></div>
 <script src="admin-common.js"></script>
 <script>
 adminRoleGuard();
 
+const defaultCategories = ['Yoga', 'Meditation', 'Adjustment', 'Research', 'Books', 'Courses'];
+
+function getCategories() {
+  return lsGet('admin_resource_filters', defaultCategories);
+}
+
+function renderCategoryDropdowns() {
+  const cats = getCategories();
+  const catFilter = document.getElementById('catFilter');
+  const rsCat = document.getElementById('rsCat');
+  const existingList = document.getElementById('existingFiltersList');
+
+  if (catFilter) {
+    const current = catFilter.value || 'all';
+    catFilter.innerHTML = `<option value="all">All Categories</option>` + cats.map(c => `<option value="${c}">${c}</option>`).join('');
+    catFilter.value = current;
+  }
+
+  if (rsCat) {
+    rsCat.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+  }
+
+  if (existingList) {
+    existingList.innerHTML = cats.map(c => `
+      <span style="background:var(--primary-light);color:var(--primary);font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px;display:inline-flex;align-items:center;gap:4px;">
+        ${c}
+        ${!defaultCategories.includes(c) ? `<i class="fas fa-times" style="cursor:pointer;font-size:10px;margin-left:2px;" onclick="removeCustomFilter('${c}')"></i>` : ''}
+      </span>
+    `).join('');
+  }
+}
+
+function saveCustomFilter(e) {
+  e.preventDefault();
+  const name = document.getElementById('newFilterName').value.trim();
+  if (!name) return;
+  let cats = getCategories();
+  if (!cats.includes(name)) {
+    cats.push(name);
+    lsSet('admin_resource_filters', cats);
+    showToast(`Filter "${name}" added`);
+  }
+  document.getElementById('newFilterName').value = '';
+  renderCategoryDropdowns();
+  closeModal('filterModal');
+  window.dispatchEvent(new Event('resourcesUpdated'));
+}
+
+function removeCustomFilter(name) {
+  let cats = getCategories().filter(c => c !== name);
+  lsSet('admin_resource_filters', cats);
+  showToast(`Filter "${name}" removed`);
+  renderCategoryDropdowns();
+  window.dispatchEvent(new Event('resourcesUpdated'));
+}
+
 const defaultResources = [
-  { id: '1', title: 'Complete Pranayama Guide 2026', cat: 'Yoga', type: 'PDF', author: 'Dr. Akhilesh', date: '2026-06-12', url: '#' },
-  { id: '2', title: 'Mindfulness Meditation Slides', cat: 'Meditation', type: 'PPT', author: 'Gyan Prakash', date: '2026-06-20', url: '#' },
-  { id: '3', title: 'Yoga Research Paper 2025', cat: 'Research', type: 'DOC', author: 'Research Team', date: '2026-07-02', url: '#' },
-  { id: '4', title: 'Sun Salutation Video Walkthrough', cat: 'Yoga', type: 'Video', author: 'Priya Sharma', date: '2026-07-15', url: '#' }
+  { id: '1', title: 'Complete Pranayama Guide 2026', desc: 'Beginner to Advanced Pranayama Notes & Techniques', course: '200-Hour Yoga Teacher Training', cat: 'Yoga', type: 'PDF', size: '2.4 MB', author: 'Dr. Akhilesh', date: '2026-06-12', url: '#' },
+  { id: '2', title: 'Mindfulness Meditation Slides', desc: 'Presentation slides for mindfulness session', course: '200-Hour Yoga Teacher Training', cat: 'Meditation', type: 'PPT', size: '4.8 MB', author: 'Gyan Prakash', date: '2026-06-20', url: '#' },
+  { id: '3', title: 'Breathing Exercises & Techniques', desc: 'Guided video tutorial on deep breathing exercises', course: 'Spine Therapy Intensive', cat: 'Meditation', type: 'Video', size: '18 mins', author: 'Priya Sharma', date: '2026-07-15', url: '#' },
+  { id: '4', title: 'Yoga Research Paper 2025', desc: 'Scientific review of yoga benefits on mental clarity', course: 'General Resource', cat: 'Research', type: 'DOC', size: '1.2 MB', author: 'Research Team', date: '2026-07-02', url: '#' },
+  { id: '5', title: 'Workshop Presentation on Adjustment', desc: 'PPT slides for postural adjustment and alignment', course: '300-Hour Master Training', cat: 'Adjustment', type: 'PPT', size: '5.1 MB', author: 'Aarya Kuldeep', date: '2026-07-20', url: '#' },
+  { id: '6', title: 'Yoga Philosophy & Sutras Book', desc: 'Complete translation and commentary on Yoga Sutras', course: '200-Hour Yoga Teacher Training', cat: 'Books', type: 'PDF', size: '6.5 MB', author: 'Dr. Yatendra', date: '2026-07-25', url: '#' }
 ];
 
 function getResources() {
   let r = lsGet('admin_resources', null);
-  if (!r) {
+  if (!r || !r.length) {
     r = defaultResources;
     lsSet('admin_resources', r);
   }
-  return r;
+  return r.map(item => ({
+    ...item,
+    course: item.course || '200-Hour Yoga Teacher Training',
+    cat: item.cat || item.category || 'Yoga',
+    category: item.cat || item.category || 'Yoga',
+    desc: item.desc || item.description || '',
+    description: item.desc || item.description || ''
+  }));
 }
 
 function renderResources() {
@@ -211,29 +317,35 @@ function renderResources() {
   document.getElementById('stResLinks').textContent = resources.filter(r => r.type === 'Link').length;
 
   const query = document.getElementById('resSearch').value.toLowerCase();
+  const course = document.getElementById('courseFilter').value;
   const cat = document.getElementById('catFilter').value;
   const type = document.getElementById('typeFilter').value;
 
   const filtered = resources.filter(r => {
-    const matchQ = r.title.toLowerCase().includes(query);
-    const matchC = cat === 'all' || r.cat === cat;
-    const matchT = type === 'all' || r.type === type;
-    return matchQ && matchC && matchT;
+    const matchQ = (r.title || '').toLowerCase().includes(query) || (r.desc || '').toLowerCase().includes(query);
+    const matchCourse = course === 'all' || (r.course || '').toLowerCase() === course.toLowerCase();
+    const matchC = cat === 'all' || (r.cat || '').toLowerCase() === cat.toLowerCase();
+    const matchT = type === 'all' || (r.type || '').toLowerCase() === type.toLowerCase();
+    return matchQ && matchCourse && matchC && matchT;
   });
 
   const tbody = document.getElementById('resTableBody');
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:30px;">No resources found.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:30px;">No resources found.</td></tr>`;
     return;
   }
 
   tbody.innerHTML = filtered.map(r => `
     <tr>
-      <td><strong>${r.title}</strong></td>
+      <td>
+        <strong>${r.title}</strong>
+        ${r.desc ? `<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">${r.desc}</div>` : ''}
+      </td>
+      <td><span class="badge badge-success" style="font-weight:600;"><i class="fas fa-graduation-cap" style="margin-right:4px;"></i>${r.course || '200-Hour YTT'}</span></td>
       <td><span class="badge badge-info">${r.cat}</span></td>
       <td><span class="badge badge-purple">${r.type}</span></td>
       <td>${r.author || 'Admin'}</td>
-      <td>${r.date}</td>
+      <td>${r.date || 'Recent'}</td>
       <td style="text-align:right;">
         <div class="action-btns" style="justify-content:flex-end;">
           <button class="btn-icon" onclick="editResource('${r.id}')" title="Edit"><i data-lucide="pencil"></i></button>
@@ -248,24 +360,26 @@ function renderResources() {
 function resetResForm() {
   document.getElementById('rsId').value = '';
   document.getElementById('rsTitle').value = '';
+  document.getElementById('rsCourse').value = '200-Hour Yoga Teacher Training';
   document.getElementById('rsCat').value = 'Yoga';
   document.getElementById('rsType').value = 'PDF';
   document.getElementById('rsUrl').value = '';
   document.getElementById('rsDesc').value = '';
-  document.getElementById('resModalTitle').textContent = 'Upload Resource';
+  document.getElementById('resModalTitle').textContent = 'Upload Course Resource';
 }
 
 function editResource(id) {
   const resources = getResources();
-  const r = resources.find(x => x.id === id);
+  const r = resources.find(x => x.id == id);
   if (!r) return;
   document.getElementById('rsId').value = r.id;
   document.getElementById('rsTitle').value = r.title;
-  document.getElementById('rsCat').value = r.cat;
+  document.getElementById('rsCourse').value = r.course || '200-Hour Yoga Teacher Training';
+  document.getElementById('rsCat').value = r.cat || r.category || 'Yoga';
   document.getElementById('rsType').value = r.type;
   document.getElementById('rsUrl').value = r.url || '#';
-  document.getElementById('rsDesc').value = r.desc || '';
-  document.getElementById('resModalTitle').textContent = 'Edit Resource';
+  document.getElementById('rsDesc').value = r.desc || r.description || '';
+  document.getElementById('resModalTitle').textContent = 'Edit Course Resource';
   openModal('resModal');
 }
 
@@ -273,22 +387,25 @@ function saveResource(e) {
   e.preventDefault();
   const id = document.getElementById('rsId').value;
   const title = document.getElementById('rsTitle').value.trim();
+  const course = document.getElementById('rsCourse').value;
   const cat = document.getElementById('rsCat').value;
   const type = document.getElementById('rsType').value;
   const url = document.getElementById('rsUrl').value.trim();
   const desc = document.getElementById('rsDesc').value.trim();
   const author = sessionStorage.getItem('adminName') || 'Super Admin';
   const date = new Date().toISOString().split('T')[0];
+  const size = type === 'Video' ? '18 mins' : '2.5 MB';
 
   let resources = getResources();
   if (id) {
-    resources = resources.map(x => x.id === id ? { ...x, title, cat, type, url, desc } : x);
+    resources = resources.map(x => x.id == id ? { ...x, title, course, cat, category: cat, type, url, desc, description: desc } : x);
     showToast('Resource updated');
   } else {
-    resources.unshift({ id: Date.now().toString(), title, cat, type, url, desc, author, date });
+    resources.unshift({ id: Date.now().toString(), title, course, cat, category: cat, type, url, desc, description: desc, author, date, size });
     showToast('Resource uploaded');
   }
   lsSet('admin_resources', resources);
+  window.dispatchEvent(new Event('resourcesUpdated'));
   closeModal('resModal');
   renderResources();
 }
@@ -296,15 +413,24 @@ function saveResource(e) {
 function deleteResource(id) {
   confirmDelete('Delete resource?', () => {
     let resources = getResources();
-    resources = resources.filter(r => r.id !== id);
+    resources = resources.filter(r => r.id != id);
     lsSet('admin_resources', resources);
+    window.dispatchEvent(new Event('resourcesUpdated'));
     showToast('Resource deleted', 'error');
     renderResources();
   });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  renderCategoryDropdowns();
   renderResources();
+});
+
+window.addEventListener('storage', (e) => {
+  if (e.key === 'admin_resources' || e.key === 'admin_resource_filters') {
+    renderCategoryDropdowns();
+    renderResources();
+  }
 });
 </script>
 </body>

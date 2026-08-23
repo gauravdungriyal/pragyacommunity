@@ -14,11 +14,14 @@ export function CreatePost({ onPost, className }: CreatePostProps) {
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const savedUserName = typeof window !== 'undefined' ? localStorage.getItem("userName") : null;
+  const savedUserName = typeof window !== 'undefined' ? (localStorage.getItem("userName") || 'Pragya') : 'Pragya';
   const savedUserAvatar = typeof window !== 'undefined' ? localStorage.getItem("profileImage") : null;
+  const isPragya = savedUserName.toLowerCase().includes('pragya');
+  const userBadge = typeof window !== 'undefined' ? (localStorage.getItem("userBadge") || (isPragya ? 'Super Diamond 💎✨' : 'Diamond Member 💎')) : 'Diamond Member 💎';
   const activeUser = {
-    name: savedUserName || 'Gyan Prakash',
-    avatar: savedUserAvatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Gyan',
+    name: savedUserName,
+    badge: userBadge,
+    avatar: savedUserAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(savedUserName)}`,
   };
 
   const emojis = ['👍', '❤️', '😂', '😮', '😢', '🙏', '🎉', '🔥', '👏', '💡'];

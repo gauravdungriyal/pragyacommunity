@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Package Edit — Pragya Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="admin.css">
+  <style>
+    .category-filter-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+    .cat-btn {
+      padding: 9px 18px;
+      border-radius: 99px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .cat-btn:hover, .cat-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .packages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 22px;
+      margin-top: 18px;
+    }
+    .package-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition);
+      position: relative;
+    }
+    .package-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+    .package-card-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background: var(--bg-body);
+    }
+    .package-card-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .package-cat-tag {
+      display: inline-block;
+      align-self: flex-start;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    .package-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-heading);
+      margin-bottom: 10px;
+      line-height: 1.35;
+    }
+    .package-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .package-meta span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .package-meta span i, .package-meta span svg {
+      width: 14px;
+      height: 14px;
+      color: var(--primary);
+    }
+    .package-card-footer {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .package-price-tag {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    /* Multi-Mentor Selector Styles */
+    .mentor-chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 40px;
+      padding: 8px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+    .mentor-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 99px;
+      border: 1px solid rgba(0,56,31,0.18);
+    }
+    .mentor-chip-remove {
+      cursor: pointer;
+      color: var(--danger);
+      font-weight: 800;
+      font-size: 14px;
+      line-height: 1;
+      padding: 0 2px;
+      transition: var(--transition);
+    }
+    .mentor-chip-remove:hover {
+      color: #900;
+      transform: scale(1.2);
+    }
+    .mentor-checklist {
+      max-height: 190px;
+      overflow-y: auto;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 6px;
+      background: var(--bg-body);
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .mentor-check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+    }
+    .mentor-check-row:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .mentor-check-row.selected {
+      border-color: var(--primary);
+      background: #EAF8F1;
+    }
+    .mentor-chk-box {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+    .mentor-chk-av {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .mentor-chk-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .mentor-chk-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-heading);
+      line-height: 1.2;
+    }
+    .mentor-chk-exp {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="admin-brand">
+      <img src="../assets/logo.png" alt="Pragya Logo">
+      <div class="admin-brand-text"><h2>Pragya Admin</h2><span>Control Panel</span></div>
+    </div>
+    <ul class="admin-nav">
+      <li><a href="dashboard.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+      <li><a href="users.html"><i data-lucide="users"></i> Users</a></li>
+      <li><a href="community.html"><i data-lucide="message-square"></i> Community</a></li>
+      <li><a href="events.html"><i data-lucide="calendar"></i> Events</a></li>
+      <li class="active"><a href="package-edit.html"><i data-lucide="package"></i> Package Edit</a></li>
+      <li><a href="promotions.html"><i data-lucide="megaphone"></i> Promotions</a></li>
+      <li><a href="mentors.html"><i data-lucide="graduation-cap"></i> Mentors</a></li>
+      <li><a href="resources.html"><i data-lucide="book-open"></i> Resources</a></li>
+      <li><a href="notifications.html"><i data-lucide="bell"></i> Notifications</a></li>
+      <li><a href="analytics.html"><i data-lucide="bar-chart-2"></i> Analytics</a></li>
+      <li><a href="settings.html"><i data-lucide="settings"></i> Settings</a></li>
+    </ul>
+    <div class="admin-sidebar-footer">
+      <a href="../events/Events.html" class="platform-link"><i data-lucide="external-link"></i> User Events Page</a>
+      <a href="../dashboard.html" class="platform-link"><i data-lucide="layout-dashboard"></i> User Dashboard</a>
+      <a href="#" onclick="adminLogout()" class="logout-link"><i data-lucide="log-out"></i> Logout</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <div class="admin-topbar-left">
+        <button class="admin-topbar-toggle" id="sidebarToggle"><i data-lucide="menu"></i></button>
+        <span class="admin-page-title">Package Edit & Management</span>
+      </div>
+      <div class="admin-topbar-right">
+        <div class="admin-search"><i data-lucide="search"></i><input type="text" id="searchPackages" placeholder="Search packages, workshops..."></div>
+        <button class="admin-topbar-icon-btn"><i data-lucide="bell"></i><span class="admin-notif-dot"></span></button>
+        <div class="admin-user-menu" id="adminUserTrigger">
+          <div class="admin-avatar">SA</div>
+          <div class="admin-user-info">
+            <strong class="admin-user-name">Super Admin</strong>
+            <span class="admin-user-role">superadmin</span>
+          </div>
+          <i data-lucide="chevron-down"></i>
+          <div class="admin-dropdown" id="adminUserDropdown">
+            <a href="../events/Events.html"><i data-lucide="external-link"></i> Users Page in Events</a>
+            <a href="../dashboard.html"><i data-lucide="layout-dashboard"></i> Platform Dashboard</a>
+            <a href="settings.html"><i data-lucide="settings"></i> Settings</a>
+            <a href="#" class="danger" onclick="adminLogout()"><i data-lucide="log-out"></i> Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="admin-content">
+      
+      <!-- Header -->
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Event Packages & Workshop Catalog</h1>
+          <p>Assign multiple mentors to workshops, retreats, and therapy programs.</p>
+        </div>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="category-filter-bar" id="categoryFilterBar">
+        <button class="cat-btn active" data-cat="All">All Packages</button>
+        <button class="cat-btn" data-cat="Yog Therapy">Yog Therapy</button>
+        <button class="cat-btn" data-cat="Intensive Training">Intensive</button>
+        <button class="cat-btn" data-cat="ABC Workshop">ABC Workshop</button>
+        <button class="cat-btn" data-cat="Teacher Training">Training</button>
+        <button class="cat-btn" data-cat="Kids Program">Kids</button>
+        <button class="cat-btn" data-cat="Retreat">Retreat</button>
+        <button class="cat-btn" data-cat="Pragya Events">Events</button>
+        <button class="cat-btn" data-cat="Workshop">Workshop</button>
+      </div>
+
+      <!-- Packages Grid -->
+      <div class="packages-grid" id="packagesGrid">
+        <!-- Injected via JavaScript -->
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Assign Mentors Modal (Multiple Selection) -->
+<div class="modal-overlay" id="packageModal">
+  <div class="modal" style="max-width: 540px;">
+    <div class="modal-header">
+      <h3 class="modal-title" id="packageModalTitle"><i data-lucide="users" style="width:18px;height:18px;display:inline-block;vertical-align:middle;margin-right:6px;color:var(--primary);"></i> Assign Mentors</h3>
+      <button class="modal-close" onclick="closeModal('packageModal')"><i data-lucide="x"></i></button>
+    </div>
+    <form id="packageForm" onsubmit="savePackage(event)">
+      <div class="modal-body">
+        <input type="hidden" id="pkgId">
+
+        <!-- Selected Package Summary Card -->
+        <div style="background:var(--bg-body);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;gap:14px;">
+          <img id="modalPkgThumb" src="" style="width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#ddd;" alt="" onerror="this.src='../events/assets/gallery_group.png'">
+          <div style="min-width:0;flex:1;">
+            <span id="modalPkgCategory" class="package-cat-tag" style="margin-bottom:4px;font-size:10px;padding:2px 8px;"></span>
+            <h4 id="modalPkgTitle" style="font-size:14px;font-weight:700;color:var(--text-heading);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></h4>
+            <span id="modalPkgPrice" style="font-size:12px;font-weight:700;color:var(--primary);margin-top:2px;display:block;"></span>
+          </div>
+        </div>
+
+        <!-- Multiple Mentor Assignment Area -->
+        <div class="form-group">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <label style="font-weight:700;display:flex;align-items:center;gap:8px;margin:0;">
+              <i data-lucide="graduation-cap" style="width:16px;height:16px;color:var(--primary);"></i>
+              Assigned Mentors
+            </label>
+            <div style="display:flex;gap:6px;">
+              <button type="button" class="btn btn-sm btn-outline" style="padding:3px 9px;font-size:11px;font-weight:700;" onclick="selectAllMentors(true)">Select All</button>
+              <button type="button" class="btn btn-sm btn-outline" style="padding:3px 9px;font-size:11px;font-weight:700;" onclick="selectAllMentors(false)">Clear</button>
+            </div>
+          </div>
+
+          <!-- Live Selected Mentor Chips -->
+          <div id="selectedMentorsChips" class="mentor-chips-container">
+            <span style="font-size:12px;color:var(--text-muted);">No mentors selected</span>
+          </div>
+
+          <!-- Search Filter for Mentors -->
+          <div style="position:relative;margin-bottom:8px;">
+            <input type="text" id="mentorFilterInput" class="form-control" placeholder="Search mentor by name or specialty..." style="padding-left:34px;font-size:13px;height:38px;" oninput="filterMentorChecklist()">
+            <i data-lucide="search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text-muted);pointer-events:none;"></i>
+          </div>
+
+          <!-- Scrollable Checklist -->
+          <div id="mentorChecklist" class="mentor-checklist">
+            <!-- Injected via JavaScript -->
+          </div>
+          <span style="font-size:11px;color:var(--text-muted);margin-top:6px;display:block;">Select one or multiple mentors to conduct this event/workshop.</span>
+        </div>
+
+        <!-- Mentor Role / Note -->
+        <div class="form-group" style="margin-bottom:0;">
+          <label style="font-weight:600;">Assignment Role / Note (Optional)</label>
+          <input type="text" id="pkgMentorRole" class="form-control" placeholder="e.g. Lead Mentors / Joint Instructors">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('packageModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i data-lucide="check"></i> Save Assignment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast-container"></div>
+<script src="../events/js/data.js"></script>
+<script src="admin-common.js"></script>
+<!-- Pragya Yog External API Service — load before main script -->
+<script src="../assets/js/pragya-api.js"></script>
+<script>
+adminRoleGuard();
+
+let allPackages = [];
+let currentCategory = 'All';
+let currentlySelectedMentors = new Set();
+
+const mentorCatalog = [
+  { name: 'Dr. Akhilesh', exp: 'Breathwork & Pranayama' },
+  { name: 'Shoaib', exp: 'Spinal Health & Therapy' },
+  { name: 'Aarya Kuldeep', exp: 'Founder & MSc. Yogic Science' },
+  { name: 'Dr. Yatendra Dutt Amoli', exp: 'Kashmir Shaivism & Tantra' },
+  { name: 'Dr. Usha Jaiswal', exp: 'Pranic Healing & Energy Work' },
+  { name: 'Dr. Rakesh Jaiswal', exp: 'Spiritual Psychology & Training' },
+  { name: 'Ashish Prajapati', exp: 'Yogic Science & Hatha Yoga' },
+  { name: 'Angela', exp: 'Yoga & Beginner Asana' },
+  { name: 'Charlotte', exp: 'Hatha Yoga & Mindfulness' },
+  { name: 'Louise', exp: 'Inclusive Yoga & Wellness' },
+  { name: 'Marcus', exp: 'Mindfulness & Stress Relief' },
+  { name: 'Tavia', exp: 'Vinyasa Yoga & Strength' }
+];
+
+function getMentorsData() {
+  const stored = lsGet('admin_mentors', null);
+  if (stored && Array.isArray(stored) && stored.length > 0) {
+    return stored.map(m => ({
+      name: m.name || m,
+      exp: m.expertise || 'Yoga Instructor'
+    }));
+  }
+  return mentorCatalog;
+}
+
+function renderMentorChips() {
+  const container = document.getElementById('selectedMentorsChips');
+  if (currentlySelectedMentors.size === 0) {
+    container.innerHTML = '<span style="font-size:12px;color:var(--text-muted);font-style:italic;">No mentors selected (click below to assign)</span>';
+    return;
+  }
+
+  container.innerHTML = Array.from(currentlySelectedMentors).map(name => `
+    <span class="mentor-chip">
+      <i data-lucide="graduation-cap" style="width:12px;height:12px;"></i>
+      <span>${name}</span>
+      <span class="mentor-chip-remove" onclick="toggleMentorSelection('${name}', false)" title="Remove">&times;</span>
+    </span>
+  `).join('');
+
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function renderMentorChecklist() {
+  const listEl = document.getElementById('mentorChecklist');
+  const search = (document.getElementById('mentorFilterInput').value || '').toLowerCase().trim();
+  const allMentors = getMentorsData();
+
+  const filtered = allMentors.filter(m => 
+    m.name.toLowerCase().includes(search) || 
+    m.exp.toLowerCase().includes(search)
+  );
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<div style="text-align:center;padding:12px;color:var(--text-muted);font-size:12px;">No mentors match your search.</div>';
+    return;
+  }
+
+  listEl.innerHTML = filtered.map(m => {
+    const isSelected = currentlySelectedMentors.has(m.name);
+    const initials = m.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+    return `
+      <div class="mentor-check-row ${isSelected ? 'selected' : ''}" onclick="toggleMentorSelection('${m.name}')">
+        <input type="checkbox" class="mentor-chk-box" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleMentorSelection('${m.name}')">
+        <div class="mentor-chk-av">${initials}</div>
+        <div class="mentor-chk-info">
+          <div class="mentor-chk-name">${m.name}</div>
+          <div class="mentor-chk-exp">${m.exp}</div>
+        </div>
+        ${isSelected ? '<i data-lucide="check" style="width:15px;height:15px;color:var(--primary);flex-shrink:0;"></i>' : ''}
+      </div>
+    `;
+  }).join('');
+
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function toggleMentorSelection(name, forceState = null) {
+  if (forceState === false) {
+    currentlySelectedMentors.delete(name);
+  } else if (forceState === true) {
+    currentlySelectedMentors.add(name);
+  } else {
+    if (currentlySelectedMentors.has(name)) {
+      currentlySelectedMentors.delete(name);
+    } else {
+      currentlySelectedMentors.add(name);
+    }
+  }
+
+  renderMentorChips();
+  renderMentorChecklist();
+}
+
+function selectAllMentors(select) {
+  const allMentors = getMentorsData();
+  if (select) {
+    allMentors.forEach(m => currentlySelectedMentors.add(m.name));
+  } else {
+    currentlySelectedMentors.clear();
+  }
+  renderMentorChips();
+  renderMentorChecklist();
+}
+
+function filterMentorChecklist() {
+  renderMentorChecklist();
+}
+
+function loadPackages() {
+  const customPkgs = lsGet('admin_custom_packages', null);
+  if (customPkgs && customPkgs.length) {
+    allPackages = customPkgs;
+  } else if (typeof events !== 'undefined' && Array.isArray(events)) {
+    allPackages = JSON.parse(JSON.stringify(events));
+    // Pre-populate sensible mentor defaults
+    allPackages.forEach(p => {
+      if (!p.mentors) {
+        if ((p.title || '').includes('Shoaib')) p.mentors = ['Shoaib', 'Dr. Akhilesh'];
+        else if ((p.title || '').includes('Akhilesh')) p.mentors = ['Dr. Akhilesh'];
+        else if ((p.category || '') === 'Teacher Training') p.mentors = ['Aarya Kuldeep', 'Dr. Yatendra Dutt Amoli'];
+        else if ((p.category || '') === 'Yog Therapy') p.mentors = ['Dr. Usha Jaiswal', 'Shoaib'];
+        else if ((p.category || '') === 'Retreat') p.mentors = ['Dr. Yatendra Dutt Amoli', 'Aarya Kuldeep'];
+        else p.mentors = [];
+      }
+      p.mentor = (p.mentors || []).join(', ');
+    });
+    lsSet('admin_custom_packages', allPackages);
+  } else {
+    allPackages = [];
+  }
+  renderPackageList();
+}
+
+function renderPackageList() {
+  const grid = document.getElementById('packagesGrid');
+  const search = (document.getElementById('searchPackages').value || '').toLowerCase().trim();
+
+  let filtered = allPackages;
+  if (currentCategory !== 'All') {
+    filtered = filtered.filter(p => p.category === currentCategory);
+  }
+  if (search) {
+    filtered = filtered.filter(p => 
+      (p.title || '').toLowerCase().includes(search) || 
+      (p.venue || '').toLowerCase().includes(search) ||
+      (p.category || '').toLowerCase().includes(search) ||
+      (p.mentor || '').toLowerCase().includes(search) ||
+      ((p.mentors || []).some(m => m.toLowerCase().includes(search)))
+    );
+  }
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align:center; padding: 48px; background:var(--bg-card); border-radius:var(--radius-lg); border:1px dashed var(--border);">
+        <i data-lucide="package-search" style="width:48px;height:48px;color:var(--text-muted);margin:0 auto 12px;"></i>
+        <h3 style="color:var(--text-heading);margin-bottom:6px;">No packages found</h3>
+        <p style="color:var(--text-muted);font-size:14px;">Try selecting another category or refining your search.</p>
+      </div>
+    `;
+    lucide.createIcons();
+    return;
+  }
+
+  grid.innerHTML = filtered.map(pkg => {
+    const dateFormatted = pkg.date ? new Date(pkg.date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+    const mentorsList = Array.isArray(pkg.mentors) && pkg.mentors.length > 0 
+      ? pkg.mentors 
+      : (pkg.mentor ? pkg.mentor.split(',').map(s => s.trim()).filter(Boolean) : []);
+
+    const mentorDisplay = mentorsList.length > 0
+      ? `<div style="display:flex;align-items:flex-start;gap:6px;margin-top:2px;">
+          <i data-lucide="graduation-cap" style="width:14px;height:14px;color:var(--primary);margin-top:3px;flex-shrink:0;"></i>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;">
+            ${mentorsList.map(m => `<span style="background:var(--primary-light);color:var(--primary);font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;">${m}</span>`).join('')}
+          </div>
+        </div>`
+      : `<span><i data-lucide="graduation-cap" style="color:var(--text-muted);"></i> Mentors: <span style="color:var(--text-muted);font-style:italic;">Not Assigned</span></span>`;
+
+    return `
+      <div class="package-card" data-id="${pkg.id}">
+        <img class="package-card-img" src="${pkg.image || '../events/assets/gallery_group.png'}" alt="${pkg.title}" onerror="this.src='../events/assets/gallery_group.png'">
+        <div class="package-card-body">
+          <span class="package-cat-tag">${pkg.category || 'Event'}</span>
+          <h3 class="package-title">${pkg.title}</h3>
+          <div class="package-meta">
+            ${dateFormatted ? `<span><i data-lucide="calendar"></i> ${dateFormatted}</span>` : ''}
+            ${pkg.time ? `<span><i data-lucide="clock"></i> ${pkg.time}</span>` : ''}
+            ${pkg.venue ? `<span><i data-lucide="map-pin"></i> ${pkg.venue}</span>` : ''}
+            ${mentorDisplay}
+          </div>
+          <div class="package-card-footer">
+            <span class="package-price-tag">${pkg.price || 'Free'}</span>
+            <div class="action-btns">
+              <button class="btn btn-sm btn-primary" onclick="editPackage('${pkg.id}')" style="gap:6px;padding:7px 14px;font-size:12px;border-radius:8px;">
+                <i data-lucide="user-check" style="width:14px;height:14px;"></i>
+                <span>Assign Mentors (${mentorsList.length})</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  lucide.createIcons();
+}
+
+function editPackage(id) {
+  const pkg = allPackages.find(p => String(p.id) === String(id));
+  if (!pkg) return;
+  
+  document.getElementById('pkgId').value = pkg.id;
+  document.getElementById('modalPkgThumb').src = pkg.image || '../events/assets/gallery_group.png';
+  document.getElementById('modalPkgTitle').textContent = pkg.title || 'Untitled Package';
+  document.getElementById('modalPkgCategory').textContent = pkg.category || 'Event';
+  document.getElementById('modalPkgPrice').textContent = pkg.price ? `Price: ${pkg.price}` : 'Price: Free';
+  document.getElementById('pkgMentorRole').value = pkg.mentorRole || '';
+  document.getElementById('mentorFilterInput').value = '';
+
+  const initialMentors = Array.isArray(pkg.mentors) && pkg.mentors.length > 0 
+    ? pkg.mentors 
+    : (pkg.mentor ? pkg.mentor.split(',').map(s => s.trim()).filter(Boolean) : []);
+
+  currentlySelectedMentors = new Set(initialMentors);
+
+  renderMentorChips();
+  renderMentorChecklist();
+  openModal('packageModal');
+}
+
+function savePackage(e) {
+  e.preventDefault();
+  const id = document.getElementById('pkgId').value;
+  const mentorsArray = Array.from(currentlySelectedMentors);
+  const mentorRole = document.getElementById('pkgMentorRole').value.trim();
+
+  if (id) {
+    allPackages = allPackages.map(p => String(p.id) === String(id) 
+      ? { ...p, mentors: mentorsArray, mentor: mentorsArray.join(', '), mentorRole } 
+      : p
+    );
+    const count = mentorsArray.length;
+    showToast(count > 0 ? `${count} mentor(s) assigned successfully!` : 'Mentor assignment cleared.');
+  }
+
+  lsSet('admin_custom_packages', allPackages);
+  closeModal('packageModal');
+  renderPackageList();
+}
+
+// Category filter events
+document.querySelectorAll('#categoryFilterBar .cat-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('#categoryFilterBar .cat-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    currentCategory = this.dataset.cat;
+    renderPackageList();
+  });
+});
+
+document.getElementById('searchPackages').addEventListener('input', () => {
+  renderPackageList();
+});
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // First load from local storage / data.js
+  loadPackages();
+
+  // Then try loading real packages from Pragya Yog API
+  loadRealPackages();
+
+  // Also load real teachers as mentor catalog options
+  loadRealTeachers();
+});
+
+/* ─── Load real packages from Pragya Yog API ──────────────── */
+async function loadRealPackages() {
+  try {
+    const data = await PragyaAPI.getPackages();
+    if (!data || !data.status) return;
+
+    // Flatten all categories into one array
+    const categories = Object.values(data).filter(v => Array.isArray(v));
+    const apiPackages = categories.flat().filter(p => p && p.id && p.title);
+
+    if (!apiPackages.length) return;
+
+    // Convert to local package format
+    const mapped = apiPackages.map(p => ({
+      id: 'live_' + p.id,
+      title: p.title,
+      category: p.category || 'Event',
+      price: p.amount ? `HKD ${p.amount.toLocaleString()}` : 'Free',
+      date: p.periods_start_date || '',
+      venue: 'Pragya Yog School HK',
+      image: '',
+      mentors: [],
+      mentor: '',
+      _live: true
+    }));
+
+    // Only add if they're not already in allPackages (avoid duplicates)
+    const existingIds = new Set(allPackages.map(p => String(p.id)));
+    const newPackages = mapped.filter(p => !existingIds.has(String(p.id)));
+
+    if (newPackages.length) {
+      allPackages = [...allPackages, ...newPackages];
+      renderPackageList();
+      console.log(`[PragyaAPI] Loaded ${newPackages.length} real packages`);
+    }
+  } catch(e) {
+    console.warn('[PragyaAPI] Packages load failed:', e.message);
+  }
+}
+
+/* ─── Load real teachers as mentor catalog options ───────── */
+async function loadRealTeachers() {
+  try {
+    const data = await PragyaAPI.getTeachers();
+    if (!data || !data.status || !Array.isArray(data.data)) return;
+
+    const liveMentors = data.data
+      .filter(t => t.name || (t.fname && t.lname))
+      .map(t => ({
+        name: t.name || ([t.fname, t.lname].filter(Boolean).join(' ')),
+        exp: t.post || t.speciality || 'Yoga Instructor'
+      }));
+
+    if (!liveMentors.length) return;
+
+    // Merge with mentorCatalog (avoid duplicates by name)
+    const existingNames = new Set(mentorCatalog.map(m => m.name.toLowerCase()));
+    const newMentors = liveMentors.filter(m => !existingNames.has(m.name.toLowerCase()));
+
+    if (newMentors.length) {
+      mentorCatalog.push(...newMentors);
+      renderMentorChecklist();
+      console.log(`[PragyaAPI] Added ${newMentors.length} real teachers to mentor catalog`);
+    }
+  } catch(e) {
+    console.warn('[PragyaAPI] Teachers catalog load failed:', e.message);
+  }
+}
+</script>
+
+<!-- Pragya Yog External API Service -->
+<script src="../assets/js/pragya-api.js"></script>
+
+</body>
+</html>

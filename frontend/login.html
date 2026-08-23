@@ -48,20 +48,20 @@ body{
 }
 
 .login-header{
-text-align:center;
+    text-align:center;
 }
 
 .login-header img{
-width:100px;
-height:100px;
-object-fit:contain;
+    width:100px;
+    height:100px;
+    object-fit:contain;
 }
 
 .login-header h1{
-font-size:24px;
-color:#0B525B;
-font-weight:800;
-letter-spacing:1px;
+    font-size:24px;
+    color:#0B525B;
+    font-weight:800;
+    letter-spacing:1px;
 }
 
 .login-left{
@@ -80,93 +80,93 @@ letter-spacing:1px;
 }
 
 .welcome{
-text-align:center;
-margin:10px 10px 20px;
+    text-align:center;
+    margin:10px 10px 20px;
 }
 
 .welcome h2{
-font-size:20px;
-color:#111827;
+    font-size:20px;
+    color:#111827;
 }
 
 .welcome p{
-font-size:13px;
-color:#6B7280;
-margin-top:5px;
+    font-size:13px;
+    color:#6B7280;
+    margin-top:5px;
 }
 
 .input-group{
-margin-bottom:15px;
+    margin-bottom:15px;
 }
 
 .input-group label{
-display:block;
-font-size:13px;
-margin-bottom:6px;
-color:#374151;
+    display:block;
+    font-size:13px;
+    margin-bottom:6px;
+    color:#374151;
 }
 
 .input-group input{
-width:100%;
-padding:12px;
-border:1px solid #E5E7EB;
-border-radius:12px;
-outline:none;
-transition:0.3s;
+    width:100%;
+    padding:12px;
+    border:1px solid #E5E7EB;
+    border-radius:12px;
+    outline:none;
+    transition:0.3s;
 }
 
 .input-group input:focus{
-border-color:#0B525B;
+    border-color:#0B525B;
 }
 
 .password-wrapper{
-position:relative;
+    position:relative;
 }
 
 .toggle-pass{
-position:absolute;
-right:12px;
-top:50%;
-transform:translateY(-50%);
-cursor:pointer;
-font-size:14px;
-color:#6B7280;
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    cursor:pointer;
+    font-size:14px;
+    color:#6B7280;
 }
 
 .options{
-display:flex;
-justify-content:space-between;
-align-items:center;
-font-size:13px;
-margin:10px 0 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:13px;
+    margin:10px 0 20px;
 }
 
 .options a{
-color:#0B525B;
-text-decoration:none;
+    color:#0B525B;
+    text-decoration:none;
 }
 
 .btn{
-width:100%;
-padding:12px;
-background:#0B525B;
-color:#fff;
-border:none;
-border-radius:12px;
-font-weight:700;
-cursor:pointer;
-transition:0.3s;
+    width:100%;
+    padding:12px;
+    background:#0B525B;
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    font-weight:700;
+    cursor:pointer;
+    transition:0.3s;
 }
 
 .btn:hover{
-background:#083E45;
+    background:#083E45;
 }
 
 .footer{
-text-align:center;
-margin-top:15px;
-font-size:12px;
-color:#6B7280;
+    text-align:center;
+    margin-top:15px;
+    font-size:12px;
+    color:#6B7280;
 }
 
 /* Tablets */
@@ -229,7 +229,6 @@ body{
 }
 
 }
-
 
 </style>
 </head>
@@ -417,7 +416,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
 
             window.location.href = "dashboard.html";
         } else {
-            // Local demo login fallback
+            // Local offline mock login fallback for development demo credentials
             if (password === "123456" || password === "admin123" || email.toLowerCase().includes("pragya") || password.length >= 4) {
                 setupUserSession(email.split('@')[0], email, "student");
                 window.location.href = "dashboard.html";
@@ -426,6 +425,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
             }
         }
     } catch (error) {
+        // Fallback allow demo login even if backend is offline
         if (password.length >= 4) {
             setupUserSession(email.split('@')[0], email, "student");
             window.location.href = "dashboard.html";

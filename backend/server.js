@@ -17,7 +17,7 @@ const notificationRoutes = require("./routes/notificationRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 
 // Load Environment Variables
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, ".env") });
 
 // Connect Database
 connectDB();
@@ -31,6 +31,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve Frontend Static Files
+app.use(express.static(path.join(__dirname, "../frontend")));
 app.use(express.static(path.join(__dirname, "../Frontend")));
 
 // Routes
@@ -45,9 +46,10 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
-// Fallback for landing page
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "../Frontend/index.html"));
+// Fallback for landing & login page
+app.get(["/", "/login", "/login.html", "/index.html"], (req, res) => {
+    const indexPath = path.join(__dirname, "../frontend/index.html");
+    res.sendFile(indexPath);
 });
 
 // Start Server

@@ -708,7 +708,7 @@ color:white;
 
 .events-grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
 gap:25px;
 }
 
@@ -837,7 +837,7 @@ background:#EAF3F4;
         <!-- Left Sidebar Navigation -->
         <aside class="sidebar">
             <div class="logo-container">
-                <img src="assets\logo.png" alt="Pragya Logo" class="logo-img">
+                <img src="../assets/logo.png" alt="Pragya Logo" class="logo-img">
             </div>
 
             <ul class="nav-menu">
@@ -850,35 +850,17 @@ background:#EAF3F4;
                 <li class="nav-item">
                     <a href="../mentors.html"><i data-lucide="graduation-cap"></i> <span>Mentors</span></a>
                 </li>
-                <li class="nav-item has-submenu"><a href="#" id="eventsToggle"><i data-lucide="calendar"></i>
-                    <span>Events</span>
-                    <i data-lucide="chevron-down" class="submenu-arrow"></i>
-                </a>
-                <ul class="submenu" id="eventsMenu">
-                    <li class="nav-item active">
-                        <a href="Events.html">All Events</a>
-                    </li>
-                    <li>
-                        <a href="Calender.html">Calendar</a>
-                    </li>
-                    <li>
-                        <a href="EventDetails.html">
-                            Event Details
-                        </a>
-                    </li>
-                    <li>
-                        <a href="MyRegistrations.html">My Registrations</a>
-                    </li>
-                </ul>
+                <li class="nav-item active">
+                    <a href="Events.html"><i data-lucide="calendar"></i> <span>Events</span></a>
                 </li>
                 <li class="nav-item">
                     <a href="../resources.html"><i data-lucide="book-open"></i> <span>Resources</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="#"><i data-lucide="message-square"></i> <span>Messages</span><span class="badge">3</span></a>
+                    <a href="../message.html"><i data-lucide="message-square"></i> <span>Messages</span><span class="badge">3</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="#"><i data-lucide="bell"></i> <span>Notifications</span><span class="badge">5</span></a>
+                    <a href="../notifications.html"><i data-lucide="bell"></i> <span>Notifications</span><span class="badge">5</span></a>
                 </li>
                 <li class="nav-item">
                     <a href="../Profile.html"><i data-lucide="user"></i> <span>Profile</span></a>
@@ -889,7 +871,7 @@ background:#EAF3F4;
             </ul>
 
             <div class="nav-logout">
-                <a href="index.html"><i data-lucide="log-out"></i> <span>Logout</span></a>
+                <a href="../index.html"><i data-lucide="log-out"></i> <span>Logout</span></a>
             </div>
         </aside>
 
@@ -944,6 +926,12 @@ background:#EAF3F4;
                         <div class="dropdown-divider"></div>
                         <ul class="dropdown-menu">
                             <li>
+                                <a href="../admin/package-edit.html" class="dropdown-item" style="color:var(--primary);font-weight:700;">
+                                    <i data-lucide="shield"></i>
+                                    <span>Admin: Package Edit</span>
+                                </a>
+                            </li>
+                            <li>
                                 <a href="Profile.html" class="dropdown-item">
                                     <i data-lucide="user"></i>
                                     <span>My Profile</span>
@@ -980,6 +968,9 @@ background:#EAF3F4;
         <h1>Upcoming Events</h1>
         <p>Stay connected with workshops, yoga sessions, seminars and cultural activities.</p>
     </div>
+    <div>
+        <a href="../admin/package-edit.html" id="adminPackageEditBtn" style="display:none;background:var(--primary-light);color:var(--primary);border:1.5px solid var(--primary);padding:10px 18px;border-radius:12px;font-size:13px;font-weight:700;text-decoration:none;align-items:center;gap:8px;"><i data-lucide="package" style="width:16px;height:16px;"></i> Package Edit Panel</a>
+    </div>
 </section>
 
 <!-- Search & Filter -->
@@ -1014,6 +1005,16 @@ background:#EAF3F4;
 <script src="../assets/js/admin-sync.js"></script>
 
 <script>
+    function getEventList() {
+        try {
+            const custom = JSON.parse(localStorage.getItem('admin_custom_packages'));
+            if (custom && Array.isArray(custom) && custom.length > 0) {
+                return custom;
+            }
+        } catch(e) {}
+        return (typeof events !== 'undefined') ? events : [];
+    }
+
     function renderEvents(filter) {
         console.log('renderEvents called with filter:', filter);
         const grid = document.getElementById('eventsGrid');
@@ -1021,15 +1022,13 @@ background:#EAF3F4;
             console.error('eventsGrid element not found in DOM!');
             return;
         }
-        if (typeof events === 'undefined') {
-            console.error('events array is undefined in Events.html!');
-            return;
-        }
-        console.log('events count to render:', events.length);
+
+        const evList = getEventList();
+        console.log('events count to render:', evList.length);
 
         const filtered = filter && filter !== 'All'
-            ? events.filter(e => e.category === filter)
-            : events;
+            ? evList.filter(e => e.category === filter)
+            : evList;
 
         console.log('filtered events count:', filtered.length);
 
@@ -1051,8 +1050,6 @@ background:#EAF3F4;
                     <div class="card-footer">
                         <button class="details-btn" onclick="openDetails(this)">View Details</button>
                         <button class="register-btn" onclick="registerEvent(this)">Register</button>
-
-                   
                     </div>
                 </div>
             </div>`;
@@ -1238,31 +1235,12 @@ document.addEventListener("keydown", function (e) {
         loadAvatarInitials();
         loadProfileImageToTopBar();
 
-// Events submenu
-const eventsToggle = document.getElementById("eventsToggle");
-const eventsParent = document.querySelector(".has-submenu");
+        if (sessionStorage.getItem('adminRole')) {
+            const adminBtn = document.getElementById('adminPackageEditBtn');
+            if (adminBtn) adminBtn.style.display = 'inline-flex';
+        }
 
-if (eventsToggle && eventsParent) {
 
-    // Toggle submenu
-    eventsToggle.addEventListener("click", function (e) {
-        e.preventDefault();
-        eventsParent.classList.toggle("open");
-    });
-
-    // Keep submenu open on Events pages
-    const page = window.location.pathname.toLowerCase();
-
-    if (
-        page.includes("events.html") ||
-        page.includes("calender.html") ||
-        page.includes("eventdetails.html") ||
-        page.includes("register.html") ||
-        page.includes("myregistrations.html")
-    ) {
-        eventsParent.classList.add("open");
-    }
-}
 
 function loadUserName() {
     const savedName = localStorage.getItem("userName");
@@ -1288,12 +1266,8 @@ function openDetails(button) {
 }
 
 function registerEvent(button) {
-
     const eventId = button.closest(".event-card").dataset.id;
-
-    window.location.href =
-        `Register.html?id=${eventId}`;
-
+    window.location.href = `EventDetails.html?id=${eventId}`;
 }
 
 // ── Admin ↔ Platform Sync: Append Admin Events ───────────────
@@ -1336,6 +1310,65 @@ document.addEventListener('DOMContentLoaded', () => {
     AdminSync.init({ popup: false, promoBanner: true, notifBadge: true });
 });
 </script>
+
+<!-- Pragya Yog External API Service -->
+<script src="../assets/js/pragya-api.js"></script>
+<script>
+/* ================================================================
+   REAL EVENTS from Pragya Yog API — Prepend to eventsGrid
+================================================================ */
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const data = await PragyaAPI.getUpcomingEvents();
+        if (!data || !data.status || !Array.isArray(data.data) || !data.data.length) return;
+
+        const grid = document.getElementById('eventsGrid');
+        if (!grid) return;
+
+        // Map API events to card format
+        const cards = data.data.map(ev => {
+            const startDate = ev.starts_at ? new Date(ev.starts_at) : null;
+            const dateStr = startDate ? startDate.toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'}) : '';
+            const imgUrl = ev.image || (ev.carousel_image && ev.carousel_image.url) || '';
+            const category = ev.difficulty_tags && ev.difficulty_tags[0] ? ev.difficulty_tags[0] : 'Event';
+            const catClass = category.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+            const price = ev.amount ? `HKD ${ev.amount.toLocaleString()}` : (ev.is_free ? 'Free' : '');
+            const instructor = ev.instructor ? ev.instructor.name : '';
+            const eventId = 'live_' + ev.id;
+
+            return `
+            <div class="event-card" data-id="${eventId}" data-live-id="${ev.id}" style="position:relative;">
+                <span style="position:absolute;top:10px;right:10px;background:#00381F;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.5px;z-index:1;">LIVE</span>
+                <img src="${imgUrl || 'assets/gallery_group.png'}" alt="${ev.title}" loading="lazy" onerror="this.src='assets/gallery_group.png'" style="height:180px;object-fit:cover;width:100%;">
+                <div class="event-content">
+                    <span class="category ${catClass}">${category}</span>
+                    <h3>${ev.title}</h3>
+                    ${dateStr ? `<p><i data-lucide="calendar"></i> ${dateStr}</p>` : ''}
+                    ${instructor ? `<p><i data-lucide="user"></i> ${instructor}</p>` : ''}
+                    ${price ? `<p><i data-lucide="tag"></i> ${price}</p>` : ''}
+                    ${ev.countdown_label ? `<p style="color:var(--accent);font-weight:600;font-size:12px;"><i data-lucide="clock"></i> ${ev.countdown_label}</p>` : ''}
+                    <div class="card-footer">
+                        <a href="EventDetails.html?eventId=${ev.id}" class="details-btn" style="text-decoration:none;">View Details</a>
+                        <a href="EventDetails.html?eventId=${ev.id}" class="register-btn" style="text-decoration:none;">Instant Booking</a>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+
+        // Insert real events at the beginning
+        grid.insertAdjacentHTML('afterbegin', cards);
+        if (window.lucide) lucide.createIcons();
+
+        // Update filter categories to include real event tags
+        console.log(`[PragyaAPI] Loaded ${data.data.length} real events`);
+    } catch(e) {
+        console.warn('[PragyaAPI] Events load failed:', e.message);
+    }
+});
+</script>
+
+<!-- Pragya Universal Common Engine -->
+<script src="../common.js"></script>
 
 </body>
 </html>

@@ -233,9 +233,30 @@ const AdminSync = {
      * Returns all admin-managed resources, optionally filtered by category.
      */
     getResources(category = null) {
-        const all = this._get('admin_resources', []);
-        if (!category) return all;
-        return all.filter(r => r.category === category);
+        let stored = this._get('admin_resources', null);
+        if (!stored || !stored.length) {
+            stored = [
+                { id: '1', title: 'Complete Pranayama Guide 2026', desc: 'Beginner to Advanced Pranayama Notes & Techniques', cat: 'Yoga', type: 'PDF', size: '2.4 MB', author: 'Dr. Akhilesh', date: '2026-06-12', url: '#' },
+                { id: '2', title: 'Mindfulness Meditation Slides', desc: 'Presentation slides for mindfulness session', cat: 'Meditation', type: 'PPT', size: '4.8 MB', author: 'Gyan Prakash', date: '2026-06-20', url: '#' },
+                { id: '3', title: 'Breathing Exercises & Techniques', desc: 'Guided video tutorial on deep breathing exercises', cat: 'Meditation', type: 'Video', size: '18 mins', author: 'Priya Sharma', date: '2026-07-15', url: '#' },
+                { id: '4', title: 'Yoga Research Paper 2025', desc: 'Scientific review of yoga benefits on mental clarity', cat: 'Research', type: 'DOC', size: '1.2 MB', author: 'Research Team', date: '2026-07-02', url: '#' },
+                { id: '5', title: 'Workshop Presentation on Adjustment', desc: 'PPT slides for postural adjustment and alignment', cat: 'Adjustment', type: 'PPT', size: '5.1 MB', author: 'Aarya Kuldeep', date: '2026-07-20', url: '#' },
+                { id: '6', title: 'Yoga Philosophy & Sutras Book', desc: 'Complete translation and commentary on Yoga Sutras', cat: 'Books', type: 'PDF', size: '6.5 MB', author: 'Dr. Yatendra', date: '2026-07-25', url: '#' }
+            ];
+            this._set('admin_resources', stored);
+        }
+        // Normalize fields (cat/category, desc/description, size, timeText)
+        const normalized = stored.map(r => ({
+            ...r,
+            category: r.cat || r.category || 'Yoga',
+            cat: r.cat || r.category || 'Yoga',
+            description: r.desc || r.description || '',
+            desc: r.desc || r.description || '',
+            size: r.size || (r.type === 'Video' ? '15 mins' : '2.5 MB'),
+            timeText: r.date ? `Uploaded ${r.date}` : (r.timeText || 'Recently updated')
+        }));
+        if (!category || category === 'all') return normalized;
+        return normalized.filter(r => (r.category || '').toLowerCase() === category.toLowerCase());
     },
 
     // ─── COMMUNITY POSTS ────────────────────────────────────────

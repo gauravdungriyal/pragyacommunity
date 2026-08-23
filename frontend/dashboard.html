@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,97 +8,103 @@
     <!-- Google Fonts: Plus Jakarta Sans for modern typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <!-- Lucide Icons Library -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
+
     <style>
         :root {
-    /* =========================
+            /* =========================
        PYSHK Brand Theme
     ========================== */
 
-    /* Primary */
-    --primary: #00381F;
-    --primary-hover: #00522E;
-    --primary-light: #E8F2ED;
+            /* Primary */
+            --primary: #00381F;
+            --primary-hover: #00522E;
+            --primary-light: #E8F2ED;
 
-    /* Accent */
-    --accent: #D9AE29;
-    --accent-hover: #C89D1F;
-    --accent-light: #FFF8E6;
+            /* Accent */
+            --accent: #D9AE29;
+            --accent-hover: #C89D1F;
+            --accent-light: #FFF8E6;
 
-    /* Supporting Colors */
-    --olive: #9D9D48;
-    --terracotta: #944426;
-    --burgundy: #620513;
+            /* Supporting Colors */
+            --olive: #9D9D48;
+            --terracotta: #944426;
+            --burgundy: #620513;
 
-    /* Backgrounds */
-    --bg-body: #F5EFE5;
-    --bg-card: #FFFFFF;
-    --bg-sidebar: #00381F;
-    --bg-soft: #FAF8F4;
+            /* Backgrounds */
+            --bg-body: #F5EFE5;
+            --bg-card: #FFFFFF;
+            --bg-sidebar: #00381F;
+            --bg-soft: #FAF8F4;
 
-    /* Typography */
-    --text-main: #272727;
-    --text-heading: #00381F;
-    --text-muted: #6F6F6F;
-    --text-light: #FFFFFF;
+            /* Typography */
+            --text-main: #272727;
+            --text-heading: #00381F;
+            --text-muted: #6F6F6F;
+            --text-light: #FFFFFF;
 
-    /* Borders */
-    --border: #E5DDD2;
+            /* Borders */
+            --border: #E5DDD2;
 
-    /* Status */
-    --success: #0F8A4B;
-    --success-bg: #EAF8F1;
+            /* Status */
+            --success: #0F8A4B;
+            --success-bg: #EAF8F1;
 
-    --warning: #D9AE29;
-    --warning-bg: #FFF8E6;
+            --warning: #D9AE29;
+            --warning-bg: #FFF8E6;
 
-    --danger: #620513;
-    --danger-bg: #F8EDEE;
+            --danger: #620513;
+            --danger-bg: #F8EDEE;
 
-    --info: #944426;
-    --info-bg: #F9F0EC;
+            --info: #944426;
+            --info-bg: #F9F0EC;
 
-    /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
 
-    /* Radius */
-    --radius-sm: 10px;
-    --radius-md: 16px;
-    --radius-lg: 22px;
+            /* Radius */
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 22px;
 
-    /* Animation */
-    --transition: all 0.3s ease;
-}
+            /* Animation */
+            --transition: all 0.3s ease;
+        }
 
-/* Headings */
-h1,h2,h3,h4,h5,h6{
-    font-family:"BN Cringe Serif", serif;
-    font-weight:400;
-    color:var(--text-heading);
-}
+        /* Headings */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "BN Cringe Serif", serif;
+            font-weight: 400;
+            color: var(--text-heading);
+        }
 
-/* Body */
-body,
-p,
-button,
-input,
-textarea,
-select{
-    font-family:"Neue Montreal",sans-serif;
-}
+        /* Body */
+        body,
+        p,
+        button,
+        input,
+        textarea,
+        select {
+            font-family: "Neue Montreal", sans-serif;
+        }
 
-/* Hero text / Quotes */
-.quote,
-.hero-title,
-.event-title{
-    font-family:"Canela",serif;
-}
+        /* Hero text / Quotes */
+        .quote,
+        .hero-title,
+        .event-title {
+            font-family: "Canela", serif;
+        }
 
         /* Basic Reset */
         * {
@@ -117,7 +124,7 @@ select{
         }
 
         html {
-          scroll-behavior: smooth;
+            scroll-behavior: smooth;
         }
 
         /* Layout Structure */
@@ -140,13 +147,16 @@ select{
             bottom: 0;
             left: 0;
             z-index: 100;
-            overflow-y: auto; /* make side bar scrollable */
-            scrollbar-width: none; /* hide Firefox scrollbar */
+            overflow-y: auto;
+            /* make side bar scrollable */
+            scrollbar-width: none;
+            /* hide Firefox scrollbar */
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease;
         }
 
         .sidebar::-webkit-scrollbar {
-            display: none; /* hide Chrome/Safari scrollbar */
+            display: none;
+            /* hide Chrome/Safari scrollbar */
         }
 
         /* Logo Area */
@@ -159,7 +169,8 @@ select{
         }
 
         .logo-img {
-            max-width: 140px; /* reduced logo size */
+            max-width: 140px;
+            /* reduced logo size */
             height: auto;
             object-fit: contain;
         }
@@ -186,7 +197,8 @@ select{
             transition: var(--transition);
         }
 
-        .nav-item a i, .nav-item a svg {
+        .nav-item a i,
+        .nav-item a svg {
             width: 22px;
             height: 22px;
             transition: var(--transition);
@@ -198,7 +210,8 @@ select{
             color: var(--primary);
         }
 
-        .nav-item a:hover i, .nav-item a:hover svg {
+        .nav-item a:hover i,
+        .nav-item a:hover svg {
             transform: translateX(2px);
         }
 
@@ -302,7 +315,8 @@ select{
             transform: translateY(-2px);
         }
 
-        .sidebar-toggle-btn i, .sidebar-toggle-btn svg {
+        .sidebar-toggle-btn i,
+        .sidebar-toggle-btn svg {
             width: 22px;
             height: 22px;
         }
@@ -321,6 +335,7 @@ select{
             .sidebar-collapsed .sidebar {
                 transform: translateX(-100%);
             }
+
             .sidebar-collapsed .main-wrapper {
                 margin-left: 0;
                 width: 100%;
@@ -334,7 +349,8 @@ select{
             max-width: none;
         }
 
-        .search-container i, .search-container svg {
+        .search-container i,
+        .search-container svg {
             position: absolute;
             left: 18px;
             top: 50%;
@@ -343,7 +359,8 @@ select{
             pointer-events: none;
             width: 20px;
             height: 20px;
-            z-index: 2; /* ensure it stays visible on top of input bg */
+            z-index: 2;
+            /* ensure it stays visible on top of input bg */
         }
 
         .search-input {
@@ -473,7 +490,8 @@ select{
             margin-top: 1px;
         }
 
-        .user-menu-trigger i, .user-menu-trigger svg {
+        .user-menu-trigger i,
+        .user-menu-trigger svg {
             width: 16px;
             height: 16px;
             color: var(--text-muted);
@@ -482,25 +500,25 @@ select{
 
         /* User Dropdown Menu */
         .user-dropdown {
-            position:absolute;
-            top:calc(100% + 10px);
-            right:0;
-            min-width:250px;
-            background:#fff;
-            border-radius:14px;
-            box-shadow:0 12px 30px rgba(0,0,0,.15);
-            z-index:999999;
-            opacity:0;
-            visibility:hidden;
-            pointer-events:none;
-            transform:translateY(-10px);
-            transition:.25s;
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            min-width: 250px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .15);
+            z-index: 999999;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: .25s;
         }
 
         .user-dropdown.active {
             opacity: 1;
             visibility: visible;
-            pointer-events:auto;
+            pointer-events: auto;
             transform: translateY(0);
         }
 
@@ -578,7 +596,8 @@ select{
             color: var(--primary);
         }
 
-        .dropdown-item i, .dropdown-item svg {
+        .dropdown-item i,
+        .dropdown-item svg {
             width: 18px;
             height: 18px;
             flex-shrink: 0;
@@ -612,7 +631,7 @@ select{
 
         /* Welcome Banner Card */
         .welcome-banner {
-            background: linear-gradient( 135deg,#00381F 0%,#00522E 55%,#9D9D48 100%);
+            background: linear-gradient(135deg, #00381F 0%, #00522E 55%, #9D9D48 100%);
             border-radius: 20px;
             padding: 40px 48px;
             min-height: 220px;
@@ -649,7 +668,7 @@ select{
         .banner-desc {
             font-size: 14.5px;
             font-weight: 500;
-            color:rgba(255,255,255,.88);
+            color: rgba(255, 255, 255, .88);
             line-height: 1.5;
             max-width: 320px;
         }
@@ -670,8 +689,8 @@ select{
             height: 100%;
             object-fit: cover;
             opacity: 0.95;
-            mask-image: linear-gradient(to left, rgba(0,0,0,1) 65%, rgba(0,0,0,0));
-            -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 65%, rgba(0,0,0,0));
+            mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 65%, rgba(0, 0, 0, 0));
+            -webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 65%, rgba(0, 0, 0, 0));
         }
 
         /* Card Standard Styling */
@@ -773,11 +792,23 @@ select{
             border-color: var(--text-muted);
         }
 
-        .trigger-btn.image-btn i, .trigger-btn.image-btn svg { color: #2D9CDB; }
-        .trigger-btn.video-btn i, .trigger-btn.video-btn svg { color: #BB6BD9; }
-        .trigger-btn.doc-btn i, .trigger-btn.doc-btn svg { color: var(--accent); }
+        .trigger-btn.image-btn i,
+        .trigger-btn.image-btn svg {
+            color: #2D9CDB;
+        }
 
-        .trigger-btn i, .trigger-btn svg {
+        .trigger-btn.video-btn i,
+        .trigger-btn.video-btn svg {
+            color: #BB6BD9;
+        }
+
+        .trigger-btn.doc-btn i,
+        .trigger-btn.doc-btn svg {
+            color: var(--accent);
+        }
+
+        .trigger-btn i,
+        .trigger-btn svg {
             width: 18px;
             height: 18px;
         }
@@ -861,7 +892,8 @@ select{
             margin-top: 2px;
         }
 
-        .post-time i, .post-time svg {
+        .post-time i,
+        .post-time svg {
             width: 12px;
             height: 12px;
         }
@@ -881,7 +913,8 @@ select{
             color: var(--text-main);
         }
 
-        .post-options-btn i, .post-options-btn svg {
+        .post-options-btn i,
+        .post-options-btn svg {
             width: 20px;
             height: 20px;
         }
@@ -913,7 +946,7 @@ select{
 
         .post-illustration:hover {
             transform: scale(1.02);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
         /* Post 2 layout (text followed by gallery grid) */
@@ -947,7 +980,7 @@ select{
 
         .gallery-img:hover {
             transform: scale(1.03);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
         /* Post Action Row */
@@ -983,7 +1016,8 @@ select{
             color: var(--red-dark);
         }
 
-        .action-btn i, .action-btn svg {
+        .action-btn i,
+        .action-btn svg {
             width: 16px;
             height: 16px;
         }
@@ -1013,7 +1047,8 @@ select{
             min-width: 0;
         }
 
-        .section-title-wrap i, .section-title-wrap svg {
+        .section-title-wrap i,
+        .section-title-wrap svg {
             width: 22px;
             height: 22px;
             color: var(--accent);
@@ -1092,7 +1127,8 @@ select{
             color: var(--accent);
         }
 
-        .activity-icon-circle i, .activity-icon-circle svg {
+        .activity-icon-circle i,
+        .activity-icon-circle svg {
             width: 22px;
             height: 22px;
         }
@@ -1205,7 +1241,8 @@ select{
             font-weight: 600;
         }
 
-        .event-attendees i, .event-attendees svg {
+        .event-attendees i,
+        .event-attendees svg {
             width: 12px;
             height: 12px;
         }
@@ -1306,7 +1343,8 @@ select{
             color: var(--orange-dark);
         }
 
-        .resource-icon-box i, .resource-icon-box svg {
+        .resource-icon-box i,
+        .resource-icon-box svg {
             width: 20px;
             height: 20px;
         }
@@ -1372,14 +1410,17 @@ select{
         /* Responsive Breakpoints */
         @media (max-width: 1200px) {
             .topbar {
-                display:flex;
+                display: flex;
             }
+
             .topbar-actions {
                 justify-content: flex-start;
             }
+
             .content-grid {
                 grid-template-columns: 1fr;
             }
+
             .activity-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -1391,23 +1432,34 @@ select{
                 padding: 24px 8px;
                 align-items: center;
             }
-            .logo-title, .logo-subtitle, .nav-item a span, .nav-logout a span, .badge, .logo-img {
+
+            .logo-title,
+            .logo-subtitle,
+            .nav-item a span,
+            .nav-logout a span,
+            .badge,
+            .logo-img {
                 display: none;
             }
+
             .logo-container {
                 margin-bottom: 24px;
             }
+
             .main-wrapper {
                 margin-left: 72px;
                 width: calc(100% - 72px);
                 padding: 16px;
             }
+
             .welcome-banner {
                 padding: 24px;
             }
+
             .banner-text {
                 max-width: 100%;
             }
+
             .banner-image-container {
                 display: none;
             }
@@ -1418,44 +1470,55 @@ select{
                 gap: 12px;
                 margin-bottom: 20px;
             }
+
             .topbar-main {
                 gap: 10px;
             }
+
             .sidebar-toggle-btn {
                 width: 42px;
                 height: 42px;
             }
-            .sidebar-toggle-btn i, .sidebar-toggle-btn svg {
+
+            .sidebar-toggle-btn i,
+            .sidebar-toggle-btn svg {
                 width: 20px;
                 height: 20px;
             }
+
             .search-input {
                 height: 42px;
                 padding: 10px 14px 10px 42px;
                 border-radius: 13px;
                 font-size: 13px;
             }
-            .search-container i, .search-container svg {
+
+            .search-container i,
+            .search-container svg {
                 left: 14px;
                 width: 17px;
                 height: 17px;
             }
+
             .topbar-actions {
                 justify-content: flex-start;
                 gap: 8px;
                 flex-wrap: nowrap;
                 width: 100%;
             }
+
             .icon-btn-badge {
                 width: 42px;
                 height: 42px;
                 flex: 0 0 42px;
             }
+
             .icon-btn-badge .badge-dot {
                 width: 16px;
                 height: 16px;
                 font-size: 9px;
             }
+
             .user-menu-trigger {
                 flex: 1 1 auto;
                 min-width: 0;
@@ -1463,101 +1526,127 @@ select{
                 gap: 8px;
                 padding: 4px 10px 4px 6px;
             }
+
             .user-avatar-circle {
                 width: 34px;
                 height: 34px;
                 font-size: 12px;
             }
+
             .user-details {
                 min-width: 0;
             }
+
             .user-name {
                 font-size: 12.5px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
+
             .user-role {
                 display: none;
             }
-            .user-menu-trigger i, .user-menu-trigger svg {
+
+            .user-menu-trigger i,
+            .user-menu-trigger svg {
                 width: 14px;
                 height: 14px;
                 margin-left: 0;
                 flex-shrink: 0;
             }
+
             .user-dropdown {
                 width: 260px;
                 right: -8px;
             }
+
             .dropdown-header {
                 padding: 16px 20px;
             }
+
             .dropdown-avatar {
                 width: 42px;
                 height: 42px;
                 font-size: 14px;
             }
+
             .dropdown-name {
                 font-size: 13px;
             }
+
             .dropdown-role {
                 font-size: 11px;
             }
+
             .dropdown-item {
                 padding: 10px 20px;
                 font-size: 13px;
             }
-            .dropdown-item i, .dropdown-item svg {
+
+            .dropdown-item i,
+            .dropdown-item svg {
                 width: 16px;
                 height: 16px;
             }
+
             .create-post-card {
                 padding: 16px;
             }
+
             .create-post-input-row {
                 gap: 10px;
             }
+
             .create-post-input-row .avatar {
                 width: 38px;
                 height: 38px;
                 font-size: 13px;
             }
+
             .create-post-field {
                 height: 42px;
                 padding: 10px 14px;
                 font-size: 13px;
             }
+
             .create-post-actions-row {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 10px;
                 padding-top: 12px;
             }
+
             .media-triggers {
                 display: grid;
                 grid-template-columns: repeat(3, minmax(0, 1fr));
                 width: 100%;
                 gap: 6px;
             }
+
             .trigger-btn {
                 gap: 4px;
                 padding: 8px 4px;
                 min-width: 0;
                 font-size: 11.5px;
             }
-            .trigger-btn i, .trigger-btn svg {
+
+            .trigger-btn i,
+            .trigger-btn svg {
                 width: 15px;
                 height: 15px;
             }
+
             .post-submit-btn {
                 width: 100%;
                 padding: 10px 16px;
                 font-size: 13px;
             }
+
             .post-actions-row {
                 gap: 4px;
             }
+
             .action-btn {
                 flex: 1 1 0;
                 justify-content: center;
@@ -1566,19 +1655,24 @@ select{
                 padding: 6px 4px;
                 font-size: 11.5px;
             }
+
             .activity-grid {
                 grid-template-columns: 1fr;
             }
+
             .bottom-split-row {
                 grid-template-columns: 1fr;
             }
+
             .post-gallery-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+
             .post-body-split {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .post-illustration {
                 width: 100%;
                 height: 160px;
@@ -1589,538 +1683,636 @@ select{
             .topbar-main {
                 gap: 8px;
             }
+
             .sidebar-toggle-btn,
             .icon-btn-badge {
                 width: 38px;
                 height: 38px;
             }
+
             .icon-btn-badge {
                 flex-basis: 38px;
             }
+
             .search-input {
                 height: 38px;
                 padding-left: 38px;
                 font-size: 12px;
             }
+
             .user-menu-trigger {
                 height: 38px;
                 padding-right: 8px;
             }
+
             .user-avatar-circle {
                 width: 30px;
                 height: 30px;
                 font-size: 11px;
             }
+
             .user-name {
                 font-size: 12px;
             }
         }
 
-.search-results{
+        .search-results {
 
-position:absolute;
-top:55px;
-left:0;
-width:100%;
-background:#fff;
-border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,.1);
-display:none;
-overflow:hidden;
-z-index:999;
+            position: absolute;
+            top: 55px;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .1);
+            display: none;
+            overflow: hidden;
+            z-index: 999;
 
-}
+        }
 
-.search-item{
+        .search-item {
 
-padding:14px 18px;
-cursor:pointer;
-transition:.3s;
+            padding: 14px 18px;
+            cursor: pointer;
+            transition: .3s;
 
-}
+        }
 
-.search-item:hover{
+        .search-item:hover {
 
-background:#EAF3F4;
+            background: #EAF3F4;
 
-}
+        }
 
-.footer{
-    margin-top:40px;
-    background:#fff;
-    border-top:1px solid #e5e7eb;
-    border-radius:20px 20px 0 0;
-    padding:35px;
-    display:grid;
-    grid-template-columns:1.2fr 1fr 1.5fr 1fr;
-    gap:35px;
-    box-shadow:var(--shadow-md);
-}
+        .footer {
+            margin-top: 40px;
+            background: #fff;
+            border-top: 1px solid #e5e7eb;
+            border-radius: 20px 20px 0 0;
+            padding: 35px;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1.5fr 1fr;
+            gap: 35px;
+            box-shadow: var(--shadow-md);
+        }
 
-.footer h4{
-    color:var(--primary);
-    margin-bottom:15px;
-    font-size:18px;
-}
+        .footer h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
 
-.footer-left{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    gap:10px;
-}
+        .footer-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 10px;
+        }
 
-.footer-logo{
-    width:80px;
-    height:80px;
-    object-fit:contain;
-}
+        .footer-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
 
-.footer-left h3{
-    margin:0;
-    color:var(--primary);
-    font-size:24px;
-    font-weight:700;
-}
+        .footer-left h3 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: 700;
+        }
 
-.footer-left p{
-    margin:0;
-    color:var(--text-muted);
-    font-size:14px;
-    line-height:1.5;
-    max-width:220px;
-}
+        .footer-left p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.5;
+            max-width: 220px;
+        }
 
-.footer-links{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-.footer-links a{
-    color:var(--text-main);
-    text-decoration:none;
-    transition:.3s;
-}
+        .footer-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            transition: .3s;
+        }
 
-.footer-links a:hover{
-    color:var(--primary);
-    padding-left:6px;
-}
+        .footer-links a:hover {
+            color: var(--primary);
+            padding-left: 6px;
+        }
 
-.footer-contact p{
-    display:flex;
-    align-items:flex-start;
-    gap:10px;
-    margin-bottom:14px;
-    color:var(--text-main);
-    line-height:1.6;
-}
+        .footer-contact p {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 14px;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
 
-.footer-contact svg{
-    color:var(--accent);
-    width:18px;
-    height:18px;
-    margin-top:3px;
-    flex-shrink:0;
-}
+        .footer-contact svg {
+            color: var(--accent);
+            width: 18px;
+            height: 18px;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
 
-.social-icons{
-    display:flex;
-    gap:12px;
-}
+        .social-icons {
+            display: flex;
+            gap: 12px;
+        }
 
-.social-icons a{
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    background:var(--primary-light);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    color:var(--primary);
-    transition:.3s;
-}
+        .social-icons a {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary);
+            transition: .3s;
+        }
 
-.social-icons a:hover{
-    background:var(--accent);
-    color:#fff;
-    transform:translateY(-4px);
-}
+        .social-icons a:hover {
+            background: var(--accent);
+            color: #fff;
+            transform: translateY(-4px);
+        }
 
-.footer-bottom{
-    background: var(--primary);
-    color: #fff;
-    padding: 16px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    border-radius: 0 0 20px 20px;
-}
+        .footer-bottom {
+            background: var(--primary);
+            color: #fff;
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-radius: 0 0 20px 20px;
+        }
 
-.footer-bottom-links{
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
+        .footer-bottom-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-.footer-bottom-links a{
-    color: #fff;
-    text-decoration: none;
-    font-size: 14px;
-    transition: .3s;
-}
+        .footer-bottom-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: .3s;
+        }
 
-.footer-bottom-links a:hover{
-    color: var(--accent);
-}
+        .footer-bottom-links a:hover {
+            color: var(--accent);
+        }
 
-.footer-bottom-links span{
-    color: rgba(255,255,255,.6);
-}
+        .footer-bottom-links span {
+            color: rgba(255, 255, 255, .6);
+        }
 
-@media (max-width:768px){
-    .footer-bottom{
-        flex-direction: column;
-        text-align: center;
-    }
+        @media (max-width:992px) {
+            .footer {
+                grid-template-columns: 1fr 1fr;
+                gap: 30px 24px;
+            }
 
-    .footer-bottom-links{
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-}
+            .footer-left {
+                grid-column: 1 / -1;
+                text-align: center;
+                align-items: center;
+                justify-content: center;
+            }
 
-@media(max-width:992px){
+            .footer-links {
+                grid-column: 1 / 2;
+                text-align: left;
+                align-items: flex-start;
+            }
 
-    .footer{
-        grid-template-columns:1fr 1fr;
-    }
+            .footer-contact {
+                grid-column: 2 / 3;
+                text-align: left;
+            }
 
-}
+            .footer-contact p {
+                justify-content: flex-start;
+            }
 
-@media(max-width:768px){
+            .footer-social {
+                grid-column: 1 / -1;
+                text-align: center;
+                align-items: center;
+            }
 
-    .footer{
-        grid-template-columns:1fr;
-        text-align:center;
-    }
+            .footer-social h4 {
+                text-align: center;
+            }
 
-    .footer-left{
-        justify-content:center;
-    }
+            .social-icons {
+                justify-content: center;
+            }
+        }
 
-    .footer-contact p{
-        justify-content:center;
-    }
+        @media (max-width:768px) {
+            .footer {
+                grid-template-columns: 1fr 1fr;
+                gap: 25px 16px;
+                padding: 25px 20px;
+            }
 
-    .social-icons{
-        justify-content:center;
-    }
+            .footer-left {
+                grid-column: 1 / -1;
+                text-align: center;
+                align-items: center;
+                justify-content: center;
+            }
 
-    .footer-links{
-        align-items:center;
-    }
+            .footer-links {
+                grid-column: 1 / 2;
+                text-align: left;
+                align-items: flex-start;
+            }
 
-}
+            .footer-contact {
+                grid-column: 2 / 3;
+                text-align: left;
+            }
 
-body{
-    display:flex;
-    flex-direction:column;
-    min-height:100vh;
-}
+            .footer-contact p {
+                justify-content: flex-start;
+                font-size: 13px;
+                word-break: break-word;
+            }
 
-.dashboard-container{
-    flex:1;
-}
+            .footer-links a {
+                font-size: 13px;
+            }
 
-.main-wrapper{
-    min-height:100vh;
-}
+            .footer-social {
+                grid-column: 1 / -1;
+                text-align: center;
+                align-items: center;
+            }
 
-.footer,
-.footer-bottom{
-    width:calc(100% - 272px);
-    margin-left:272px;
-}
+            .footer-social h4 {
+                text-align: center;
+            }
 
-.footer{
-    margin-top:50px;
-}
+            .social-icons {
+                justify-content: center;
+            }
 
-body.sidebar-collapsed .footer,
-body.sidebar-collapsed .footer-bottom{
-    width:100%;
-    margin-left:0;
-}
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+                padding: 16px 20px;
+            }
 
-@media (max-width:900px){
-    .footer,
-    .footer-bottom{
-        width:calc(100% - 72px);
-        margin-left:72px;
-    }
+            .footer-bottom-links {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
 
-    body.sidebar-collapsed .footer,
-    body.sidebar-collapsed .footer-bottom{
-        width:100%;
-        margin-left:0;
-    }
-}
+        @media (max-width:480px) {
+            .footer {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px 12px;
+                padding: 20px 14px;
+            }
 
-/* ==========================================================
+            .footer h4 {
+                font-size: 15px;
+                margin-bottom: 10px;
+            }
+
+            .footer-links a,
+            .footer-contact p {
+                font-size: 12px;
+                line-height: 1.4;
+            }
+
+            .footer-contact p {
+                gap: 6px;
+                margin-bottom: 10px;
+            }
+
+            .footer-contact svg {
+                width: 14px;
+                height: 14px;
+                margin-top: 2px;
+            }
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            flex: 1;
+        }
+
+        .main-wrapper {
+            min-height: 100vh;
+        }
+
+        .footer,
+        .footer-bottom {
+            width: calc(100% - 272px);
+            margin-left: 272px;
+        }
+
+        .footer {
+            margin-top: 50px;
+        }
+
+        body.sidebar-collapsed .footer,
+        body.sidebar-collapsed .footer-bottom {
+            width: 100%;
+            margin-left: 0;
+        }
+
+        @media (max-width:900px) {
+
+            .footer,
+            .footer-bottom {
+                width: calc(100% - 72px);
+                margin-left: 72px;
+            }
+
+            body.sidebar-collapsed .footer,
+            body.sidebar-collapsed .footer-bottom {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+
+        /* ==========================================================
    EVENT PROMOTION POPUP
 ========================================================== */
 
-.event-popup-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.55);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:24px;
-    opacity:0;
-    visibility:hidden;
-    transition:.35s ease;
-    z-index: 999999999 !important;
-}
+        .event-popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            opacity: 0;
+            visibility: hidden;
+            transition: .35s ease;
+            z-index: 999999999 !important;
+        }
 
-.event-popup-overlay.show{
-    opacity:1;
-    visibility:visible;
-}
+        .event-popup-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
 
-.event-popup{
-    width:100%;
-    max-width:920px;
-    background:#fff;
-    border-radius:24px;
-    overflow:hidden;
-    box-shadow:0 25px 70px rgba(0,0,0,.25);
-    transform:scale(.92);
-    transition:.35s ease;
-    position: relative;
-    z-index: 999999999 !important;
-}
+        .event-popup {
+            width: 100%;
+            max-width: 920px;
+            background: #fff;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, .25);
+            transform: scale(.92);
+            transition: .35s ease;
+            position: relative;
+            z-index: 999999999 !important;
+        }
 
-.event-popup-overlay.show .event-popup{
-    transform:scale(1);
-}
+        .event-popup-overlay.show .event-popup {
+            transform: scale(1);
+        }
 
-/* close */
+        /* close */
 
-.event-popup-close{
-    position:absolute;
-    top:18px;
-    right:18px;
-    width:42px;
-    height:42px;
-    border:none;
-    border-radius:50%;
-    background:rgba(255,255,255,.95);
-    cursor:pointer;
-    font-size:18px;
-    box-shadow:0 10px 25px rgba(0,0,0,.15);
-    transition:.25s;
-    z-index: 999999999 !important;
-    pointer-events: auto;
-    
-}
+        .event-popup-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .95);
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .15);
+            transition: .25s;
+            z-index: 999999999 !important;
+            pointer-events: auto;
 
-.event-popup-close:hover{
-    transform:rotate(90deg);
-    background:#fff;
-}
+        }
 
-/* body */
+        .event-popup-close:hover {
+            transform: rotate(90deg);
+            background: #fff;
+        }
 
-.event-popup-body{
-    display:flex;
-    gap:30px;
-    padding:30px;
-}
+        /* body */
 
-/* poster */
+        .event-popup-body {
+            display: flex;
+            gap: 30px;
+            padding: 30px;
+        }
 
-.event-poster{
-    flex:0 0 360px;
-}
+        /* poster */
 
-.event-poster img{
-    width:100%;
-    border-radius:18px;
-    display:block;
-    box-shadow:0 15px 35px rgba(0,0,0,.18);
-}
+        .event-poster {
+            flex: 0 0 360px;
+        }
 
-/* details */
+        .event-poster img {
+            width: 100%;
+            border-radius: 18px;
+            display: block;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .18);
+        }
 
-.event-details{
-    flex:1;
-}
+        /* details */
 
-.event-badge{
-    display:inline-flex;
-    align-items:center;
-    padding:8px 18px;
-    border-radius:100px;
-    background:#D9AE29;
-    color:#00381F;
-    font-weight:700;
-    font-size:.9rem;
-    margin-bottom:18px;
-}
+        .event-details {
+            flex: 1;
+        }
 
-.event-details h2{
-    font-size:2rem;
-    line-height:1.3;
-    color:#00381F;
-    margin-bottom:18px;
-}
+        .event-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 18px;
+            border-radius: 100px;
+            background: #D9AE29;
+            color: #00381F;
+            font-weight: 700;
+            font-size: .9rem;
+            margin-bottom: 18px;
+        }
 
-.event-meta{
-    display:flex;
-    gap:20px;
-    flex-wrap:wrap;
-    margin-bottom:18px;
-}
+        .event-details h2 {
+            font-size: 2rem;
+            line-height: 1.3;
+            color: #00381F;
+            margin-bottom: 18px;
+        }
 
-.meta-item{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    color:#666;
-    font-weight:600;
-}
+        .event-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
 
-.meta-item i{
-    color:#D9AE29;
-}
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            font-weight: 600;
+        }
 
-.event-details p{
-    color:#666;
-    line-height:1.8;
-    margin-bottom:28px;
-}
+        .meta-item i {
+            color: #D9AE29;
+        }
 
-/* buttons */
+        .event-details p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 28px;
+        }
 
-.event-actions{
-    display:flex;
-    gap:14px;
-    flex-wrap:wrap;
-    margin-bottom:22px;
-}
+        /* buttons */
 
-.btn-register,
-.btn-details{
-    padding:14px 24px;
-    border-radius:12px;
-    text-decoration:none;
-    font-weight:700;
-    transition:.25s;
-}
+        .event-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+        }
 
-.btn-register{
-    background:#00381F;
-    color:#fff;
-}
+        .btn-register,
+        .btn-details {
+            padding: 14px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: .25s;
+        }
 
-.btn-register:hover{
-    transform:translateY(-2px);
-    background:#02502d;
-}
+        .btn-register {
+            background: #00381F;
+            color: #fff;
+        }
 
-.btn-details{
-    background:#D9AE29;
-    color:#00381F;
-}
+        .btn-register:hover {
+            transform: translateY(-2px);
+            background: #02502d;
+        }
 
-.btn-details:hover{
-    transform:translateY(-2px);
-}
+        .btn-details {
+            background: #D9AE29;
+            color: #00381F;
+        }
 
-/* checkbox */
+        .btn-details:hover {
+            transform: translateY(-2px);
+        }
 
-.dont-show{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    cursor:pointer;
-    font-size:.95rem;
-    color:#666;
-}
+        /* checkbox */
 
-.dont-show input{
-    width:18px;
-    height:18px;
-    accent-color:#00381F;
-}
+        .dont-show {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: .95rem;
+            color: #666;
+        }
 
-/* mobile */
+        .dont-show input {
+            width: 18px;
+            height: 18px;
+            accent-color: #00381F;
+        }
 
-@media(max-width:900px){
+        /* mobile */
 
-.event-popup{
-    max-width:96%;
-}
+        @media(max-width:900px) {
 
-.event-popup-body{
-    flex-direction:column;
-    padding:22px;
-}
+            .event-popup {
+                max-width: 96%;
+            }
 
-.event-poster{
-    flex:none;
-    max-width:260px;
-    margin:auto;
-}
+            .event-popup-body {
+                flex-direction: column;
+                padding: 22px;
+            }
 
-.event-details h2{
-    font-size:1.5rem;
-}
+            .event-poster {
+                flex: none;
+                max-width: 260px;
+                margin: auto;
+            }
 
-.event-actions{
-    flex-direction:column;
-}
+            .event-details h2 {
+                font-size: 1.5rem;
+            }
 
-.btn-register,
-.btn-details{
-    width:100%;
-    text-align:center;
-}
+            .event-actions {
+                flex-direction: column;
+            }
 
-}
+            .btn-register,
+            .btn-details {
+                width: 100%;
+                text-align: center;
+            }
 
-@media(max-width:600px){
+        }
 
-.event-popup-body{
-    padding:18px;
-}
+        @media(max-width:600px) {
 
-.event-details h2{
-    font-size:1.25rem;
-}
+            .event-popup-body {
+                padding: 18px;
+            }
 
-.meta-item{
-    width:100%;
-}
+            .event-details h2 {
+                font-size: 1.25rem;
+            }
 
-.event-popup-close{
-    width:36px;
-    height:36px;
-}
+            .meta-item {
+                width: 100%;
+            }
 
-}
+            .event-popup-close {
+                width: 36px;
+                height: 36px;
+            }
+
+        }
     </style>
 </head>
+
 <body>
 
     <div class="dashboard-container">
@@ -2141,16 +2333,18 @@ body.sidebar-collapsed .footer-bottom{
                     <a href="mentors.html"><i data-lucide="graduation-cap"></i> <span>Mentors</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="events\Events.html"><i data-lucide="calendar"></i> <span>Events</span></a>
+                    <a href="events/Events.html"><i data-lucide="calendar"></i> <span>Events</span></a>
                 </li>
                 <li class="nav-item">
                     <a href="resources.html"><i data-lucide="book-open"></i> <span>Resources</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="message.html"><i data-lucide="message-square"></i> <span>Messages</span><span class="badge">3</span></a>
+                    <a href="message.html"><i data-lucide="message-square"></i> <span>Messages</span><span
+                            class="badge">3</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="notifications.html"><i data-lucide="bell"></i> <span>Notifications</span><span class="badge">5</span></a>
+                    <a href="notifications.html"><i data-lucide="bell"></i> <span>Notifications</span><span
+                            class="badge">5</span></a>
                 </li>
                 <li class="nav-item">
                     <a href="Profile.html"><i data-lucide="user"></i> <span>Profile</span></a>
@@ -2167,39 +2361,40 @@ body.sidebar-collapsed .footer-bottom{
 
         <!-- Main Workspace Area -->
         <div class="main-wrapper">
-            
+
             <!-- Topbar Header -->
             <header class="topbar">
                 <div class="topbar-main">
                     <button class="sidebar-toggle-btn" id="sidebarToggle" aria-label="Toggle Sidebar">
                         <i data-lucide="menu"></i>
                     </button>
-                    
+
                     <div class="search-container">
                         <i data-lucide="search"></i>
                         <input type="text" class="search-input" placeholder="Search mentors, events...">
-                    
-                        
+
+
                     </div>
                 </div>
-                
+
                 <div class="topbar-actions">
                     <!-- Notification Bell Button -->
-                    <button class="icon-btn-badge" id="notificationBell" aria-label="Notifications" onclick="toggleNotificationPanel(event)">
+                    <button class="icon-btn-badge" id="notificationBell" aria-label="Notifications"
+                        onclick="toggleNotificationPanel(event)">
                         <i data-lucide="bell"></i>
                         <span class="badge-dot" id="notificationCount">0</span>
                     </button>
-                    
+
                     <!-- Messages Bubble Button -->
                     <button class="icon-btn-badge" aria-label="Messages">
                         <i data-lucide="message-square"></i>
                         <span class="badge-dot">3</span>
-                    </button>                   
+                    </button>
                     <!-- User Avatar trigger -->
                     <div class="user-menu-trigger" id="userMenuTrigger">
-                        <div class="user-avatar-circle">GP</div>
+                        <div class="user-avatar-circle">P</div>
                         <div class="user-details">
-                            <span class="user-name">Gyan Prakash</span>
+                            <span class="user-name">Pragya <span class="user-tier-badge">💎 ✨ SuperDiamond</span></span>
                             <span class="user-role">Student</span>
                         </div>
                         <i data-lucide="chevron-down"></i>
@@ -2208,37 +2403,39 @@ body.sidebar-collapsed .footer-bottom{
                     <!-- User Dropdown Menu -->
                     <div class="user-dropdown" id="userDropdown">
                         <div class="dropdown-header">
-                            <div class="dropdown-avatar">GP</div>
+                            <div class="dropdown-avatar">P</div>
                             <div class="dropdown-user-info">
-                                <span class="dropdown-name">Gyan Prakash</span>
+                                <span class="dropdown-name">Pragya</span>
+                                <div class="dropdown-streak-badge">Super Diamond 💎✨ · 🔥 36–Day Streak</div>
+                                <div class="dropdown-package">Master 300–Hr YTT &amp; Spine Therapy</div>
                                 <span class="dropdown-role">Student</span>
                             </div>
                         </div>
                         <div class="dropdown-divider"></div>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="Profile.html" class="dropdown-item">
+                                <a href="Profile.html" class="dropdown-item" id="dropdownProfileLink">
                                     <i data-lucide="user"></i>
                                     <span>My Profile</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="setting.html" class="dropdown-item">
+                                <a href="setting.html" class="dropdown-item" id="dropdownSettingsLink">
                                     <i data-lucide="settings"></i>
                                     <span>Settings</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="help-support.html" class="dropdown-item">
+                                <a href="help-support.html" class="dropdown-item" id="dropdownHelpLink">
                                     <i data-lucide="help-circle"></i>
-                                    <span>Help & Support</span>
+                                    <span>Help &amp; Support</span>
                                 </a>
                             </li>
                         </ul>
                         <div class="dropdown-divider"></div>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="index.html" class="dropdown-item logout-item">
+                                <a href="index.html" class="dropdown-item logout-item" id="dropdownLogoutLink">
                                     <i data-lucide="log-out"></i>
                                     <span>Logout</span>
                                 </a>
@@ -2250,14 +2447,14 @@ body.sidebar-collapsed .footer-bottom{
 
             <!-- Dashboard Content Grid -->
             <main class="content-grid">
-                
+
                 <!-- Center column panel -->
                 <div class="center-column">
-                    
+
                     <!-- Welcome Hero Banner -->
                     <section class="welcome-banner">
                         <div class="banner-text">
-                            <h2 class="banner-title">Welcome Back, <br><span id="heroBannerName">Gyan!</span></h2>
+                            <h2 class="banner-title">Welcome Back, <br><span id="heroBannerName">Pragya!</span></h2>
                             <p class="banner-desc">Continue learning, connect with mentors, and grow your community.</p>
                         </div>
                         <div class="banner-image-container">
@@ -2265,11 +2462,36 @@ body.sidebar-collapsed .footer-bottom{
                         </div>
                     </section>
 
+                    <!-- Daily Sadhana & Streak Milestone Tracker -->
+                    <section class="dashboard-card sadhana-tracker-card" style="background: linear-gradient(135deg, #00381F 0%, #00522E 100%); color: #fff; border: 1px solid rgba(217, 174, 41, 0.4); padding: 20px 24px; border-radius: 18px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0, 56, 31, 0.18);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <div style="width: 52px; height: 52px; border-radius: 14px; background: rgba(217, 174, 41, 0.18); border: 1px solid #D9AE29; display: flex; align-items: center; justify-content: center; font-size: 26px;">
+                                    🔥
+                                </div>
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <h4 style="color: #fff; font-size: 17px; margin: 0; font-family: 'Outfit', sans-serif; font-weight: 700;">Daily Sadhana &amp; Streak</h4>
+                                        <span id="sadhanaBadgeDisplay" style="font-size: 11px; background: rgba(217, 174, 41, 0.25); color: #D9AE29; border: 1px solid #D9AE29; padding: 2px 8px; border-radius: 10px; font-weight: 700;">💎 Super Diamond</span>
+                                    </div>
+                                    <p style="margin: 4px 0 0 0; color: rgba(255, 255, 255, 0.85); font-size: 13px;">
+                                        Current Streak: <strong id="sadhanaStreakCount" style="color: #D9AE29; font-size: 15px;">36 Days Active</strong> • 4 more days to next tier reward!
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                <button id="btnCheckinSadhana" onclick="openSadhanaModal()" style="background: linear-gradient(135deg, #D9AE29 0%, #F3CA40 100%); color: #00381F; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; font-size: 13.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(217, 174, 41, 0.35); transition: all 0.25s ease;">
+                                    <span>✨ Log Today's Practice</span>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- Create Post Widget -->
                     <section class="dashboard-card create-post-card">
                         <div class="create-post-input-row">
-                            <div class="avatar" id="dashboardPostAvatar">GP</div>
-                            <input type="text" class="create-post-field" placeholder="What's on your mind?">
+                            <div class="avatar" id="dashboardPostAvatar">P</div>
+                            <input type="text" class="create-post-field" id="dashboardPostInput" placeholder="What's on your mind?">
                         </div>
                         <div class="create-post-actions-row">
                             <div class="media-triggers">
@@ -2277,7 +2499,7 @@ body.sidebar-collapsed .footer-bottom{
                                 <button class="trigger-btn video-btn" id="videoBtn"><i data-lucide="video"></i> Video</button>
                                 <button class="trigger-btn doc-btn" id="documentBtn"><i data-lucide="file-text"></i> Document</button>
                             </div>
-                            <button class="post-submit-btn">Post</button>
+                            <button class="post-submit-btn" onclick="submitDashboardPost()">Post</button>
                         </div>
                         <input type="file" id="imageInput" accept="image/*" multiple hidden>
                         <input type="file" id="videoInput" accept="video/*" hidden>
@@ -2306,6 +2528,54 @@ body.sidebar-collapsed .footer-bottom{
                         <div class="mentors-list" id="mentorSuggestions"></div>
                     </section>
 
+                    <!-- Today's Classes Card (Matching Screenshot 1) -->
+                    <section class="dashboard-card" style="margin-bottom: 20px;">
+                        <div class="section-header" style="margin-bottom: 14px;">
+                            <div class="section-title-wrap">
+                                <i data-lucide="clock" style="color: var(--primary);"></i>
+                                <div>
+                                    <h3 class="section-title" style="margin: 0; font-size: 15px;">Today's Classes</h3>
+                                    <span style="font-size: 11.5px; color: var(--text-muted);">Sun August, 23</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border);">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #3182CE; flex-shrink: 0;"></span>
+                                    <div>
+                                        <div style="font-size: 13.5px; font-weight: 700; color: var(--text-main);">Spine Mobility</div>
+                                        <div style="font-size: 11px; color: var(--text-muted);">7:00am &ndash; 08:00am &bull; Master Aarya</div>
+                                    </div>
+                                </div>
+                                <a href="events/EventDetails.html?id=evt_1" style="background: var(--primary-light); color: var(--primary); font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 8px; text-decoration: none;">Join</a>
+                            </div>
+
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border);">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #3182CE; flex-shrink: 0;"></span>
+                                    <div>
+                                        <div style="font-size: 13.5px; font-weight: 700; color: var(--text-main);">Yog Balance</div>
+                                        <div style="font-size: 11px; color: var(--text-muted);">12:30pm &ndash; 01:30pm &bull; Angela</div>
+                                    </div>
+                                </div>
+                                <a href="events/EventDetails.html?id=evt_2" style="background: var(--primary-light); color: var(--primary); font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 8px; text-decoration: none;">Join</a>
+                            </div>
+
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border);">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #3182CE; flex-shrink: 0;"></span>
+                                    <div>
+                                        <div style="font-size: 13.5px; font-weight: 700; color: var(--text-main);">Arm Balance Flow</div>
+                                        <div style="font-size: 11px; color: var(--text-muted);">06:00pm &ndash; 07:00pm &bull; Dr. Akhilesh</div>
+                                    </div>
+                                </div>
+                                <a href="events/EventDetails.html?id=evt_3" style="background: var(--primary-light); color: var(--primary); font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 8px; text-decoration: none;">Join</a>
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- Upcoming Events Card -->
                     <section class="dashboard-card">
                         <div class="section-header">
@@ -2315,17 +2585,18 @@ body.sidebar-collapsed .footer-bottom{
                             </div>
                             <a href="events/Calender.html" class="view-all-link">View All</a>
                         </div>
-                        
+
                         <div class="events-list" id="dashboardUpcomingEvents">
                         </div>
                     </section>
-                    
+
                     <!-- Two Split Cards: Resources & Announcements -->
                     <div class="bottom-split-row">
                         <!-- Resources Card -->
                         <section class="dashboard-card split-card">
                             <div class="section-header" style="margin-bottom: 12px;">
-                                <span class="section-title" style="font-size: 13.5px; font-weight: 700;">Latest Resources</span>
+                                <span class="section-title" style="font-size: 13.5px; font-weight: 700;">Latest
+                                    Resources</span>
                                 <a href="resources.html" class="view-all-link" style="font-size: 11px;">View All</a>
                             </div>
 
@@ -2362,96 +2633,22 @@ body.sidebar-collapsed .footer-bottom{
                                 </div>
                             </div>
                         </section>
-
-                        <!-- Announcements Card -->
-                        <section class="dashboard-card split-card">
-                            <div class="section-header" style="margin-bottom: 12px; justify-content: flex-start; gap: 6px;">
-                                <i data-lucide="megaphone" style="width: 16px; height: 16px; color: var(--text-main);"></i>
-                                <span class="section-title" style="font-size: 13.5px; font-weight: 700;">Announcements</span>
-                            </div>
-
-                            <div class="announcements-list">
-                                <!-- Announce 1 -->
-                                <div class="announcement-item">
-                                    <div class="announcement-bullet"></div>
-                                    <div class="announcement-info">
-                                        <span class="announcement-title">Holiday Notice</span>
-                                        <span class="announcement-date">May 20, 2024</span>
-                                    </div>
-                                </div>
-                                <!-- Announce 2 -->
-                                <div class="announcement-item">
-                                    <div class="announcement-bullet"></div>
-                                    <div class="announcement-info">
-                                        <span class="announcement-title">Workshop Registration Open</span>
-                                        <span class="announcement-date">May 18, 2024</span>
-                                    </div>
-                                </div>
-                                <!-- Announce 3 -->
-                                <div class="announcement-item">
-                                    <div class="announcement-bullet"></div>
-                                    <div class="announcement-info">
-                                        <span class="announcement-title">New Mentor Added</span>
-                                        <span class="announcement-date">May 15, 2024</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
                     </div>
 
                     <!-- Recent Activity Section -->
                     <section class="dashboard-card recent-activity-card">
-                    <div class="section-header">
-                        <div class="section-title-wrap">
-                            <i data-lucide="activity"></i>
-                            <h3 class="section-title">Recent Activity</h3>
+                        <div class="section-header">
+                            <div class="section-title-wrap">
+                                <i data-lucide="activity"></i>
+                                <h3 class="section-title">Recent Activity</h3>
+                            </div>
+                            <a href="Profile.html" class="view-all-link">View All</a>
                         </div>
-                        <a href="Profile.html" class="view-all-link">View All</a>
-                    </div>
 
-                    <div class="activity-grid">
-                        <!-- Activity 1 -->
-                        <div class="activity-item">
-                            <div class="activity-icon-circle primary-icon">
-                                <i data-lucide="users"></i>
-                            </div>
-                            <div class="activity-details">
-                                <span>You joined <strong>Mindfulness Group</strong></span>
-                                <span class="time">Yesterday</span>
-                            </div>
+                        <div class="activity-grid" id="dashboardRecentActivities">
+                            <!-- Dynamic activities rendered here -->
                         </div>
-                        <!-- Activity 2 -->
-                        <div class="activity-item">
-                            <div class="activity-icon-circle primary-icon">
-                                <i data-lucide="check-circle-2"></i>
-                            </div>
-                            <div class="activity-details">
-                                <span><strong>Completed</strong> 5-Day Challenge</span>
-                                <span class="time">2 days ago</span>
-                            </div>
-                        </div>
-                        <!-- Activity 3 -->
-                        <div class="activity-item">
-                            <div class="activity-icon-circle primary-icon">
-                                <i data-lucide="calendar"></i>
-                            </div>
-                            <div class="activity-details">
-                                <span><strong>Attended</strong> Yoga Workshop</span>
-                                <span class="time">3 days ago</span>
-                            </div>
-                        </div>
-                        <!-- Activity 4 -->
-                        <div class="activity-item">
-                            <div class="activity-icon-circle accent-icon">
-                                <i data-lucide="star"></i>
-                            </div>
-                            <div class="activity-details">
-                                <span><strong>Earned</strong> Meditation Badge</span>
-                                <span class="time">5 days ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                    </section>
 
                 </div>
 
@@ -2461,346 +2658,393 @@ body.sidebar-collapsed .footer-bottom{
 
     <footer class="footer">
 
-    <!-- Left -->
-    <div class="footer-left">
+        <!-- Left -->
+        <div class="footer-left">
 
-    <img src="assets/logo.png" alt="Pragya Connect Logo" class="footer-logo">
+            <img src="assets/logo.png" alt="Pragya Connect Logo" class="footer-logo">
 
-    <h3>Pragya Connect</h3>
+            <h3>Pragya Connect</h3>
 
-    <p>Community &amp; Mentorship Portal</p>
+            <p>Community &amp; Mentorship Portal</p>
 
-</div>
-
-    <!-- Quick Links -->
-    <div class="footer-links">
-
-        <h4>Quick Links</h4>
-
-        <a href="../dashboard.html">Dashboard</a>
-        <a href="../CommunityFeed.html">Community</a>
-        <a href="events\Events.html">Events</a>
-        <a href="../Profile.html">Profile</a>
-        <a href="/setting.html">Settings</a>
-
-    </div>
-
-    <!-- Contact -->
-    <div class="footer-contact">
-
-        <h4>Contact Us</h4>
-
-        <p>
-            <i data-lucide="phone"></i>
-            +852 6708 2503
-        </p>
-
-        <p>
-            <i data-lucide="mail"></i>
-            info@pyshk.com
-        </p>
-
-        <p>
-            <i data-lucide="map-pin"></i>
-            1303-04, 13/F Tak Woo House,<br>
-            1-3 Wo On Lane, Central,<br>
-            Hong Kong
-        </p>
-
-    </div>
-
-    <!-- Social -->
-    <div class="footer-social">
-        <h4>Follow Us</h4>
-        <div class="social-icons">
-            <a href="https://www.facebook.com/pragyahk"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://www.instagram.com/pragyahk"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.linkedin.com/company/pyshk/"><i class="fab fa-linkedin-in"></i></a>
-            <a href="https://www.youtube.com/@pys_hk"><i class="fab fa-youtube"></i></a>
-            <a href="https://x.com/pragyahk"><i class="fab fa-x-twitter"></i></a>
         </div>
 
-    </div>
-</footer>
+        <!-- Quick Links -->
+        <div class="footer-links">
 
-<div class="footer-bottom">
-    <span>&copy; 2026 Pragya Connect. All Rights Reserved.</span>
+            <h4>Quick Links</h4>
 
-    <div class="footer-bottom-links">
-        <a href="privacy-policy.html">Privacy Policy</a>
-        <span>|</span>
-        <a href="../Pragya Connect/terms-and-conditions.html">Terms &amp; Conditions</a>
-    </div>
-</div>  
+            <a href="dashboard.html">Dashboard</a>
+            <a href="CommunityFeed.html">Community</a>
+            <a href="events/Events.html">Events</a>
+            <a href="resources.html">Resources</a>
+            <a href="mentors.html">Mentors</a>
+            <a href="Profile.html">Profile</a>
+            <a href="setting.html">Settings</a>
 
-<div class="event-popup-overlay" id="eventPopupOverlay" aria-hidden="true">
-    <div class="event-popup" role="dialog" aria-modal="true" aria-labelledby="eventTitle">
-        <button class="event-popup-close" id="closeEventPopup" type="button" aria-label="Close event popup">&times;</button>
-        <div class="event-popup-body">
-            <div class="event-poster">
-                <img id="eventPoster" src="" alt="Upcoming event poster">
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-contact">
+
+            <h4>Contact Us</h4>
+
+            <p>
+                <i data-lucide="phone"></i>
+                +852 6708 2503
+            </p>
+
+            <p>
+                <i data-lucide="mail"></i>
+                info@pyshk.com
+            </p>
+
+            <p>
+                <i data-lucide="map-pin"></i>
+                1303-04, 13/F Tak Woo House,<br>
+                1-3 Wo On Lane, Central,<br>
+                Hong Kong
+            </p>
+
+        </div>
+
+        <!-- Social -->
+        <div class="footer-social">
+            <h4>Follow Us</h4>
+            <div class="social-icons">
+                <a href="https://www.facebook.com/pragyahk"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/pragyahk"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/company/pyshk/"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.youtube.com/@pys_hk"><i class="fab fa-youtube"></i></a>
+                <a href="https://x.com/pragyahk"><i class="fab fa-x-twitter"></i></a>
             </div>
-            <div class="event-details">
-                <span class="event-badge">Upcoming Event</span>
-                <h2 id="eventTitle"></h2>
-                <div class="event-meta">
-                    <div class="meta-item">
-                        <i data-lucide="calendar"></i>
-                        <span id="eventDate"></span>
-                    </div>
-                    <div class="meta-item">
-                        <i data-lucide="map-pin"></i>
-                        <span id="eventVenue"></span>
-                    </div>
+
+        </div>
+    </footer>
+
+    <div class="footer-bottom">
+        <span>&copy; 2026 Pragya Connect. All Rights Reserved.</span>
+
+        <div class="footer-bottom-links">
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <span>|</span>
+            <a href="../Pragya Connect/terms-and-conditions.html">Terms &amp; Conditions</a>
+        </div>
+    </div>
+
+    <div class="event-popup-overlay" id="eventPopupOverlay" aria-hidden="true">
+        <div class="event-popup" role="dialog" aria-modal="true" aria-labelledby="eventTitle">
+            <button class="event-popup-close" id="closeEventPopup" type="button"
+                aria-label="Close event popup">&times;</button>
+            <div class="event-popup-body">
+                <div class="event-poster">
+                    <img id="eventPoster" src="" alt="Upcoming event poster">
                 </div>
-                <p id="eventDescription"></p>
-                <div class="event-actions">
-                    <a class="btn-register" id="registerBtn" href="#">Register</a>
-                    <a class="btn-details" id="detailsBtn" href="#">Details</a>
+                <div class="event-details">
+                    <span class="event-badge">Upcoming Event</span>
+                    <h2 id="eventTitle"></h2>
+                    <div class="event-meta">
+                        <div class="meta-item">
+                            <i data-lucide="calendar"></i>
+                            <span id="eventDate"></span>
+                        </div>
+                        <div class="meta-item">
+                            <i data-lucide="map-pin"></i>
+                            <span id="eventVenue"></span>
+                        </div>
+                    </div>
+                    <p id="eventDescription"></p>
+                    <div class="event-actions">
+                        <a class="btn-register" id="registerBtn" href="#">Register</a>
+                        <a class="btn-details" id="detailsBtn" href="#">Details</a>
+                    </div>
+                    <label class="dont-show">
+                        <input type="checkbox" id="dontShowToday">
+                        <span>Don't show again today</span>
+                    </label>
                 </div>
-                <label class="dont-show">
-                    <input type="checkbox" id="dontShowToday">
-                    <span>Don't show again today</span>
-                </label>
             </div>
         </div>
     </div>
-</div>
 
-    
-<script src="common.js"></script>
-<script src="assets/js/app-service.js"></script>
-<script src="assets/js/admin-sync.js"></script>
-<script src="events/js/data.js"></script>
-<script src="events/js/mentor.js"></script>
-<script src="events/js/search.js"></script>
+
+    <script src="common.js"></script>
+    <script src="assets/js/app-service.js"></script>
+    <script src="assets/js/admin-sync.js"></script>
+    <script src="events/js/data.js"></script>
+    <script src="events/js/mentor.js"></script>
+    <script src="events/js/search.js"></script>
 
     <script>
         // Initialize Lucide Icons
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
 
-        // Load user name from localStorage and update top bar
+        // Load user name from localStorage and update top bar with Diamond / Super Diamond Badge
         function loadUserName() {
-            const savedUserName = localStorage.getItem("userName");
-            if (savedUserName) {
-                const topBarName = document.querySelector('.user-name');
-                const dropdownName = document.querySelector('.dropdown-name');
-                if (topBarName) {
-                    topBarName.innerText = savedUserName;
-                }
-                if (dropdownName) {
-                    dropdownName.innerText = savedUserName;
-                }
-                
-                // Update hero banner name with first name
-                const firstName = savedUserName.split(' ')[0];
-                const heroBannerName = document.getElementById('heroBannerName');
-                if (heroBannerName) {
-                    heroBannerName.innerText = firstName + '!';
-                }
+            const savedUserName = localStorage.getItem("userName") || "Pragya";
+            const userBadge = localStorage.getItem("userBadge") || (savedUserName.toLowerCase().includes("pragya") ? "Super Diamond 💎✨" : "Diamond Member 💎");
+            const userStreak = localStorage.getItem("userStreak") || "18";
+            const userPackage = localStorage.getItem("userPackage") || "200-Hour Yoga Teacher Training";
+
+            const topBarName = document.querySelector('.user-name');
+            const dropdownName = document.querySelector('.dropdown-name');
+            if (topBarName) {
+                topBarName.innerHTML = `${savedUserName} <span style="font-size:10px; background:linear-gradient(135deg, #00381F, #00522E); color:#D9AE29; border:1px solid #D9AE29; padding:2px 6px; border-radius:10px; font-weight:700; margin-left:4px;">${userBadge.includes('Super') ? '💎✨ Super Diamond' : '💎 Diamond'}</span>`;
             }
+            if (dropdownName) {
+                dropdownName.innerHTML = `${savedUserName} <div style="font-size:11px; color:#D9AE29; font-weight:700; margin-top:2px;">${userBadge} · 🔥 ${userStreak}-Day Streak</div><div style="font-size:10px; color:var(--text-muted);">${userPackage}</div>`;
+            }
+
+            // Update hero banner name with first name
+            const firstName = savedUserName.split(' ')[0];
+            const heroBannerName = document.getElementById('heroBannerName');
+            if (heroBannerName) {
+                heroBannerName.innerText = firstName + '!';
+            }
+
+            // Update Sadhana tracker widget
+            const sadhanaStreakCount = document.getElementById('sadhanaStreakCount');
+            const sadhanaBadgeDisplay = document.getElementById('sadhanaBadgeDisplay');
+            if (sadhanaStreakCount) {
+                sadhanaStreakCount.innerText = `${userStreak} Days Active`;
+            }
+            if (sadhanaBadgeDisplay) {
+                sadhanaBadgeDisplay.innerText = userBadge;
+            }
+
+            const postAvatar = document.getElementById('dashboardPostAvatar');
+            if (postAvatar) {
+                const initials = savedUserName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'PR';
+                postAvatar.textContent = initials;
+            }
+        }
+
+        // Daily Sadhana Check-in Action
+        function handleSadhanaCheckin() {
+            const currentStreak = parseInt(localStorage.getItem("userStreak") || "36", 10);
+            const newStreak = currentStreak + 1;
+            localStorage.setItem("userStreak", newStreak.toString());
+
+            const btn = document.getElementById("btnCheckinSadhana");
+            if (btn) {
+                btn.innerHTML = `<span>✅ Practice Logged (${newStreak}d)</span>`;
+                btn.style.background = "#00522E";
+                btn.style.color = "#D9AE29";
+                btn.style.border = "1px solid #D9AE29";
+                btn.disabled = true;
+            }
+
+            // Save to recent activities
+            let activities = JSON.parse(localStorage.getItem("recent_activities") || "[]");
+            activities.unshift({
+                icon: "sparkles",
+                title: `Completed Day ${newStreak} Sadhana Check-in`,
+                time: "Just now",
+                highlight: true
+            });
+            localStorage.setItem("recent_activities", JSON.stringify(activities));
+
+            if (typeof loadRecentActivities === "function") {
+                loadRecentActivities();
+            }
+            if (typeof window.syncGlobalUserCredentials === "function") {
+                window.syncGlobalUserCredentials();
+            }
+            loadUserName();
+
+            alert(`🎉 Hari Om! You have logged today's Sadhana. Your active practice streak is now 🔥 ${newStreak} Days! Keep shining!`);
         }
 
         // Load user role from localStorage and update top bar
         function loadUserRole() {
-            const savedUserRole = localStorage.getItem("userRole");
-            if (savedUserRole) {
-                const topBarRole = document.querySelector('.user-role');
-                const dropdownRole = document.querySelector('.dropdown-role');
-                if (topBarRole) {
-                    topBarRole.innerText = savedUserRole;
+            const savedUserRole = localStorage.getItem("userRole") || "VIP Member";
+            const topBarRole = document.querySelector('.user-role');
+            const dropdownRole = document.querySelector('.dropdown-role');
+            if (topBarRole) {
+                topBarRole.innerText = savedUserRole;
+            }
+            if (dropdownRole) {
+                dropdownRole.innerText = savedUserRole;
+            }
+        }
+
+        // Load avatar initials from localStorage
+        function loadAvatarInitials() {
+            const savedName = localStorage.getItem("userName") || "Pragya";
+            const savedInitials = localStorage.getItem("userInitials") || savedName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'PR';
+            const topBarAvatar = document.querySelector('.user-avatar-circle');
+            const dropdownAvatar = document.querySelector('.dropdown-avatar');
+            if (topBarAvatar) {
+                topBarAvatar.textContent = savedInitials;
+            }
+            if (dropdownAvatar) {
+                dropdownAvatar.textContent = savedInitials;
+            }
+        }
+
+        // Load profile image to top bar avatars
+        function loadProfileImageToTopBar() {
+            const savedImage = localStorage.getItem("profileImage");
+            if (savedImage) {
+                const topBarAvatar = document.querySelector('.user-avatar-circle');
+                const dropdownAvatar = document.querySelector('.dropdown-avatar');
+
+                if (topBarAvatar) {
+                    topBarAvatar.style.backgroundImage = `url(${savedImage})`;
+                    topBarAvatar.style.backgroundSize = 'cover';
+                    topBarAvatar.style.backgroundPosition = 'center';
+                    topBarAvatar.style.backgroundRepeat = 'no-repeat';
+                    topBarAvatar.textContent = '';
                 }
-                if (dropdownRole) {
-                    dropdownRole.innerText = savedUserRole;
+
+                if (dropdownAvatar) {
+                    dropdownAvatar.style.backgroundImage = `url(${savedImage})`;
+                    dropdownAvatar.style.backgroundSize = 'cover';
+                    dropdownAvatar.style.backgroundPosition = 'center';
+                    dropdownAvatar.style.backgroundRepeat = 'no-repeat';
+                    dropdownAvatar.textContent = '';
                 }
             }
         }
 
-            // Load avatar initials from localStorage
-            function loadAvatarInitials() {
-                const savedInitials = localStorage.getItem("userInitials");
-                if (savedInitials) {
-                    const topBarAvatar = document.querySelector('.user-avatar-circle');
-                    const dropdownAvatar = document.querySelector('.dropdown-avatar');
-                    if (topBarAvatar) {
-                        topBarAvatar.textContent = savedInitials;
-                    }
-                    if (dropdownAvatar) {
-                        dropdownAvatar.textContent = savedInitials;
-                    }
-                }
+        // Call load functions on page load
+        loadUserName();
+        loadUserRole();
+        loadAvatarInitials();
+        loadProfileImageToTopBar();
+
+        // Open File Picker
+        const imageBtn = document.getElementById("imageBtn");
+        const videoBtn = document.getElementById("videoBtn");
+        const documentBtn = document.getElementById("documentBtn");
+        const imageInput = document.getElementById("imageInput");
+        const videoInput = document.getElementById("videoInput");
+        const documentInput = document.getElementById("documentInput");
+        const preview = document.getElementById("preview");
+        let dashboardPostImage = null;
+
+        imageBtn?.addEventListener("click", () => imageInput?.click());
+        videoBtn?.addEventListener("click", () => videoInput?.click());
+        documentBtn?.addEventListener("click", () => documentInput?.click());
+
+        // Image Preview
+        imageInput?.addEventListener("change", function () {
+            preview.innerHTML = "";
+            dashboardPostImage = null;
+
+            [...this.files].forEach(file => {
+                const img = document.createElement("img");
+                img.src = URL.createObjectURL(file);
+                img.style.width = "120px";
+                img.style.height = "120px";
+                img.style.objectFit = "cover";
+                img.style.margin = "8px";
+                img.style.borderRadius = "10px";
+                preview.appendChild(img);
+            });
+
+            const firstImage = this.files[0];
+            if (firstImage) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    dashboardPostImage = reader.result;
+                };
+                reader.readAsDataURL(firstImage);
             }
+        });
 
-            // Load profile image to top bar avatars
-            function loadProfileImageToTopBar() {
-                const savedImage = localStorage.getItem("profileImage");
-                if (savedImage) {
-                    const topBarAvatar = document.querySelector('.user-avatar-circle');
-                    const dropdownAvatar = document.querySelector('.dropdown-avatar');
-                    
-                    if (topBarAvatar) {
-                        topBarAvatar.style.backgroundImage = `url(${savedImage})`;
-                        topBarAvatar.style.backgroundSize = 'cover';
-                        topBarAvatar.style.backgroundPosition = 'center';
-                        topBarAvatar.style.backgroundRepeat = 'no-repeat';
-                        topBarAvatar.textContent = '';
-                    }
-                    
-                    if (dropdownAvatar) {
-                        dropdownAvatar.style.backgroundImage = `url(${savedImage})`;
-                        dropdownAvatar.style.backgroundSize = 'cover';
-                        dropdownAvatar.style.backgroundPosition = 'center';
-                        dropdownAvatar.style.backgroundRepeat = 'no-repeat';
-                        dropdownAvatar.textContent = '';
-                    }
-                }
-            }
+        // Video Preview
+        videoInput?.addEventListener("change", function () {
+            preview.innerHTML = "";
+            dashboardPostImage = null;
+            const file = this.files[0];
+            if (!file) return;
 
-            // Call load functions on page load
-            loadUserName();
-            loadUserRole();
-            loadAvatarInitials();
-            loadProfileImageToTopBar();
+            const video = document.createElement("video");
+            video.src = URL.createObjectURL(file);
+            video.controls = true;
+            video.style.width = "300px";
+            video.style.borderRadius = "10px";
+            preview.appendChild(video);
+        });
 
-// Open File Picker
-const imageBtn = document.getElementById("imageBtn");
-const videoBtn = document.getElementById("videoBtn");
-const documentBtn = document.getElementById("documentBtn");
-const imageInput = document.getElementById("imageInput");
-const videoInput = document.getElementById("videoInput");
-const documentInput = document.getElementById("documentInput");
-const preview = document.getElementById("preview");
-let dashboardPostImage = null;
+        // Document Preview
+        documentInput?.addEventListener("change", function () {
+            preview.innerHTML = "";
+            dashboardPostImage = null;
+            const file = this.files[0];
+            if (!file) return;
 
-imageBtn?.addEventListener("click", () => imageInput?.click());
-videoBtn?.addEventListener("click", () => videoInput?.click());
-documentBtn?.addEventListener("click", () => documentInput?.click());
+            const card = document.createElement("div");
+            card.style.padding = "15px";
+            card.style.border = "1px solid #ddd";
+            card.style.borderRadius = "10px";
+            card.style.display = "inline-flex";
+            card.style.alignItems = "center";
+            card.style.gap = "10px";
+            card.innerHTML = `
+                <i class="fa-solid fa-file-lines" style="font-size:24px;color:#EBA036"></i>
+                <div>
+                    <strong>${file.name}</strong><br>
+                    <small>${(file.size / 1024).toFixed(2)} KB</small>
+                </div>
+            `;
+            preview.appendChild(card);
+        });
 
-// Image Preview
-imageInput?.addEventListener("change", function () {
+        function formatDashboardPostTime(createdAt) {
+            if (!createdAt) return "Just now";
+            const then = new Date(createdAt).getTime();
+            const diff = Date.now() - then;
+            const minute = 60 * 1000;
+            const hour = 60 * minute;
+            const day = 24 * hour;
 
-    preview.innerHTML = "";
-    dashboardPostImage = null;
+            if (diff < minute) return "Just now";
+            if (diff < hour) return `${Math.floor(diff / minute)} min ago`;
+            if (diff < day) return `${Math.floor(diff / hour)} hr ago`;
+            return new Date(createdAt).toLocaleDateString();
+        }
 
-    [...this.files].forEach(file => {
+        function getDashboardPostAuthor(post) {
+            const userObject = typeof post.user_id === "object" && post.user_id ? post.user_id : {};
+            const loggedInName = localStorage.getItem("userName") || "Pragya";
+            const authorName = userObject.name || post.userName || loggedInName;
+            const isPragya = authorName.toLowerCase().includes("pragya");
+            const badge = post.userBadge || (isPragya ? "Super Diamond 💎✨" : "Diamond Member 💎");
+            return {
+                name: authorName,
+                role: userObject.role || post.userRole || "Student",
+                badge: badge,
+                avatar: post.userAvatar || (authorName === loggedInName ? localStorage.getItem("profileImage") : null)
+            };
+        }
 
-        const img = document.createElement("img");
-        img.src = URL.createObjectURL(file);
+        function renderDashboardPostCard(post) {
+            const author = getDashboardPostAuthor(post);
+            const initials = author.name
+                .split(" ")
+                .map(part => part[0])
+                .join("")
+                .toUpperCase()
+                .slice(0, 2) || "PR";
+            const avatar = author.avatar
+                ? `<img src="${author.avatar}" alt="${author.name}" class="avatar" style="object-fit:cover;">`
+                : `<div class="avatar">${initials}</div>`;
+            const postId = post._id || post.id;
+            const likedPosts = JSON.parse(localStorage.getItem("liked_posts") || "[]");
+            const isLiked = likedPosts.includes(postId);
 
-        img.style.width = "120px";
-        img.style.height = "120px";
-        img.style.objectFit = "cover";
-        img.style.margin = "8px";
-        img.style.borderRadius = "10px";
-
-        preview.appendChild(img);
-    });
-
-    const firstImage = this.files[0];
-    if (firstImage) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            dashboardPostImage = reader.result;
-        };
-        reader.readAsDataURL(firstImage);
-    }
-
-});
-
-// Video Preview
-videoInput?.addEventListener("change", function () {
-
-    preview.innerHTML = "";
-    dashboardPostImage = null;
-
-    const file = this.files[0];
-    if (!file) return;
-
-    const video = document.createElement("video");
-
-    video.src = URL.createObjectURL(file);
-    video.controls = true;
-    video.style.width = "300px";
-    video.style.borderRadius = "10px";
-
-    preview.appendChild(video);
-
-});
-
-// Document Preview
-documentInput?.addEventListener("change", function () {
-
-    preview.innerHTML = "";
-    dashboardPostImage = null;
-
-    const file = this.files[0];
-    if (!file) return;
-
-    const card = document.createElement("div");
-
-    card.style.padding = "15px";
-    card.style.border = "1px solid #ddd";
-    card.style.borderRadius = "10px";
-    card.style.display = "inline-flex";
-    card.style.alignItems = "center";
-    card.style.gap = "10px";
-
-    card.innerHTML = `
-        <i class="fa-solid fa-file-lines" style="font-size:24px;color:#EBA036"></i>
-        <div>
-            <strong>${file.name}</strong><br>
-            <small>${(file.size / 1024).toFixed(2)} KB</small>
-        </div>
-    `;
-
-    preview.appendChild(card);
-
-});
-
-function formatDashboardPostTime(createdAt) {
-    if (!createdAt) return "Just now";
-
-    const then = new Date(createdAt).getTime();
-    const diff = Date.now() - then;
-    const minute = 60 * 1000;
-    const hour = 60 * minute;
-    const day = 24 * hour;
-
-    if (diff < minute) return "Just now";
-    if (diff < hour) return `${Math.floor(diff / minute)} min ago`;
-    if (diff < day) return `${Math.floor(diff / hour)} hr ago`;
-    return new Date(createdAt).toLocaleDateString();
-}
-
-function getDashboardPostAuthor(post) {
-    const userObject = typeof post.user_id === "object" && post.user_id ? post.user_id : {};
-    return {
-        name: userObject.name || post.userName || "Gyan Prakash",
-        role: userObject.role || post.userRole || "Student",
-        avatar: post.userAvatar || localStorage.getItem("profileImage") || null
-    };
-}
-
-function renderDashboardPostCard(post) {
-    const author = getDashboardPostAuthor(post);
-    const initials = author.name
-        .split(" ")
-        .map(part => part[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2) || "GP";
-    const avatar = author.avatar
-        ? `<img src="${author.avatar}" alt="${author.name}" class="avatar" style="object-fit:cover;">`
-        : `<div class="avatar">${initials}</div>`;
-    const postId = post._id || post.id;
-
-    return `
+            return `
         <article class="dashboard-card post-card" data-post-id="${postId}">
             <div class="post-header">
                 <div class="post-author-info">
                     ${avatar}
                     <div class="author-meta">
-                        <span class="author-name">${author.name}</span>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span class="author-name" style="font-weight:700;">${author.name}</span>
+                            <span style="font-size:10px; background:linear-gradient(135deg, #00381F, #00522E); color:#D9AE29; border:1px solid #D9AE29; padding:1px 6px; border-radius:10px; font-weight:700;">${author.badge.includes('Super') ? '💎✨ Super Diamond' : '💎 Diamond'}</span>
+                        </div>
                         <span class="post-time"><i data-lucide="clock"></i>${formatDashboardPostTime(post.createdAt)}</span>
                     </div>
                 </div>
@@ -2810,108 +3054,178 @@ function renderDashboardPostCard(post) {
                 ${post.image ? `<img src="${post.image}" alt="Post image" class="gallery-img" style="aspect-ratio:auto;max-height:280px;">` : ""}
             </div>
             <div class="post-actions-row">
-                <button class="action-btn" type="button" onclick="likeDashboardPost('${postId}')">
-                    <i data-lucide="heart"></i>${post.likes || 0}
+                <button class="action-btn" type="button" style="${isLiked ? 'color:#ef4444;background:#fee2e2;' : ''}" onclick="likeDashboardPost('${postId}')" aria-label="${isLiked ? 'Unlike' : 'Like'}">
+                    <i data-lucide="heart" style="${isLiked ? 'fill:#ef4444;color:#ef4444;' : ''}"></i>
                 </button>
-                <a class="action-btn" href="CommunityFeed.html">
-                    <i data-lucide="message-circle"></i>${(post.comments || []).length}
-                </a>
-                <a class="action-btn" href="CommunityFeed.html">
-                    <i data-lucide="share-2"></i>Share
-                </a>
+                <button class="action-btn" type="button" onclick="toggleDashboardComments('${postId}')" aria-label="Comments">
+                    <i data-lucide="message-circle"></i>
+                </button>
+                <button class="action-btn" type="button" onclick="shareDashboardPost('${postId}')" aria-label="Share">
+                    <i data-lucide="share-2"></i>
+                </button>
+            </div>
+            <div class="dashboard-comments-container" id="comments-${postId}" style="display:none; border-top:1px solid var(--border, #eee); padding-top:12px; margin-top:12px;">
+                <div class="comments-list" style="display:flex; flex-direction:column; gap:8px; max-height:180px; overflow-y:auto; margin-bottom:12px;">
+                    ${(post.comments && post.comments.length > 0)
+                        ? post.comments.map(c => `
+                            <div style="display:flex; gap:8px; align-items:flex-start; font-size:12.5px; background:var(--bg-soft, #f9f9f9); padding:7px 10px; border-radius:10px;">
+                                <strong style="color:var(--text-heading, #00381F);">${c.user_id?.name || c.userName || "User"}:</strong>
+                                <span style="color:#444; flex:1; word-break:break-word;">${c.comment_text || c.content || ""}</span>
+                            </div>
+                        `).join('')
+                        : `<p style="font-size:12px; color:var(--text-muted, #888); margin:0;">No comments yet. Be the first to comment!</p>`
+                    }
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" id="comment-input-${postId}" placeholder="Write a comment..." style="flex:1; height:34px; padding:6px 12px; border:1px solid var(--border, #ddd); border-radius:8px; font-size:12.5px; outline:none; background:#fff;" onkeydown="if(event.key==='Enter') submitDashboardComment('${postId}')">
+                    <button type="button" class="post-submit-btn" style="padding:6px 14px; font-size:12px; border-radius:8px; height:34px; background:var(--primary, #00381F); color:#fff; border:none; cursor:pointer; font-weight:600;" onclick="submitDashboardComment('${postId}')">Send</button>
+                </div>
             </div>
         </article>
     `;
-}
+        }
 
-async function renderDashboardFeed() {
-    const feed = document.getElementById("dashboardFeed");
-    if (!feed || !window.AppService) return;
+        async function renderDashboardFeed() {
+            const feed = document.getElementById("dashboardFeed");
+            if (!feed || !window.AppService) return;
 
-    const posts = await AppService.getPosts();
-    feed.innerHTML = posts
-        .slice(0, 5)
-        .map(renderDashboardPostCard)
-        .join("");
+            // Remember which comment sections were open
+            const openCommentIds = new Set();
+            document.querySelectorAll(".dashboard-comments-container").forEach(el => {
+                if (el.style.display === "block") {
+                    openCommentIds.add(el.id);
+                }
+            });
 
-    if (window.lucide) lucide.createIcons();
-}
+            const posts = await AppService.getPosts();
+            feed.innerHTML = posts
+                .slice(0, 5)
+                .map(renderDashboardPostCard)
+                .join("");
 
-async function createDashboardPost() {
-    const input = document.querySelector(".create-post-field");
-    const content = input?.value.trim() || "";
+            // Restore open comment sections
+            openCommentIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = "block";
+            });
 
-    if (!content && !dashboardPostImage) return;
-    if (!window.AppService) return;
+            if (window.lucide) lucide.createIcons();
+        }
 
-    await AppService.createPost(content, dashboardPostImage);
+        async function createDashboardPost() {
+            const input = document.querySelector(".create-post-field");
+            const content = input?.value.trim() || "";
 
-    if (input) input.value = "";
-    if (preview) preview.innerHTML = "";
-    if (imageInput) imageInput.value = "";
-    if (videoInput) videoInput.value = "";
-    if (documentInput) documentInput.value = "";
-    dashboardPostImage = null;
-    renderDashboardFeed();
-}
+            if (!content && !dashboardPostImage) return;
+            if (!window.AppService) return;
 
-window.likeDashboardPost = async function likeDashboardPost(postId) {
-    if (!window.AppService) return;
-    await AppService.likePost(postId);
-    renderDashboardFeed();
-};
+            await AppService.createPost(content, dashboardPostImage);
 
-document.querySelector(".create-post-card .post-submit-btn")?.addEventListener("click", createDashboardPost);
-document.querySelector(".create-post-field")?.addEventListener("keydown", event => {
-    if (event.key === "Enter") {
-        event.preventDefault();
-        createDashboardPost();
-    }
-});
-window.addEventListener("postsUpdated", renderDashboardFeed);
-window.addEventListener("storage", event => {
-    if (event.key === "local_posts" || event.key === "cached_posts") {
-        renderDashboardFeed();
-    }
-});
-document.addEventListener("DOMContentLoaded", renderDashboardFeed);
+            if (input) input.value = "";
+            if (preview) preview.innerHTML = "";
+            if (imageInput) imageInput.value = "";
+            if (videoInput) videoInput.value = "";
+            if (documentInput) documentInput.value = "";
+            dashboardPostImage = null;
+            renderDashboardFeed();
+        }
 
-// ===============================
-// Upcoming Events from Calendar
-// ===============================
+        window.likeDashboardPost = async function likeDashboardPost(postId) {
+            if (!window.AppService) return;
+            await AppService.likePost(postId);
+            renderDashboardFeed();
+        };
 
-function escapeDashboardHtml(value) {
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
+        window.toggleDashboardComments = function toggleDashboardComments(postId) {
+            const el = document.getElementById(`comments-${postId}`);
+            if (el) {
+                el.style.display = el.style.display === "none" ? "block" : "none";
+                if (el.style.display === "block") {
+                    setTimeout(() => {
+                        document.getElementById(`comment-input-${postId}`)?.focus();
+                    }, 50);
+                }
+            }
+        };
 
-function getDashboardUpcomingEvents(limit = 3) {
-    const eventList = Array.isArray(window.events) ? window.events : [];
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+        window.submitDashboardComment = async function submitDashboardComment(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            const text = input?.value.trim();
+            if (!text || !window.AppService) return;
 
-    return eventList
-        .filter(event => {
-            const eventDate = new Date(event.date);
-            eventDate.setHours(0, 0, 0, 0);
-            return !Number.isNaN(eventDate.getTime()) && eventDate >= today;
-        })
-        .sort((a, b) => new Date(a.date) - new Date(b.date))
-        .slice(0, limit);
-}
+            await AppService.addComment(postId, text);
+            if (input) input.value = "";
+            await renderDashboardFeed();
+            const el = document.getElementById(`comments-${postId}`);
+            if (el) el.style.display = "block";
+        };
 
-function renderDashboardUpcomingEvents() {
-    const container = document.getElementById("dashboardUpcomingEvents");
-    if (!container) return;
+        window.shareDashboardPost = function shareDashboardPost(postId) {
+            const shareUrl = window.location.origin + "/CommunityFeed.html";
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Pragya Connect Community Post',
+                    text: 'Check out this post on Pragya Connect!',
+                    url: shareUrl
+                }).catch(() => {});
+            } else if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    alert('✨ Post link copied to clipboard!');
+                });
+            }
+        };
 
-    const upcomingEvents = getDashboardUpcomingEvents(3);
+        document.querySelector(".create-post-card .post-submit-btn")?.addEventListener("click", createDashboardPost);
+        document.querySelector(".create-post-field")?.addEventListener("keydown", event => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                createDashboardPost();
+            }
+        });
+        window.addEventListener("postsUpdated", renderDashboardFeed);
+        window.addEventListener("storage", event => {
+            if (event.key === "local_posts" || event.key === "cached_posts") {
+                renderDashboardFeed();
+            }
+        });
+        document.addEventListener("DOMContentLoaded", renderDashboardFeed);
 
-    if (!upcomingEvents.length) {
-        container.innerHTML = `
+        // ===============================
+        // Upcoming Events from Calendar
+        // ===============================
+
+        function escapeDashboardHtml(value) {
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function getDashboardUpcomingEvents(limit = 3) {
+            const eventList = Array.isArray(window.events) ? window.events : [];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            return eventList
+                .filter(event => {
+                    const eventDate = new Date(event.date);
+                    eventDate.setHours(0, 0, 0, 0);
+                    return !Number.isNaN(eventDate.getTime()) && eventDate >= today;
+                })
+                .sort((a, b) => new Date(a.date) - new Date(b.date))
+                .slice(0, limit);
+        }
+
+        function renderDashboardUpcomingEvents() {
+            const container = document.getElementById("dashboardUpcomingEvents");
+            if (!container) return;
+
+            const upcomingEvents = getDashboardUpcomingEvents(3);
+
+            if (!upcomingEvents.length) {
+                container.innerHTML = `
             <div class="event-item">
                 <div class="event-info">
                     <span class="event-title">No upcoming events</span>
@@ -2919,19 +3233,19 @@ function renderDashboardUpcomingEvents() {
                 </div>
             </div>
         `;
-        return;
-    }
+                return;
+            }
 
-    container.innerHTML = upcomingEvents.map(event => {
-        const eventDate = new Date(event.date);
-        const month = eventDate.toLocaleString("en-US", { month: "short" });
-        const day = String(eventDate.getDate()).padStart(2, "0");
-        const detailUrl = `events/EventDetails.html?id=${encodeURIComponent(event.id)}`;
-        const title = escapeDashboardHtml(event.title);
-        const time = escapeDashboardHtml(event.time || "Time to be announced");
-        const venue = escapeDashboardHtml(event.venue || "Venue to be announced");
+            container.innerHTML = upcomingEvents.map(event => {
+                const eventDate = new Date(event.date);
+                const month = eventDate.toLocaleString("en-US", { month: "short" });
+                const day = String(eventDate.getDate()).padStart(2, "0");
+                const detailUrl = `events/EventDetails.html?id=${encodeURIComponent(event.id)}`;
+                const title = escapeDashboardHtml(event.title);
+                const time = escapeDashboardHtml(event.time || "Time to be announced");
+                const venue = escapeDashboardHtml(event.venue || "Venue to be announced");
 
-        return `
+                return `
             <a class="event-item" href="${detailUrl}">
                 <div class="event-date-badge">
                     <div class="month">${month}</div>
@@ -2944,132 +3258,132 @@ function renderDashboardUpcomingEvents() {
                 </div>
             </a>
         `;
-    }).join("");
+            }).join("");
 
-    if (window.lucide) lucide.createIcons();
-}
-
-document.addEventListener("DOMContentLoaded", renderDashboardUpcomingEvents);
-
-// ===============================
-// Mentor Recommendation System
-// ===============================
-
-function normalizeArray(arr) {
-    if (!arr) return [];
-
-    if (Array.isArray(arr)) {
-        return arr.map(item => item.toLowerCase().trim());
-    }
-
-    return arr
-        .split(",")
-        .map(item => item.toLowerCase().trim())
-        .filter(Boolean);
-}
-
-function calculateMatch(user, mentor) {
-
-    let score = 0;
-
-    const userInterests = normalizeArray(user.interests);
-    const userSkills = normalizeArray(user.skills);
-    const mentorTags = normalizeArray(mentor.tags);
-
-    // Interest Match (40 Points)
-
-    userInterests.forEach(interest => {
-
-        if (mentorTags.includes(interest)) {
-            score += 20;
+            if (window.lucide) lucide.createIcons();
         }
 
-    });
+        document.addEventListener("DOMContentLoaded", renderDashboardUpcomingEvents);
 
-    // Skill Match (40 Points)
+        // ===============================
+        // Mentor Recommendation System
+        // ===============================
 
-    userSkills.forEach(skill => {
+        function normalizeArray(arr) {
+            if (!arr) return [];
 
-        if (mentorTags.includes(skill)) {
-            score += 20;
-        }
-
-    });
-
-    // Bio Match (20 Points)
-
-    if (user.bio) {
-
-        const bio = user.bio.toLowerCase();
-
-        mentorTags.forEach(tag => {
-
-            if (bio.includes(tag.toLowerCase())) {
-                score += 5;
+            if (Array.isArray(arr)) {
+                return arr.map(item => item.toLowerCase().trim());
             }
 
-        });
+            return arr
+                .split(",")
+                .map(item => item.toLowerCase().trim())
+                .filter(Boolean);
+        }
 
-    }
+        function calculateMatch(user, mentor) {
 
-    return Math.min(score, 100);
+            let score = 0;
 
-}
+            const userInterests = normalizeArray(user.interests);
+            const userSkills = normalizeArray(user.skills);
+            const mentorTags = normalizeArray(mentor.tags);
+
+            // Interest Match (40 Points)
+
+            userInterests.forEach(interest => {
+
+                if (mentorTags.includes(interest)) {
+                    score += 20;
+                }
+
+            });
+
+            // Skill Match (40 Points)
+
+            userSkills.forEach(skill => {
+
+                if (mentorTags.includes(skill)) {
+                    score += 20;
+                }
+
+            });
+
+            // Bio Match (20 Points)
+
+            if (user.bio) {
+
+                const bio = user.bio.toLowerCase();
+
+                mentorTags.forEach(tag => {
+
+                    if (bio.includes(tag.toLowerCase())) {
+                        score += 5;
+                    }
+
+                });
+
+            }
+
+            return Math.min(score, 100);
+
+        }
 
 
-// ===============================
-// Get Recommended Mentors
-// ===============================
+        // ===============================
+        // Get Recommended Mentors
+        // ===============================
 
-function getRecommendedMentors(user) {
+        function getRecommendedMentors(user) {
 
-    const mentorList = Array.isArray(window.teachers) ? window.teachers : [];
+            const mentorList = Array.isArray(window.teachers) ? window.teachers : [];
 
-    if (!user) {
-        return mentorList
-            .filter(teacher => teacher.image && teacher.image.trim())
-            .slice(0, 5);
-    }
+            if (!user) {
+                return mentorList
+                    .filter(teacher => teacher.image && teacher.image.trim())
+                    .slice(0, 5);
+            }
 
-    return mentorList
+            return mentorList
 
-        .filter(teacher => teacher.image && teacher.image.trim())
+                .filter(teacher => teacher.image && teacher.image.trim())
 
-        .map(teacher => ({
+                .map(teacher => ({
 
-            ...teacher,
+                    ...teacher,
 
-            match: calculateMatch(user, teacher)
+                    match: calculateMatch(user, teacher)
 
-        }))
+                }))
 
-        .sort((a, b) => b.match - a.match)
+                .sort((a, b) => b.match - a.match)
 
-        .slice(0, 5);
+                .slice(0, 5);
 
-}
+        }
 
 
 
-// ===============================
-// Render Mentor Suggestions
-// ===============================
+        // ===============================
+        // Render Mentor Suggestions
+        // ===============================
 
-function renderRecommendedMentors() {
+        function renderRecommendedMentors() {
 
-    const currentUser = JSON.parse(localStorage.getItem("profile") || "null");
+            const currentUser = JSON.parse(localStorage.getItem("profile") || "null");
 
-    const mentors = getRecommendedMentors(currentUser);
+            const mentors = getRecommendedMentors(currentUser);
 
-    const container = document.getElementById("mentorSuggestions");
+            const container = document.getElementById("mentorSuggestions");
 
-    if (!container) return;
+            if (!container) return;
 
-    container.innerHTML = "";
+            container.innerHTML = "";
 
-    mentors.forEach(mentor => {
+            mentors.forEach(mentor => {
 
-        container.innerHTML += `
+                container.innerHTML += `
 
         <div class="mentor-item">
 
@@ -3099,203 +3413,168 @@ function renderRecommendedMentors() {
 
         `;
 
-    });
+            });
 
-}
+        }
 
 
 
-// ===============================
-// Refresh Automatically
-// ===============================
+        // ===============================
+        // Refresh Automatically
+        // ===============================
 
-document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", () => {
 
-    renderRecommendedMentors();
+            renderRecommendedMentors();
 
-    const mentorSuggestionsViewAll = document.getElementById("mentorSuggestionsViewAll");
-    if (mentorSuggestionsViewAll) {
-        mentorSuggestionsViewAll.addEventListener("click", event => {
-            event.preventDefault();
-            window.location.href = "./mentors.html";
+            const mentorSuggestionsViewAll = document.getElementById("mentorSuggestionsViewAll");
+            if (mentorSuggestionsViewAll) {
+                mentorSuggestionsViewAll.addEventListener("click", event => {
+                    event.preventDefault();
+                    window.location.href = "./mentors.html";
+                });
+            }
+
         });
-    }
+    </script>
+    <script>
+        /* ==========================================================
+           EVENT PROMOTION POPUP
+        ========================================================== */
 
-});
-</script>
-<script>
-/* ==========================================================
-   EVENT PROMOTION POPUP
-========================================================== */
+        document.addEventListener("DOMContentLoaded", async () => {
 
-document.addEventListener("DOMContentLoaded", async () => {
+            const overlay = document.getElementById("eventPopupOverlay");
+            const closeBtn = document.getElementById("closeEventPopup");
+            const dontShow = document.getElementById("dontShowToday");
 
-    const overlay = document.getElementById("eventPopupOverlay");
-    const closeBtn = document.getElementById("closeEventPopup");
-    const dontShow = document.getElementById("dontShowToday");
+            if (!overlay) return;
 
-    if (!overlay) return;
+            // Get nearest upcoming event
+            const event = await getUpcomingEvent();
+            console.log("Popup Event:", event);
 
-    // Get nearest upcoming event
-    const event = await getUpcomingEvent();
-    console.log("Popup Event:", event);
+            // No upcoming event
+            if (!event) {
+                console.log("No upcoming event found.");
+                return;
+            }
 
-    // No upcoming event
-    if (!event) {
-        console.log("No upcoming event found.");
-        return;
-    }
+            // Check if hidden today
+            const today = new Date().toDateString();
+            const hidden = localStorage.getItem("event-popup-" + event.id);
 
-    // Check if hidden today
-    const today = new Date().toDateString();
-    const hidden = localStorage.getItem("event-popup-" + event.id);
+            if (hidden === today) {
+                return;
+            }
 
-    if (hidden === today) {
-        return;
-    }
+            // Fill popup
+            console.log("Poster URL:", event.poster);
+            const poster = document.getElementById("eventPoster");
+            if (poster) {
+                poster.src = event.poster;
+                poster.alt = event.title;
+            }
+            const title = document.getElementById("eventTitle");
+            const date = document.getElementById("eventDate");
+            const venue = document.getElementById("eventVenue");
+            const description = document.getElementById("eventDescription");
+            const registerBtn = document.getElementById("registerBtn");
+            const detailsBtn = document.getElementById("detailsBtn");
 
-    // Fill popup
-    console.log("Poster URL:", event.poster);
-    const poster = document.getElementById("eventPoster");
-    if (poster) {
-        poster.src = event.poster;
-        poster.alt = event.title;
-    }
-    const title = document.getElementById("eventTitle");
-    const date = document.getElementById("eventDate");
-    const venue = document.getElementById("eventVenue");
-    const description = document.getElementById("eventDescription");
-    const registerBtn = document.getElementById("registerBtn");
-    const detailsBtn = document.getElementById("detailsBtn");
+            if (title) title.textContent = event.title;
+            if (date) date.textContent = event.date;
+            if (venue) venue.textContent = event.venue;
+            if (description) description.textContent = event.description;
+            if (registerBtn) registerBtn.href = event.register;
+            if (detailsBtn) detailsBtn.href = event.details;
 
-    if (title) title.textContent = event.title;
-    if (date) date.textContent = event.date;
-    if (venue) venue.textContent = event.venue;
-    if (description) description.textContent = event.description;
-    if (registerBtn) registerBtn.href = event.register;
-    if (detailsBtn) detailsBtn.href = event.details;
+            // Show popup after dashboard loads
+            setTimeout(() => {
+                overlay.classList.add("show");
+                overlay.setAttribute("aria-hidden", "false");
+                if (window.lucide) lucide.createIcons();
+            }, 500);
 
-    // Show popup after dashboard loads
-    setTimeout(() => {
-        overlay.classList.add("show");
-        overlay.setAttribute("aria-hidden", "false");
-        if (window.lucide) lucide.createIcons();
-    }, 500);
+            // Close popup
+            function closePopup() {
+                console.log("Close button clicked");
 
-    // Close popup
-    function closePopup() {
-    console.log("Close button clicked");
+                const checkbox = document.getElementById("dontShowToday");
 
-        const checkbox = document.getElementById("dontShowToday");
+                if (checkbox && checkbox.checked) {
+                    localStorage.setItem("event-popup-" + event.id, today);
+                }
 
-        if (checkbox && checkbox.checked) {
-            localStorage.setItem("event-popup-" + event.id, today);
-        }
+                overlay.classList.remove("show");
+                overlay.setAttribute("aria-hidden", "true");
+            }
+            if (closeBtn) closeBtn.addEventListener("click", closePopup);
 
-        overlay.classList.remove("show");
-        overlay.setAttribute("aria-hidden", "true");
-    }
-    if (closeBtn) closeBtn.addEventListener("click", closePopup);
+            overlay.addEventListener("click", function (e) {
 
-    overlay.addEventListener("click", function (e) {
+                if (e.target === overlay) {
+                    closePopup();
+                }
 
-        if (e.target === overlay) {
-            closePopup();
-        }
-
-    });
-
-});
-
-
-/* ==========================================================
-   GET UPCOMING EVENT
-========================================================== */
-
-async function getUpcomingEvent() {
-
-    // Check if events array exists
-    if (!window.events || !window.events.length) {
-
-        console.warn("window.events not found");
-
-        return null;
-    }
-
-    // Today's date
-    const today = new Date();
-    today.setHours(0,0,0,0);
-
-    // Upcoming events only
-    const upcomingEvents = window.events
-        .filter(event => {
-
-            const eventDate = new Date(event.date);
-            eventDate.setHours(0,0,0,0);
-
-            return eventDate >= today;
-
-        })
-        .sort((a,b) => {
-
-            return new Date(a.date) - new Date(b.date);
+            });
 
         });
 
-    // No events
-    if (!upcomingEvents.length) {
 
-        return null;
+        /* ==========================================================
+           GET UPCOMING EVENT (local data fallback)
+        ========================================================== */
 
-    }
+        async function getUpcomingEvent() {
+            if (!window.events || !window.events.length) {
+                console.warn("window.events not found");
+                return null;
+            }
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const upcomingEvents = window.events
+                .filter(event => {
+                    const eventDate = new Date(event.date);
+                    eventDate.setHours(0, 0, 0, 0);
+                    return eventDate >= today;
+                })
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    const event = upcomingEvents[0];
+            if (!upcomingEvents.length) return null;
 
-    return {
+            const event = upcomingEvents[0];
+            return {
+                id: event.id,
+                title: event.title,
+                poster: event.image,
+                date: new Date(event.date).toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric"
+                }),
+                venue: event.venue,
+                description: event.description,
+                register: `events/EventDetails.html?id=${encodeURIComponent(event.id)}`,
+                details: `events/EventDetails.html?id=${encodeURIComponent(event.id)}`
+            };
+        }
 
-    id: event.id,
+        // ── Admin ↔ Platform Sync ──────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            AdminSync.init({
+                popup: true,
+                promoBanner: true,
+                notifBadge: true,
+                dashboardEvents: null,
+            });
 
-    title: event.title,
-
-    poster: event.image,
-
-    date: new Date(event.date).toLocaleDateString("en-GB",{
-        day:"numeric",
-        month:"long",
-        year:"numeric"
-    }),
-
-    venue: event.venue,
-
-    description: event.description,
-
-    register: `events/EventDetails.html?id=${encodeURIComponent(event.id)}`,
-
-    details: `events/EventDetails.html?id=${encodeURIComponent(event.id)}`
-
-};
-
-}
-
-// ── Admin ↔ Platform Sync ──────────────────────────
-
- 
- document.addEventListener('DOMContentLoaded', () => {
-    AdminSync.init({
-        popup:           true,
-        promoBanner:     true,
-        notifBadge:      true,
-        dashboardEvents: null, // no dedicated upcoming events widget on dashboard
-    });
-
-    // Sync only admin mentors that include a real image into the suggestions widget.
-    const adminMentors = JSON.parse(localStorage.getItem('admin_mentors') || '[]')
-        .filter(m => m.image && m.image.trim());
-    if (adminMentors.length) {
-        const container = document.getElementById('mentorSuggestions');
-        if (container) {
-            const items = adminMentors.slice(0, 3).map(m => {
-                return `
+            const adminMentors = JSON.parse(localStorage.getItem('admin_mentors') || '[]')
+                .filter(m => m.image && m.image.trim());
+            if (adminMentors.length) {
+                const container = document.getElementById('mentorSuggestions');
+                if (container) {
+                    container.innerHTML = adminMentors.slice(0, 3).map(m => `
                 <div class="mentor-item" style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
                     <div class="mentor-profile-info" style="display:flex;gap:10px;align-items:center;">
                         <img src="${m.image}" alt="${m.name || 'Mentor'}" class="mentor-avatar" style="width:38px;height:38px;flex-shrink:0;" onerror="this.closest('.mentor-item').remove()">
@@ -3304,15 +3583,304 @@ async function getUpcomingEvent() {
                             <span class="mentor-title" style="font-size:11px;color:var(--text-muted);">${m.expertise || ''}</span>
                         </div>
                     </div>
-                </div>`;
-            }).join('');
-            container.innerHTML = items;
+                </div>`).join('');
+                }
+            }
+        });
+    </script>
+
+    <!-- Pragya Yog External API Service -->
+    <script src="assets/js/pragya-api.js"></script>
+    <script>
+        /* ================================================================
+           REAL DATA INTEGRATION — Pragya Yog External API
+        ================================================================ */
+        document.addEventListener('DOMContentLoaded', async () => {
+            loadDailyQuote();
+            loadTodayClasses();
+            loadUpcomingEvents();
+            loadTeachers();
+            loadRecentActivities();
+        });
+
+        function loadRecentActivities() {
+            const container = document.getElementById('dashboardRecentActivities');
+            if (!container) return;
+
+            let activities = JSON.parse(localStorage.getItem('recent_activities') || '[]');
+            
+            const defaultActivities = [
+                { title: 'Joined <strong>200-Hr YTT Course Group</strong>', time: 'Today', icon: 'users', color: 'primary-icon' },
+                { title: 'Downloaded <strong>Complete Pranayama Guide</strong>', time: 'Yesterday', icon: 'download', color: 'primary-icon' },
+                { title: 'Completed <strong>5-Day Meditation Challenge</strong>', time: '2 days ago', icon: 'check-circle-2', color: 'primary-icon' },
+                { title: 'Earned <strong>Meditation Mastery Badge</strong>', time: '4 days ago', icon: 'star', color: 'accent-icon' }
+            ];
+
+            let displayList = activities.length > 0 ? activities.slice(0, 4) : defaultActivities;
+
+            container.innerHTML = displayList.map(item => `
+                <div class="activity-item">
+                    <div class="activity-icon-circle ${item.color || 'primary-icon'}">
+                        <i data-lucide="${item.icon || 'activity'}"></i>
+                    </div>
+                    <div class="activity-details">
+                        <span>${item.title}</span>
+                        <span class="time">${item.time || 'Recently'}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            if (window.lucide) lucide.createIcons();
         }
-    }
-});
 
+        async function loadDailyQuote() {
+            try {
+                const data = await PragyaAPI.getDailyQuote();
+                if (!data || !data.status || !data.data || !data.data[0]) return;
+                const q = data.data[0];
+                let el = document.getElementById('liveDailyQuote');
+                if (!el) {
+                    const hero = document.querySelector('.hero-banner, .banner-body, [class*="hero"]');
+                    if (hero) {
+                        el = document.createElement('div');
+                        el.id = 'liveDailyQuote';
+                        el.style.cssText = 'background:rgba(255,255,255,0.12);border-left:3px solid var(--accent);border-radius:8px;padding:10px 14px;margin-top:12px;font-size:13px;font-style:italic;color:#fff;max-width:480px;';
+                        hero.appendChild(el);
+                    }
+                }
+                if (el) el.innerHTML = `"${q.q}"<br><span style="font-size:11px;font-style:normal;opacity:0.8;">— ${q.a}</span>`;
+            } catch (e) { }
+        }
 
-</script>
-  
+        async function loadTodayClasses() {
+            try {
+                const data = await PragyaAPI.getTodayClasses();
+                if (!data || !data.status || !Array.isArray(data.todaySchedules)) return;
+                const eventsSection = document.getElementById('dashboardUpcomingEvents');
+                if (!eventsSection || document.getElementById('liveClassesWidget')) return;
+                const parentCard = eventsSection.closest('section');
+                if (!parentCard) return;
+
+                const newCard = document.createElement('section');
+                newCard.className = 'dashboard-card';
+                newCard.style.marginBottom = '16px';
+                newCard.innerHTML = `
+            <div class="section-header">
+                <div class="section-title-wrap">
+                    <i data-lucide="clock" style="color:var(--primary);"></i>
+                    <h3 class="section-title">Today's Classes</h3>
+                </div>
+                <span style="font-size:11px;color:var(--text-muted);">${data.today || ''}</span>
+            </div>
+            <div id="liveClassesWidget">${data.todaySchedules.slice(0, 5).map(cls => `
+                    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+                        <div style="width:10px;height:10px;border-radius:50%;background:${cls.color || '#00381F'};flex-shrink:0;"></div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-weight:600;font-size:13px;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${cls.title}</div>
+                            <div style="font-size:11px;color:var(--text-muted);">${cls.timing} · ${cls.instructor}</div>
+                        </div>
+                    </div>`).join('')
+                    }</div>`;
+                parentCard.parentNode.insertBefore(newCard, parentCard);
+                if (window.lucide) lucide.createIcons();
+            } catch (e) { }
+        }
+
+        async function loadUpcomingEvents() {
+            const container = document.getElementById('dashboardUpcomingEvents');
+            if (!container) return;
+            try {
+                const data = await PragyaAPI.getUpcomingEvents();
+                if (!data || !data.status || !Array.isArray(data.data) || !data.data.length) {
+                    return renderLocalEvents(container, JSON.parse(localStorage.getItem('admin_events') || '[]'));
+                }
+                container.innerHTML = data.data.slice(0, 4).map(ev => {
+                    const d = ev.starts_at ? new Date(ev.starts_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+                    const img = ev.image || (ev.carousel_image && ev.carousel_image.url) || '';
+                    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+                ${img ? `<img src="${img}" alt="${ev.title}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` : ''}
+                <div style="flex:1;min-width:0;">
+                    <div style="font-weight:600;font-size:13px;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ev.title}</div>
+                    ${d ? `<div style="font-size:11px;color:var(--text-muted);">${d}</div>` : ''}
+                    ${ev.countdown_label ? `<div style="font-size:10px;color:var(--accent);font-weight:600;">${ev.countdown_label}</div>` : ''}
+                </div>
+            </div>`;
+                }).join('');
+            } catch (e) { renderLocalEvents(container, JSON.parse(localStorage.getItem('admin_events') || '[]')); }
+        }
+
+        function renderLocalEvents(container, events) {
+            if (!container || !events) return;
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const up = events.filter(e => new Date(e.date) >= today).slice(0, 4);
+            container.innerHTML = up.length ? up.map(ev => `
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+            <div style="flex:1;"><div style="font-weight:600;font-size:13px;color:var(--text-main);">${ev.title}</div>
+            <div style="font-size:11px;color:var(--text-muted);">${new Date(ev.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</div></div>
+        </div>`).join('') : '<p style="color:var(--text-muted);font-size:13px;padding:8px 0;">No upcoming events.</p>';
+        }
+
+        async function loadTeachers() {
+            const container = document.getElementById('mentorSuggestions');
+            if (!container || container.innerHTML.trim()) return;
+            try {
+                const data = await PragyaAPI.getTeachers();
+                if (!data || !data.status || !Array.isArray(data.data) || !data.data.length) return;
+                container.innerHTML = data.data.slice(0, 4).map(t => {
+                    const img = t.image ? PragyaAPI.img(t.image) : '';
+                    const name = t.name || ([t.fname, t.lname].filter(Boolean).join(' ')) || 'Teacher';
+                    const sub = t.post || t.expertise || '';
+                    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+                <div style="display:flex;gap:10px;align-items:center;">
+                    ${img ? `<img src="${img}" alt="${name}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` :
+                            `<div style="width:38px;height:38px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary);font-size:14px;flex-shrink:0;">${name[0]}</div>`}
+                    <div>
+                        <span style="font-weight:600;color:var(--text-main);display:block;font-size:13px;">${name}</span>
+                        <span style="font-size:11px;color:var(--text-muted);">${sub}</span>
+                    </div>
+                </div>
+                <a href="mentors.html" style="font-size:11px;color:var(--primary);font-weight:600;text-decoration:none;">View</a>
+            </div>`;
+                }).join('');
+            } catch (e) { }
+        }
+
+        // =============================
+        // INTERACTIVE SADHANA LOGGER MODAL
+        // =============================
+        window.openSadhanaModal = function() {
+            const modal = document.getElementById("sadhanaLoggerModal");
+            if (modal) modal.style.display = "flex";
+        };
+
+        window.closeSadhanaModal = function() {
+            const modal = document.getElementById("sadhanaLoggerModal");
+            if (modal) modal.style.display = "none";
+        };
+
+        let selectedPracticeType = "Asana Flow";
+        window.selectSadhanaType = function(btn, type) {
+            document.querySelectorAll(".sadhana-type-btn").forEach(b => {
+                b.style.background = "var(--bg-soft)";
+                b.style.borderColor = "var(--border)";
+                b.style.color = "var(--text-main)";
+            });
+            btn.style.background = "var(--primary)";
+            btn.style.borderColor = "var(--primary)";
+            btn.style.color = "#FFFFFF";
+            selectedPracticeType = type;
+        };
+
+        window.submitSadhanaLog = function() {
+            let currentStreak = parseInt(localStorage.getItem("userStreak") || "36", 10);
+            currentStreak += 1;
+            localStorage.setItem("userStreak", currentStreak.toString());
+
+            const streakCountEl = document.getElementById("sadhanaStreakCount");
+            if (streakCountEl) {
+                streakCountEl.innerHTML = `${currentStreak} Days Active`;
+            }
+
+            if (window.syncGlobalUserCredentials) {
+                window.syncGlobalUserCredentials();
+            }
+
+            closeSadhanaModal();
+            alert(`🎉 Divine Sadhana Logged!\n\nPractice: ${selectedPracticeType}\nDuration: ${document.getElementById('sadhanaDurationRange')?.value || 45} mins\n🔥 Your streak increased to ${currentStreak} Days!`);
+        };
+
+        // =============================
+        // INTERACTIVE POST CREATOR
+        // =============================
+        window.submitDashboardPost = function() {
+            const input = document.getElementById("dashboardPostInput");
+            if (!input || !input.value.trim()) {
+                alert("Please write something to post!");
+                return;
+            }
+            const postContent = input.value.trim();
+            const feedContainer = document.getElementById("dashboardFeed");
+            if (!feedContainer) return;
+
+            const userName = localStorage.getItem("userName") || "Pragya";
+            const userRole = localStorage.getItem("userRole") || "Student";
+            const userBadge = localStorage.getItem("userBadge") || "Super Diamond 💎✨";
+
+            const newPostHtml = `
+                <div class="dashboard-card" style="margin-bottom: 16px; border-left: 4px solid #00381F; animation: fadeIn 0.3s ease;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="user-avatar-circle" style="width: 42px; height: 42px; font-size: 16px; background: #00381F; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">P</div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 14px; color: var(--text-heading); display: flex; align-items: center; gap: 6px;">
+                                    ${userName} <span class="user-tier-badge" style="font-size: 10px; background: #00381F; color: #D9AE29; border: 1px solid #D9AE29; padding: 1px 6px; border-radius: 99px;">💎 ✨ SuperDiamond</span>
+                                </div>
+                                <div style="font-size: 11.5px; color: var(--text-muted);">Just now &bull; ${userRole}</div>
+                            </div>
+                        </div>
+                        <span style="font-size: 11px; background: var(--primary-light); color: var(--primary); font-weight: 700; padding: 3px 8px; border-radius: 99px;">🌟 Daily Practice</span>
+                    </div>
+                    <p style="font-size: 14px; color: var(--text-main); line-height: 1.5; margin-bottom: 14px;">${postContent}</p>
+                    <div style="display: flex; gap: 16px; border-top: 1px solid var(--border); padding-top: 10px;">
+                        <button onclick="this.style.color = this.style.color === 'rgb(15, 138, 75)' ? 'var(--text-muted)' : '#0F8A4B'" style="background: transparent; border: none; font-size: 12.5px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600;">
+                            <span>🙏 Namaste (1)</span>
+                        </button>
+                        <button style="background: transparent; border: none; font-size: 12.5px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600;">
+                            <span>💬 Reply</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            feedContainer.insertAdjacentHTML('afterbegin', newPostHtml);
+            input.value = "";
+            alert("✨ Post published to community feed!");
+        };
+    </script>
+
+    <!-- Interactive Sadhana Practice Logger Modal -->
+    <div class="reader-modal-overlay" id="sadhanaLoggerModal" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:999999; display:none; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:var(--bg-card, #FFFFFF); border-radius:24px; width:100%; max-width:500px; padding:28px; box-shadow:0 24px 60px rgba(0,0,0,0.3); border:1px solid rgba(217, 174, 41, 0.4); text-align:left; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:24px;">🔥</span>
+                    <div>
+                        <h3 style="font-size:18px; font-weight:800; color:var(--text-heading, #00381F); margin:0;">Log Today's Sadhana</h3>
+                        <span style="font-size:12px; color:#D9AE29; font-weight:700;">Super Diamond Tier &bull; Boost Your Streak</span>
+                    </div>
+                </div>
+                <button onclick="closeSadhanaModal()" style="background:transparent; border:none; font-size:24px; cursor:pointer; color:var(--text-muted);">&times;</button>
+            </div>
+
+            <div style="margin-bottom:14px;">
+                <label style="font-size:12.5px; font-weight:700; color:var(--text-main); display:block; margin-bottom:6px;">Select Practice Type:</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                    <button type="button" class="sadhana-type-btn" onclick="selectSadhanaType(this, 'Asana Flow')" style="padding:8px 12px; border-radius:10px; border:1px solid #00381F; background:#00381F; color:#fff; font-weight:700; font-size:12px; cursor:pointer;">🧘 Asana Flow</button>
+                    <button type="button" class="sadhana-type-btn" onclick="selectSadhanaType(this, 'Pranayama')" style="padding:8px 12px; border-radius:10px; border:1px solid var(--border); background:var(--bg-soft); color:var(--text-main); font-weight:700; font-size:12px; cursor:pointer;">🌿 Pranayama</button>
+                    <button type="button" class="sadhana-type-btn" onclick="selectSadhanaType(this, 'Dhyana Meditation')" style="padding:8px 12px; border-radius:10px; border:1px solid var(--border); background:var(--bg-soft); color:var(--text-main); font-weight:700; font-size:12px; cursor:pointer;">🕉️ Meditation</button>
+                    <button type="button" class="sadhana-type-btn" onclick="selectSadhanaType(this, 'Spine Therapy')" style="padding:8px 12px; border-radius:10px; border:1px solid var(--border); background:var(--bg-soft); color:var(--text-main); font-weight:700; font-size:12px; cursor:pointer;">🦴 Spine Therapy</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+                <label style="font-size:12.5px; font-weight:700; color:var(--text-main); display:flex; justify-content:space-between;">
+                    <span>Session Duration:</span>
+                    <strong id="durationDisplay" style="color:var(--primary, #00381F); font-size:13px;">45 Minutes</strong>
+                </label>
+                <input type="range" id="sadhanaDurationRange" min="15" max="120" step="15" value="45" oninput="document.getElementById('durationDisplay').textContent = this.value + ' Minutes'" style="width:100%; accent-color:#00381F; margin-top:6px; cursor:pointer;">
+            </div>
+
+            <div style="margin-bottom:18px;">
+                <label style="font-size:12.5px; font-weight:700; color:var(--text-main); display:block; margin-bottom:6px;">Reflection / Prana State:</label>
+                <textarea id="sadhanaReflectionInput" placeholder="How did this session feel? (e.g. Cleared thoracic tension, balanced Nadi channels...)" style="width:100%; height:75px; padding:10px; border-radius:12px; border:1px solid var(--border); font-size:12.5px; outline:none; resize:none;"></textarea>
+            </div>
+
+            <button onclick="submitSadhanaLog()" style="width:100%; background:linear-gradient(135deg, #00381F 0%, #00522E 100%); color:#FFFFFF; border:1px solid #D9AE29; padding:12px; border-radius:14px; font-size:14px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 14px rgba(0,56,31,0.25);">
+                <span>✨ Complete &amp; Boost Streak</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
 </body>
 </html>

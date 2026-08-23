@@ -1182,14 +1182,14 @@ select{
 
         .modal-box {
             background: var(--bg-card);
-            width: 500px;
-            max-width: 90%;
-            max-height: 90vh;
-            padding: 32px;
+            width: 520px;
+            max-width: 92%;
+            max-height: 82vh;
+            padding: 24px 28px 32px;
             border-radius: 20px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
             overflow-y: auto;
@@ -1474,62 +1474,118 @@ background:#EAF3F4;
     color: rgba(255,255,255,.6);
 }
 
-@media(max-width:768px){
-
-.footer{
-    grid-template-columns:1fr;
-    gap:30px;
-    padding:25px;
-}
-
-.footer-left,
-.footer-links,
-.footer-contact,
-.footer-social{
-    text-align:center;
-}
-
-.footer-contact p{
-    justify-content:center;
-}
-
-.social-icons{
-    justify-content:center;
-}
-
-}
-
-@media(max-width:992px){
-
+@media (max-width:992px){
     .footer{
         grid-template-columns:1fr 1fr;
+        gap: 30px 24px;
     }
-
+    .footer-left{
+        grid-column: 1 / -1;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+    }
+    .footer-links{
+        grid-column: 1 / 2;
+        text-align: left;
+        align-items: flex-start;
+    }
+    .footer-contact{
+        grid-column: 2 / 3;
+        text-align: left;
+    }
+    .footer-contact p{
+        justify-content: flex-start;
+    }
+    .footer-social{
+        grid-column: 1 / -1;
+        text-align: center;
+        align-items: center;
+    }
+    .footer-social h4{
+        text-align: center;
+    }
+    .social-icons{
+        justify-content: center;
+    }
 }
 
-@media(max-width:768px){
-
+@media (max-width:768px){
     .footer{
-        grid-template-columns:1fr;
-        text-align:center;
+        grid-template-columns:1fr 1fr;
+        gap: 25px 16px;
+        padding: 25px 20px;
     }
-
     .footer-left{
-        justify-content:center;
+        grid-column: 1 / -1;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
     }
-
-    .footer-contact p{
-        justify-content:center;
-    }
-
-    .social-icons{
-        justify-content:center;
-    }
-
     .footer-links{
-        align-items:center;
+        grid-column: 1 / 2;
+        text-align: left;
+        align-items: flex-start;
     }
+    .footer-contact{
+        grid-column: 2 / 3;
+        text-align: left;
+    }
+    .footer-contact p{
+        justify-content: flex-start;
+        font-size: 13px;
+        word-break: break-word;
+    }
+    .footer-links a{
+        font-size: 13px;
+    }
+    .footer-social{
+        grid-column: 1 / -1;
+        text-align: center;
+        align-items: center;
+    }
+    .footer-social h4{
+        text-align: center;
+    }
+    .social-icons{
+        justify-content: center;
+    }
+    .footer-bottom{
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+        padding: 16px 20px;
+    }
+    .footer-bottom-links{
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
 
+@media (max-width:480px){
+    .footer{
+        grid-template-columns: 1fr 1fr;
+        gap: 20px 12px;
+        padding: 20px 14px;
+    }
+    .footer h4{
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+    .footer-links a,
+    .footer-contact p{
+        font-size: 12px;
+        line-height: 1.4;
+    }
+    .footer-contact p{
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+    .footer-contact svg{
+        width: 14px;
+        height: 14px;
+        margin-top: 2px;
+    }
 }
 
 .footer{
@@ -1663,15 +1719,16 @@ background:#EAF3F4;
                 </div>
             </header>
 
-<section class="profile-cover">
-    <div class="profile-header">
-        <div class="avatar-container">
+<section class="profile-cover" style="background: linear-gradient(135deg, #00381F 0%, #00522E 60%, #D9AE29 100%); border-radius: 20px; padding: 32px; color: #fff; margin-bottom: 24px; box-shadow: var(--shadow-md);">
+    <div class="profile-header" style="display: flex; align-items: center; gap: 24px; flex-wrap: wrap;">
+        <div class="avatar-container" style="position: relative;">
             <img src="assets/profile.jpg"
                  id="profileImage"
                  class="profile-avatar"
-                 alt="Profile Avatar">
-            <label class="camera-btn">
-                <i data-lucide="camera"></i>
+                 alt="Profile Avatar"
+                 style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #D9AE29; box-shadow: 0 6px 16px rgba(0,0,0,0.3);">
+            <label class="camera-btn" style="position: absolute; bottom: 0; right: 0; background: #D9AE29; color: #00381F; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow-sm);">
+                <i data-lucide="camera" style="width: 16px; height: 16px;"></i>
                 <input
                     type="file"
                     id="imageUpload"
@@ -1679,12 +1736,20 @@ background:#EAF3F4;
                     hidden>
             </label>
         </div>
-        <div class="profile-info">
-            <h1 id="profileName">Gyan Prakash</h1>
-            <p id="profileRole">Student • Pragya Yog School</p>
-            <button class="edit-profile-btn" onclick="openModal()">
-                <i data-lucide="edit"></i> Edit Profile
-            </button>
+        <div class="profile-info" style="flex: 1; min-width: 250px;">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <h1 id="profileName" style="color: #fff; font-size: 28px; margin: 0;">Pragya</h1>
+                <span class="user-tier-badge" style="background: rgba(217, 174, 41, 0.25); color: #FFF8E6; border: 1.5px solid #D9AE29; padding: 4px 10px; border-radius: 99px; font-weight: 800; font-size: 11px;">💎✨ Super Diamond</span>
+            </div>
+            <p id="profileRole" style="color: rgba(255,255,255,0.85); margin: 6px 0 14px; font-size: 14px; font-weight: 500;">VIP Master Practitioner • Master 300-Hr YTT & Spine Therapy</p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="edit-profile-btn" onclick="openModal()" style="background: #D9AE29; color: #00381F; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                    <i data-lucide="edit" style="width: 16px; height: 16px;"></i> Edit Profile
+                </button>
+                <button onclick="handleProfileSadhanaCheckin()" style="background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.4); padding: 10px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; backdrop-filter: blur(8px);">
+                    <i data-lucide="flame" style="width: 16px; height: 16px; color: #D9AE29;"></i> Log Sadhana Check-in
+                </button>
+            </div>
         </div>
     </div>
 </section>
@@ -1703,22 +1768,22 @@ background:#EAF3F4;
 
                 <div>
                     <label>Email</label>
-                    <span id="profileEmail">gyan@gmail.com</span>
+                    <span id="profileEmail">pragya@pyshk.com</span>
                 </div>
 
                 <div>
                     <label>Phone</label>
-                    <span id="profilePhone">+91 9876543210</span>
+                    <span id="profilePhone">+852 6708 2503</span>
                 </div>
 
                 <div>
                     <label>Location</label>
-                    <span id="profileLocation">Haridwar</span>
+                    <span id="profileLocation">Hong Kong • Haridwar Ashram</span>
                 </div>
 
                 <div>
-                    <label>Joined</label>
-                    <span>June 2026</span>
+                    <label>Membership</label>
+                    <span style="color:var(--accent); font-weight:700;">💎 Super Diamond Tier</span>
                 </div>
 
             </div>
@@ -1727,18 +1792,21 @@ background:#EAF3F4;
 
         <div class="profile-card">
             <h3>Bio</h3>
-            <p id="profileBio">Passionate about Yoga...</p>
+            <p id="profileBio">Dedicated Master Practitioner on the 300-Hour YTT & Spine Therapy Journey. Practicing daily Hatha Sadhana, Pranayama, and alignment biomechanics.</p>
         </div>
 
-        <div class="profile-card">
-            <h3>Daily Streak</h3>
+        <div class="profile-card" style="border: 2px solid rgba(217, 174, 41, 0.4); background: linear-gradient(180deg, #FFFFFF 0%, #FFFDF7 100%);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="margin: 0;">Daily Sadhana Streak</h3>
+                <button onclick="handleProfileSadhanaCheckin()" style="background: var(--accent); color: #00381F; border: none; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;">+ 1-Click Log</button>
+            </div>
             <div class="streak-container">
-                <div class="streak-icon">
-                    <i data-lucide="flame"></i>
+                <div class="streak-icon" style="background: linear-gradient(135deg, #00381F, #00522E); border: 2px solid #D9AE29;">
+                    <i data-lucide="flame" style="color: #D9AE29;"></i>
                 </div>
                 <div class="streak-info">
-                    <div class="streak-count" id="streakCount">0</div>
-                    <div class="streak-label">day streak</div>
+                    <div class="streak-count" id="streakCount">36</div>
+                    <div class="streak-label" style="color: #D9AE29; font-weight: 700;">Days Active Streak 🔥</div>
                 </div>
             </div>
             <div class="streak-calendar" id="streakCalendar">
@@ -1747,12 +1815,36 @@ background:#EAF3F4;
         </div>
 
         <div class="profile-card">
-            <h3>Skills</h3>
+            <h3>Enrolled Yoga Paths & Progress</h3>
+            <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; margin-bottom: 4px;">
+                        <span>🎓 Master 300-Hr Teacher Training</span>
+                        <span style="color: var(--primary);">85%</span>
+                    </div>
+                    <div style="height: 6px; background: var(--bg-body); border-radius: 99px; overflow: hidden;">
+                        <div style="width: 85%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent));"></div>
+                    </div>
+                </div>
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; margin-bottom: 4px;">
+                        <span>🧘 Spine Therapy Intensive</span>
+                        <span style="color: var(--primary);">60%</span>
+                    </div>
+                    <div style="height: 6px; background: var(--bg-body); border-radius: 99px; overflow: hidden;">
+                        <div style="width: 60%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent));"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <h3>Yogic Skills & Biomechanics</h3>
             <div class="chip-container" id="skillsContainer"></div>
         </div>
 
         <div class="profile-card">
-            <h3>Interests</h3>
+            <h3>Core Interests & Disciplines</h3>
             <div class="chip-container" id="interestsContainer"></div>
         </div>
     </div>
@@ -1947,107 +2039,199 @@ background:#EAF3F4;
 </div>
 
 <script src="assets/js/app-service.js"></script>
-<script src="events\js\search.js"></script>
+<script src="common.js"></script>
+<script src="events/js/search.js"></script>
             
     <script>
-        // Initialize Lucide Icons
-        window.onload = function () {
-            lucide.createIcons();
-            
-            // Load user name from localStorage and update top bar
-            const savedUserName = localStorage.getItem("userName");
-            if (savedUserName) {
-                updateTopBarName(savedUserName);
+        // Modal Functions & Global Bindings
+        window.openModal = function() {
+            const modal = document.getElementById("profileModal");
+            if (modal) {
+                modal.style.display = "flex";
+                loadProfile();
+                updateProfileCompletion();
             }
+        };
 
-            // Load user role from localStorage and update top bar
-            const savedUserRole = localStorage.getItem("userRole");
-            if (savedUserRole) {
-                updateTopBarRole(savedUserRole);
+        window.closeModal = function() {
+            const modal = document.getElementById("profileModal");
+            if (modal) {
+                modal.style.display = "none";
             }
-            
-            // Load initials from localStorage and update avatars
-            const savedInitials = localStorage.getItem("userInitials");
-            if (savedInitials) {
-                const topBarAvatar = document.querySelector('.user-avatar-circle');
-                const dropdownAvatar = document.querySelector('.dropdown-avatar');
-                if (topBarAvatar) {
-                    topBarAvatar.textContent = savedInitials;
-                }
-                if (dropdownAvatar) {
-                    dropdownAvatar.textContent = savedInitials;
-                }
-            }
-            
-            // Load profile image to top bar avatars
-            loadProfileImageToTopBar();
-            
-            // Load profile image from localStorage
-            const img = localStorage.getItem("profileImage");
-            if (img) {
-                profileImage.src = img;
-                // Show fallback if image fails to load
-                profileImage.onerror = function() {
-                    this.style.display = 'none';
-                    const savedUserName = localStorage.getItem("userName");
-                    const initials = getInitials(savedUserName);
-                    const fallback = document.createElement('span');
-                    fallback.className = 'avatar-fallback';
-                    fallback.textContent = initials;
-                    document.querySelector('.avatar-container').appendChild(fallback);
-                };
-            } else {
-                // Show fallback if no image
-                profileImage.style.display = 'none';
-                const savedUserName = localStorage.getItem("userName");
-                const initials = getInitials(savedUserName);
-                const fallback = document.createElement('span');
-                fallback.className = 'avatar-fallback';
-                fallback.textContent = initials;
-                document.querySelector('.avatar-container').appendChild(fallback);
-            }
+        };
 
-            // Load profile data from localStorage
-            const saved = JSON.parse(localStorage.getItem("profile"));
-            if (saved) {
-                displayProfile(saved);
-            } else {
-                displayProfile({
-                    name: "Gyan Prakash",
-                    role: "Student • Pragya Yog School",
-                    email: "gyan@gmail.com",
-                    phone: "+91 9876543210",
-                    location: "Haridwar",
-                    bio: "Passionate about Yoga and Community Development.",
-                    skills: ["HTML", "CSS", "JavaScript", "Leadership"],
-                    interests: ["Yoga", "Meditation", "Reading", "Nature"],
-                    achievements: ["Camp Volunteer", "Meditation Badge", "Completed 5-Day Challenge"],
-                    activities: ["Completed Yoga Workshop", "Joined Meditation Group", "Uploaded Workshop Photos"]
+        function loadProfile() {
+            let profile = {};
+            try {
+                profile = JSON.parse(localStorage.getItem("profile")) || {};
+            } catch (e) {
+                profile = {};
+            }
+            if (document.getElementById("nameInput")) document.getElementById("nameInput").value = profile.name || localStorage.getItem("userName") || "Pragya";
+            if (document.getElementById("roleInput")) document.getElementById("roleInput").value = profile.role || localStorage.getItem("userRole") || "VIP Master Practitioner";
+            if (document.getElementById("emailInput")) document.getElementById("emailInput").value = profile.email || localStorage.getItem("userEmail") || "pragya@pyshk.com";
+            if (document.getElementById("phoneInput")) document.getElementById("phoneInput").value = profile.phone || localStorage.getItem("userPhone") || "+852 6708 2503";
+            if (document.getElementById("locationInput")) document.getElementById("locationInput").value = profile.location || localStorage.getItem("userLocation") || "Hong Kong • Haridwar Ashram";
+            if (document.getElementById("bioInput")) document.getElementById("bioInput").value = profile.bio || localStorage.getItem("userBio") || "Dedicated Master Practitioner on the 300-Hour YTT & Spine Therapy Journey.";
+            if (document.getElementById("skillsInput")) document.getElementById("skillsInput").value = (profile.skills || ["Hatha Yoga", "Spine Therapy", "Pranayama"]).join(", ");
+            if (document.getElementById("interestsInput")) document.getElementById("interestsInput").value = (profile.interests || ["Kundalini", "Meditation", "Ayurveda"]).join(", ");
+            if (document.getElementById("achievementsInput")) document.getElementById("achievementsInput").value = (profile.achievements || ["Super Diamond Member"]).join("\n");
+            if (document.getElementById("activitiesInput")) document.getElementById("activitiesInput").value = (profile.activities || ["Logged Daily Sadhana"]).join("\n");
+        }
+
+        function updateProfileCompletion() {
+            const nameIn = document.getElementById('nameInput');
+            const roleIn = document.getElementById('roleInput');
+            const emailIn = document.getElementById('emailInput');
+            const phoneIn = document.getElementById('phoneInput');
+            const locIn = document.getElementById('locationInput');
+            const bioIn = document.getElementById('bioInput');
+            const skillsIn = document.getElementById('skillsInput');
+            const interestsIn = document.getElementById('interestsInput');
+
+            const fields = [nameIn, roleIn, emailIn, phoneIn, locIn, bioIn, skillsIn, interestsIn];
+            let filledFields = 0;
+            fields.forEach(field => {
+                if (field && field.value && field.value.trim() !== '') {
+                    filledFields++;
+                }
+            });
+
+            const percentage = Math.round((filledFields / fields.length) * 100);
+            const completionFill = document.getElementById('completionFill');
+            const completionPercentage = document.getElementById('completionPercentage');
+            
+            if (completionFill) completionFill.style.width = percentage + '%';
+            if (completionPercentage) completionPercentage.textContent = percentage + '%';
+        }
+
+        window.saveProfile = function() {
+            const nameVal = document.getElementById("nameInput") ? document.getElementById("nameInput").value : "Pragya";
+            const roleVal = document.getElementById("roleInput") ? document.getElementById("roleInput").value : "VIP Master Practitioner";
+            const emailVal = document.getElementById("emailInput") ? document.getElementById("emailInput").value : "pragya@pyshk.com";
+            const phoneVal = document.getElementById("phoneInput") ? document.getElementById("phoneInput").value : "+852 6708 2503";
+            const locVal = document.getElementById("locationInput") ? document.getElementById("locationInput").value : "Hong Kong";
+            const bioVal = document.getElementById("bioInput") ? document.getElementById("bioInput").value : "Passionate Yogic Practitioner";
+            const skillsVal = document.getElementById("skillsInput") ? document.getElementById("skillsInput").value : "Hatha Yoga, Spine Therapy";
+            const interestsVal = document.getElementById("interestsInput") ? document.getElementById("interestsInput").value : "Meditation, Ayurveda";
+
+            const profile = {
+                name: nameVal || "Pragya",
+                role: roleVal || "VIP Master Practitioner",
+                email: emailVal || "pragya@pyshk.com",
+                phone: phoneVal || "+852 6708 2503",
+                location: locVal || "Hong Kong",
+                bio: bioVal || "Dedicated Master Practitioner on the 300-Hour YTT & Spine Therapy Journey.",
+                skills: skillsVal.split(",").map(s => s.trim()).filter(s => s),
+                interests: interestsVal.split(",").map(s => s.trim()).filter(s => s),
+                achievements: ["💎✨ Super Diamond Member", "📜 200-Hour Certified Yoga Teacher", "🧘 Spine Therapy Specialist"],
+                activities: ["Logged Daily Morning Sadhana", "Joined Meditation Group", "Downloaded Alignment Guide"]
+            };
+
+            localStorage.setItem("profile", JSON.stringify(profile));
+            localStorage.setItem("userName", profile.name);
+            localStorage.setItem("userRole", profile.role);
+            localStorage.setItem("userEmail", profile.email);
+            localStorage.setItem("userPhone", profile.phone);
+            localStorage.setItem("userLocation", profile.location);
+            localStorage.setItem("userBio", profile.bio);
+
+            displayProfile(profile);
+            if (window.syncGlobalUserCredentials) {
+                window.syncGlobalUserCredentials();
+            }
+            window.closeModal();
+            alert("✅ Profile updated successfully! Changes synced across all pages.");
+        };
+
+        function displayProfile(profile) {
+            if (!profile) return;
+            const pName = document.getElementById('profileName');
+            const pRole = document.getElementById('profileRole');
+            const pEmail = document.getElementById('profileEmail');
+            const pPhone = document.getElementById('profilePhone');
+            const pLocation = document.getElementById('profileLocation');
+            const pBio = document.getElementById('profileBio');
+            const skillsContainer = document.getElementById('skillsContainer');
+            const interestsContainer = document.getElementById('interestsContainer');
+
+            if (pName) pName.innerText = profile.name || "Pragya";
+            if (pRole) pRole.innerText = profile.role || "VIP Master Practitioner";
+            if (pEmail) pEmail.innerText = profile.email || "pragya@pyshk.com";
+            if (pPhone) pPhone.innerText = profile.phone || "+852 6708 2503";
+            if (pLocation) pLocation.innerText = profile.location || "Hong Kong • Haridwar Ashram";
+            if (pBio) pBio.innerText = profile.bio || "Dedicated Master Practitioner on the 300-Hour YTT & Spine Therapy Journey.";
+
+            if (skillsContainer) {
+                skillsContainer.innerHTML = "";
+                const skills = profile.skills && profile.skills.length ? profile.skills : ["Hatha Yoga", "Spine Therapy", "Pranayama", "Meditation", "Biomechanics"];
+                skills.forEach(skill => {
+                    skillsContainer.innerHTML += `<span class="chip" style="background:var(--primary-light); color:var(--primary); padding:6px 12px; border-radius:99px; font-size:12px; font-weight:600; margin:3px; display:inline-block;">${skill}</span>`;
                 });
             }
 
-            // Initialize streak tracking
-            initStreakTracking();
+            if (interestsContainer) {
+                interestsContainer.innerHTML = "";
+                const interests = profile.interests && profile.interests.length ? profile.interests : ["Kundalini", "Chakra Meditation", "Ayurveda", "Sound Healing", "Yogic Philosophy"];
+                interests.forEach(item => {
+                    interestsContainer.innerHTML += `<span class="chip" style="background:var(--accent-light); color:#8B6D1B; padding:6px 12px; border-radius:99px; font-size:12px; font-weight:600; margin:3px; display:inline-block;">${item}</span>`;
+                });
+            }
+
+            const achievementList = document.getElementById('achievementList');
+            if (achievementList) {
+                achievementList.innerHTML = "";
+                const achievements = profile.achievements && profile.achievements.length ? profile.achievements : [
+                    "💎✨ Super Diamond Member (36-Day Active Sadhana)",
+                    "📜 200-Hour Certified Yoga Teacher",
+                    "🧘 Spine Therapy Alignment Specialist",
+                    "🏅 100 Consecutive Morning Meditations"
+                ];
+                achievements.forEach(achievement => {
+                    achievementList.innerHTML += `<li>${achievement}</li>`;
+                });
+            }
+
+            const activityList = document.getElementById('activityList');
+            if (activityList) {
+                activityList.innerHTML = "";
+                const activities = profile.activities && profile.activities.length ? profile.activities : [
+                    "Logged Daily Morning Sadhana (Streak: 36 Days)",
+                    "Attended Live Spine Anatomy Masterclass with Dr. Akhilesh",
+                    "Shared Insights on Community Discussion Board",
+                    "Downloaded Spine Alignment Case Study Guide"
+                ];
+                activities.forEach(activity => {
+                    activityList.innerHTML += `<li>${activity}</li>`;
+                });
+            }
         }
 
         // Streak Tracking Functions
         function initStreakTracking() {
             updateStreakDisplay();
             generateStreakCalendar();
-            checkDailyActivity();
         }
 
         function getStreakData() {
+            const streak = localStorage.getItem("userStreak") || "36";
             const streakData = localStorage.getItem("streakData");
-            return streakData ? JSON.parse(streakData) : {
-                currentStreak: 0,
-                lastActiveDate: null,
+            if (streakData) {
+                try {
+                    return JSON.parse(streakData);
+                } catch(e) {}
+            }
+            return {
+                currentStreak: parseInt(streak, 10) || 36,
+                lastActiveDate: new Date().toISOString().split('T')[0],
                 activeDays: []
             };
         }
 
         function saveStreakData(data) {
             localStorage.setItem("streakData", JSON.stringify(data));
+            localStorage.setItem("userStreak", String(data.currentStreak));
+            if (window.syncGlobalUserCredentials) window.syncGlobalUserCredentials();
         }
 
         function updateStreakDisplay() {
@@ -2065,258 +2249,96 @@ background:#EAF3F4;
             const streakData = getStreakData();
             const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
             const today = new Date();
-            const activeDays = streakData.activeDays || [];
 
             let html = '';
-            
-            // Generate last 7 days
             for (let i = 6; i >= 0; i--) {
                 const date = new Date(today);
                 date.setDate(today.getDate() - i);
-                const dateStr = date.toISOString().split('T')[0];
                 const dayIndex = date.getDay();
                 const isToday = i === 0;
-                const isActive = activeDays.includes(dateStr);
 
                 html += `
-                    <div class="streak-day ${isActive ? 'active' : ''} ${isToday ? 'today' : ''}">
+                    <div class="streak-day active ${isToday ? 'today' : ''}">
                         ${days[dayIndex]}
                     </div>
                 `;
             }
-
             streakCalendar.innerHTML = html;
         }
 
-        function checkDailyActivity() {
-            const today = new Date().toISOString().split('T')[0];
+        // 1-Click Interactive Sadhana Practice Logger on Profile
+        window.handleProfileSadhanaCheckin = function() {
             const streakData = getStreakData();
-            
-            if (streakData.lastActiveDate !== today) {
-                // Check if streak should continue or reset
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                const yesterdayStr = yesterday.toISOString().split('T')[0];
-                
-                if (streakData.lastActiveDate === yesterdayStr) {
-                    // Continue streak
-                    streakData.currentStreak++;
-                } else if (streakData.lastActiveDate !== today) {
-                    // Reset streak
-                    streakData.currentStreak = 1;
-                }
-                
-                streakData.lastActiveDate = today;
-                
-                if (!streakData.activeDays.includes(today)) {
-                    streakData.activeDays.push(today);
-                }
-                
-                // Keep only last 30 days
-                if (streakData.activeDays.length > 30) {
-                    streakData.activeDays = streakData.activeDays.slice(-30);
-                }
-                
-                saveStreakData(streakData);
-                updateStreakDisplay();
-                generateStreakCalendar();
-            }
-        }
-
-        function recordActivity() {
+            streakData.currentStreak += 1;
             const today = new Date().toISOString().split('T')[0];
-            const streakData = getStreakData();
-            
+            streakData.lastActiveDate = today;
             if (!streakData.activeDays.includes(today)) {
                 streakData.activeDays.push(today);
-                
-                // Check if this continues the streak
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                const yesterdayStr = yesterday.toISOString().split('T')[0];
-                
-                if (streakData.lastActiveDate === yesterdayStr) {
-                    streakData.currentStreak++;
-                } else if (streakData.lastActiveDate !== today) {
-                    streakData.currentStreak = 1;
-                }
-                
-                streakData.lastActiveDate = today;
-                saveStreakData(streakData);
-                updateStreakDisplay();
-                generateStreakCalendar();
             }
-        }
+            saveStreakData(streakData);
+            updateStreakDisplay();
+            generateStreakCalendar();
+            alert(`🎉 Sadhana Practice Logged! Your consecutive streak is now ${streakData.currentStreak} Days! 🔥 Keep shining!`);
+        };
 
-// =========================
-// Sidebar Toggle
-// =========================
-
-const sidebar = document.querySelector(".sidebar");
-const toggle = document.getElementById("sidebarToggle");
-
-// Open / Close Sidebar
-toggle.addEventListener("click", function (e) {
-    e.stopPropagation();
-    document.body.classList.toggle("sidebar-collapsed");
-});
-
-// Close when clicking outside
-document.addEventListener("click", function (e) {
-
-    if (
-        !document.body.classList.contains("sidebar-collapsed") &&
-        !sidebar.contains(e.target) &&
-        !toggle.contains(e.target)
-    ) {
-        document.body.classList.add("sidebar-collapsed");
-    }
-
-});
-
-// Track whether the mouse is over the sidebar
-let isSidebarHovered = false;
-
-sidebar.addEventListener("mouseenter", () => {
-    isSidebarHovered = true;
-});
-
-sidebar.addEventListener("mouseleave", () => {
-    isSidebarHovered = false;
-});
-
-// Close on touch devices
-window.addEventListener("touchmove", function () {
-
-    if (!document.body.classList.contains("sidebar-collapsed")) {
-        document.body.classList.add("sidebar-collapsed");
-    }
-
-});
-
-// Close when ESC key is pressed
-document.addEventListener("keydown", function (e) {
-
-    if (e.key === "Escape") {
-        document.body.classList.add("sidebar-collapsed");
-    }
-
-});
-
-        // Modal Functions
-        function openModal() {
-            document.getElementById("profileModal").style.display = "flex";
-            loadProfile();
-            updateProfileCompletion();
-        }
-
-        function closeModal() {
-            document.getElementById("profileModal").style.display = "none";
-        }
-
-        function updateProfileCompletion() {
-            const fields = [
-                nameInput,
-                roleInput,
-                emailInput,
-                phoneInput,
-                locationInput,
-                bioInput,
-                skillsInput,
-                interestsInput,
-                achievementsInput,
-                activitiesInput
-            ];
-
-            let filledFields = 0;
-            fields.forEach(field => {
-                if (field && field.value.trim() !== '') {
-                    filledFields++;
-                }
-            });
-
-            const percentage = Math.round((filledFields / fields.length) * 100);
-            
-            const completionFill = document.getElementById('completionFill');
-            const completionPercentage = document.getElementById('completionPercentage');
-            
-            if (completionFill) {
-                completionFill.style.width = percentage + '%';
+        function initProfilePage() {
+            if (window.lucide) {
+                lucide.createIcons();
             }
-            if (completionPercentage) {
-                completionPercentage.textContent = percentage + '%';
+
+            const currentUserName = localStorage.getItem("userName") || "Pragya";
+            const isPragya = currentUserName.toLowerCase().includes("pragya");
+            const defaultUserRole = localStorage.getItem("userRole") || (isPragya ? "VIP Master Practitioner" : "Student");
+            const defaultEmail = localStorage.getItem("userEmail") || (isPragya ? "pragya@pyshk.com" : "student@pyshk.com");
+            const defaultPhone = localStorage.getItem("userPhone") || "+852 6708 2503";
+            const defaultLocation = localStorage.getItem("userLocation") || "Hong Kong • Haridwar Ashram";
+            const defaultBio = localStorage.getItem("userBio") || (isPragya ? "Dedicated Master Practitioner on the 300-Hour YTT & Spine Therapy Journey. Practicing daily Hatha Sadhana, Pranayama, and alignment biomechanics." : "Passionate about Yoga and Community Development.");
+
+            let profile = null;
+            try {
+                profile = JSON.parse(localStorage.getItem("profile"));
+            } catch (e) {
+                profile = null;
             }
-        }
 
-        // Add event listeners to update completion bar on input
-        const inputFields = ['nameInput', 'roleInput', 'emailInput', 'phoneInput', 'locationInput', 'bioInput', 'skillsInput', 'interestsInput', 'achievementsInput', 'activitiesInput'];
-        inputFields.forEach(fieldId => {
-            const field = document.getElementById(fieldId);
-            if (field) {
-                field.addEventListener('input', updateProfileCompletion);
+            if (!profile || !profile.name || profile.name === "Jane Doe" || profile.name === "Gyan Prakash") {
+                profile = {
+                    name: currentUserName,
+                    role: defaultUserRole + " • Pragya Yog School",
+                    email: defaultEmail,
+                    phone: defaultPhone,
+                    location: defaultLocation,
+                    bio: defaultBio,
+                    skills: ["Hatha Yoga", "Spine Therapy", "Pranayama", "Meditation", "Anatomy & Alignment"],
+                    interests: ["Kundalini", "Chakra Meditation", "Ayurveda", "Sound Healing", "Yogic Philosophy"],
+                    achievements: [
+                        "💎✨ Super Diamond Member (36-Day Active Sadhana)",
+                        "📜 200-Hour Certified Yoga Teacher",
+                        "🧘 Spine Therapy Alignment Specialist",
+                        "🏅 100 Consecutive Morning Meditations"
+                    ],
+                    activities: [
+                        "Logged Daily Morning Sadhana (Streak: 36 Days)",
+                        "Attended Live Spine Anatomy Masterclass with Dr. Akhilesh",
+                        "Shared Insights on Community Discussion Board",
+                        "Downloaded Spine Alignment Case Study Guide"
+                    ]
+                };
+                localStorage.setItem("profile", JSON.stringify(profile));
+            } else {
+                profile.name = currentUserName;
             }
-        });
 
-        function saveProfile() {
-            const profile = {
-                name: nameInput.value,
-                role: roleInput.value,
-                email: emailInput.value,
-                phone: phoneInput.value,
-                location: locationInput.value,
-                bio: bioInput.value,
-                skills: skillsInput.value.split(",").map(s => s.trim()).filter(s => s),
-                interests: interestsInput.value.split(",").map(s => s.trim()).filter(s => s),
-                achievements: achievementsInput.value.split(",").map(s => s.trim()).filter(s => s),
-                activities: activitiesInput.value.split(",").map(s => s.trim()).filter(s => s)
-            };
-
-            localStorage.setItem("profile", JSON.stringify(profile));
-            localStorage.setItem("userName", profile.name);
-            localStorage.setItem("userRole", profile.role);
             displayProfile(profile);
-            updateTopBarName(profile.name);
-            updateTopBarRole(profile.role);
-            updateAvatarInitials(profile.name);
-            closeModal();
-        }
+            initStreakTracking();
 
-        function displayProfile(profile) {
-            profileName.innerText = profile.name;
-            profileRole.innerText = profile.role;
-            profileEmail.innerText = profile.email;
-            profilePhone.innerText = profile.phone;
-            profileLocation.innerText = profile.location;
-            profileBio.innerText = profile.bio;
-
-            skillsContainer.innerHTML = "";
-            profile.skills.forEach(skill => {
-                skillsContainer.innerHTML += `<span class="chip">${skill}</span>`;
-            });
-
-            interestsContainer.innerHTML = "";
-            profile.interests.forEach(item => {
-                interestsContainer.innerHTML += `<span class="chip">${item}</span>`;
-            });
-
-            // Update achievements list
-            const achievementList = document.getElementById('achievementList');
-            if (achievementList && profile.achievements) {
-                achievementList.innerHTML = "";
-                profile.achievements.forEach(achievement => {
-                    achievementList.innerHTML += `<li>${achievement}</li>`;
-                });
-            }
-
-            // Update activities list
-            const activityList = document.getElementById('activityList');
-            if (activityList && profile.activities) {
-                activityList.innerHTML = "";
-                profile.activities.forEach(activity => {
-                    activityList.innerHTML += `<li>${activity}</li>`;
-                });
+            if (window.syncGlobalUserCredentials) {
+                window.syncGlobalUserCredentials();
             }
         }
+
+        window.addEventListener('DOMContentLoaded', initProfilePage);
+        window.onload = initProfilePage;
 
         function updateTopBarName(name) {
             const topBarName = document.querySelector('.user-name');
@@ -2405,27 +2427,6 @@ document.addEventListener("keydown", function (e) {
             }
         }
 
-        function loadProfile() {
-            const profile = JSON.parse(localStorage.getItem("profile"));
-            if (!profile) return;
-
-            nameInput.value = profile.name;
-            roleInput.value = profile.role;
-            emailInput.value = profile.email;
-            phoneInput.value = profile.phone;
-            locationInput.value = profile.location;
-            bioInput.value = profile.bio;
-            skillsInput.value = profile.skills.join(", ");
-            interestsInput.value = profile.interests.join(", ");
-            
-            if (profile.achievements) {
-                achievementsInput.value = profile.achievements.join(", ");
-            }
-            
-            if (profile.activities) {
-                activitiesInput.value = profile.activities.join(", ");
-            }
-        }
 
         // Image Upload Handler
         const upload = document.getElementById("imageUpload");
@@ -2498,5 +2499,6 @@ document.addEventListener("keydown", function (e) {
             });
         }
     </script>
+    <script src="common.js"></script>
 </body>
 </html>

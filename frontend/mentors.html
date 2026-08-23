@@ -1069,37 +1069,108 @@ background:#EAF3F4;
     transform:translateY(-4px);
 }
 
-@media(max-width:992px){
-
+@media (max-width:992px){
     .footer{
         grid-template-columns:1fr 1fr;
+        gap: 30px 24px;
     }
-
+    .footer-left{
+        grid-column: 1 / -1;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+    }
+    .footer-links{
+        grid-column: 1 / 2;
+        text-align: left;
+        align-items: flex-start;
+    }
+    .footer-contact{
+        grid-column: 2 / 3;
+        text-align: left;
+    }
+    .footer-contact p{
+        justify-content: flex-start;
+    }
+    .footer-social{
+        grid-column: 1 / -1;
+        text-align: center;
+        align-items: center;
+    }
+    .footer-social h4{
+        text-align: center;
+    }
+    .social-icons{
+        justify-content: center;
+    }
 }
 
-@media(max-width:768px){
-
+@media (max-width:768px){
     .footer{
-        grid-template-columns:1fr;
-        text-align:center;
+        grid-template-columns:1fr 1fr;
+        gap: 25px 16px;
+        padding: 25px 20px;
     }
-
     .footer-left{
-        justify-content:center;
+        grid-column: 1 / -1;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
     }
-
-    .footer-contact p{
-        justify-content:center;
-    }
-
-    .social-icons{
-        justify-content:center;
-    }
-
     .footer-links{
-        align-items:center;
+        grid-column: 1 / 2;
+        text-align: left;
+        align-items: flex-start;
     }
+    .footer-contact{
+        grid-column: 2 / 3;
+        text-align: left;
+    }
+    .footer-contact p{
+        justify-content: flex-start;
+        font-size: 13px;
+        word-break: break-word;
+    }
+    .footer-links a{
+        font-size: 13px;
+    }
+    .footer-social{
+        grid-column: 1 / -1;
+        text-align: center;
+        align-items: center;
+    }
+    .footer-social h4{
+        text-align: center;
+    }
+    .social-icons{
+        justify-content: center;
+    }
+}
 
+@media (max-width:480px){
+    .footer{
+        grid-template-columns: 1fr 1fr;
+        gap: 20px 12px;
+        padding: 20px 14px;
+    }
+    .footer h4{
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+    .footer-links a,
+    .footer-contact p{
+        font-size: 12px;
+        line-height: 1.4;
+    }
+    .footer-contact p{
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+    .footer-contact svg{
+        width: 14px;
+        height: 14px;
+        margin-top: 2px;
+    }
 }
 
 body{
@@ -1624,6 +1695,26 @@ body{
         </div>
     </section>
 
+    <!-- User Assigned Event Mentors Section -->
+    <section id="userAssignedMentorsSection" class="dashboard-card" style="display:none;padding:26px;border:2px solid var(--primary);background:#fff;border-radius:20px;box-shadow:var(--shadow-md);margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+            <div>
+                <span class="hero-badge" style="background:var(--primary-light);color:var(--primary);margin-bottom:8px;font-size:12px;display:inline-flex;align-items:center;gap:6px;">
+                    <i data-lucide="sparkles" style="width:14px;height:14px;color:var(--accent);"></i>
+                    Personalized Mentorship
+                </span>
+                <h2 style="font-size:24px;color:var(--text-heading);margin:0;font-weight:800;">Your Assigned Event Mentors</h2>
+                <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">Mentors assigned specifically to guide you through your registered programs and workshops.</p>
+            </div>
+
+        </div>
+
+        <!-- Assigned Mentors Grid -->
+        <div id="userAssignedMentorsGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
+            <!-- Injected via JavaScript -->
+        </div>
+    </section>
+
     <!-- Search -->
     <section class="mentor-toolbar">
         <div class="mentor-filters">
@@ -2053,6 +2144,132 @@ filterButtons.forEach(button => {
 
 });
 
+// -------------------------------------------------------------
+// User Assigned Mentors Handling
+// -------------------------------------------------------------
+function getUserRegistrations() {
+    let regs = [];
+    try {
+        regs = JSON.parse(localStorage.getItem("registrations") || "[]");
+    } catch(e) { regs = []; }
+    return regs;
+}
+
+function getUserAssignedMentors() {
+    const currentUserName = (localStorage.getItem("userName") || "Gyan Prakash").toLowerCase().trim();
+    const currentUserEmail = (localStorage.getItem("userEmail") || "gyan@gmail.com").toLowerCase().trim();
+    const allRegs = getUserRegistrations();
+
+    // Map: mentorName -> array of { event, eventDate, regId, note }
+    const mentorMap = {};
+
+    allRegs.forEach(r => {
+        const rName = (r.name || "").toLowerCase().trim();
+        const rEmail = (r.email || "").toLowerCase().trim();
+
+        // Match registration with current user
+        if (rName === currentUserName || rEmail === currentUserEmail || (!rName && !rEmail)) {
+            const assigned = Array.isArray(r.assignedMentors) ? r.assignedMentors : [];
+            assigned.forEach(mName => {
+                if (!mentorMap[mName]) {
+                    mentorMap[mName] = [];
+                }
+                mentorMap[mName].push({
+                    event: r.event || 'Workshop',
+                    eventDate: r.eventDate || r.date || '',
+                    regId: r.id,
+                    note: r.mentorNote || ''
+                });
+            });
+        }
+    });
+
+    const assignedNames = Object.keys(mentorMap);
+    if (assignedNames.length === 0) return [];
+
+    // Match with teachers / admin mentors data
+    const pool = typeof teachers !== 'undefined' && Array.isArray(teachers) ? [...teachers] : [];
+    
+    return assignedNames.map(name => {
+        const found = pool.find(t => t.name.toLowerCase() === name.toLowerCase());
+        const assignments = mentorMap[name] || [];
+        if (found) {
+            return {
+                ...found,
+                userAssignments: assignments
+            };
+        }
+        return {
+            id: Date.now() + Math.random(),
+            name: name,
+            role: 'Assigned Mentor',
+            category: 'Instructor',
+            image: 'assets/teachers/aarya-kuldeep.jpg',
+            description: `Assigned mentor for your upcoming registered events.`,
+            userAssignments: assignments
+        };
+    });
+}
+
+function renderUserAssignedMentors() {
+    const section = document.getElementById("userAssignedMentorsSection");
+    const grid = document.getElementById("userAssignedMentorsGrid");
+    if (!section || !grid) return;
+
+    const assignedMentors = getUserAssignedMentors();
+    if (assignedMentors.length === 0) {
+        section.style.display = "none";
+        return;
+    }
+
+    section.style.display = "block";
+    grid.innerHTML = assignedMentors.map(m => {
+        const eventTags = (m.userAssignments || []).map(a => `
+            <div style="background:var(--primary-light);border-radius:8px;padding:6px 10px;margin-bottom:6px;">
+                <span style="font-size:11px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:4px;">
+                    <i data-lucide="calendar" style="width:12px;height:12px;"></i>
+                    ${a.event}
+                </span>
+                ${a.note ? `<span style="font-size:11px;color:var(--text-muted);display:block;margin-top:2px;">"${a.note}"</span>` : ''}
+            </div>
+        `).join('');
+
+        return `
+            <div class="mentor-card dashboard-card" style="border:1.5px solid var(--primary);position:relative;overflow:hidden;">
+                <span style="position:absolute;top:12px;right:12px;background:var(--accent);color:#00381F;font-size:10px;font-weight:800;padding:3px 9px;border-radius:99px;box-shadow:var(--shadow-sm);z-index:2;">
+                    ★ Assigned to You
+                </span>
+                <img src="${m.image}" alt="${m.name}" onerror="this.src='assets/teachers/aarya-kuldeep.jpg'">
+                <div class="mentor-content">
+                    <span style="background:var(--primary-light);color:var(--primary);font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;">${m.role}</span>
+                    <h3 style="margin-top:6px;">${m.name}</h3>
+                    ${m.qualification ? `<small style="display:block;color:var(--text-muted);margin-bottom:8px;">${m.qualification}</small>` : ''}
+                    
+                    <div style="margin: 10px 0 14px;">
+                        <span style="font-size:10px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:4px;">Assigned for Your Event:</span>
+                        ${eventTags}
+                    </div>
+
+                    <button class="primary-btn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;" onclick="connectWithAssignedMentor('${m.name}')">
+                        <i data-lucide="message-square" style="width:14px;height:14px;"></i>
+                        <span>Connect with ${m.name.split(' ')[0]}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    if (window.lucide) lucide.createIcons();
+}
+
+function connectWithAssignedMentor(mentorName) {
+    if (typeof showToast === 'function') {
+        showToast(`Connected with ${mentorName}. Message thread initialized!`, 'success');
+    } else {
+        alert(`Connected with ${mentorName}! You will be able to message your assigned mentor directly.`);
+    }
+}
+
 function renderFeaturedMentor(category = "All") {
 
     const featuredSection = document.querySelector(".featured-mentor");
@@ -2095,6 +2312,9 @@ function renderMentors(filter = "All") {
 
     mentorGrid.style.display = "grid";
 
+    const userAssignedMentors = getUserAssignedMentors();
+    const assignedNamesSet = new Set(userAssignedMentors.map(m => m.name.toLowerCase()));
+
     let filteredTeachers;
 
     if (filter === "All") {
@@ -2110,10 +2330,14 @@ function renderMentors(filter = "All") {
     }
 
     filteredTeachers.forEach(teacher => {
+        const isAssignedToUser = assignedNamesSet.has((teacher.name || '').toLowerCase());
 
         mentorGrid.innerHTML += `
-            <div class="mentor-card dashboard-card">
-                <img src="${teacher.image}" alt="${teacher.name}" onerror="this.closest('.mentor-card').remove()">
+            <div class="mentor-card dashboard-card" style="${isAssignedToUser ? 'border: 1.5px solid var(--primary);' : ''}">
+                <div style="position:relative;">
+                    <img src="${teacher.image}" alt="${teacher.name}" onerror="this.closest('.mentor-card').remove()">
+                    ${isAssignedToUser ? '<span style="position:absolute;top:10px;right:10px;background:var(--accent);color:#00381F;font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px;box-shadow:var(--shadow-sm);">★ Assigned to You</span>' : ''}
+                </div>
 
                 <div class="mentor-content">
                     <span>${teacher.role}</span>
@@ -2130,44 +2354,29 @@ function renderMentors(filter = "All") {
             </div>
         `;
     });
+
+    if (window.lucide) lucide.createIcons();
 }
 
-// Set default filter to All
+// Filter button click event listeners
 document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.classList.remove("active");
+    btn.addEventListener("click", () => {
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const filter = btn.getAttribute("data-filter") || "All";
+        renderFeaturedMentor(filter);
+        renderMentors(filter);
+    });
 });
 
-document.querySelector('.filter-btn[data-filter="All"]').classList.add("active");
-
+renderUserAssignedMentors();
 renderFeaturedMentor("All");
 renderMentors("All");
 
-    // ── Admin ↔ Platform Sync ───────────────────────────────────
-    // Prepend only admin-managed mentors that include a real image.
-    const adminMentors = JSON.parse(localStorage.getItem('admin_mentors') || '[]').filter(hasMentorImage);
-    if (adminMentors.length) {
-        const grid = document.getElementById('mentorGrid');
-        if (grid) {
-            const cards = adminMentors.map(m => {
-                const skills = Array.isArray(m.skills) ? m.skills : (m.skills || '').split(',').map(s => s.trim()).filter(Boolean);
-                return `
-                <div class="mentor-card dashboard-card admin-synced-mentor" style="position:relative;">
-                    <img src="${m.image}" alt="${m.name || 'Mentor'}" onerror="this.closest('.mentor-card').remove()">
-                    ${m.featured ? '<span style="position:absolute;top:12px;right:12px;background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;">&#9733; Featured</span>' : ''}
-                    <div class="mentor-content">
-                        <span style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;">${m.expertise || 'Mentor'}</span>
-                        <h3 style="font-size:17px;font-weight:800;color:var(--text-heading);margin:6px 0 8px;">${m.name}</h3>
-                        ${m.bio ? `<p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.5;">${m.bio}</p>` : ''}
-                        ${skills.length ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">${skills.map(s => `<span style="background:var(--bg-body);color:var(--text-main);font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600;">${s}</span>`).join('')}</div>` : ''}
-                    </div>
-                </div>`;
-            }).join('');
-            grid.insertAdjacentHTML('afterbegin', cards);
-        }
-    }
-
-    // Show event popup + promo banner
-    AdminSync.init({ popup: true, promoBanner: true, notifBadge: true });
-    </script>
+// Show event popup + promo banner
+AdminSync.init({ popup: true, promoBanner: true, notifBadge: true });
+</script>
+<script src="common.js"></script>
 </body>
 </html>
+

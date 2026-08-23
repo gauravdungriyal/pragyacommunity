@@ -135,7 +135,7 @@ router.delete("/comment/:id", async (req, res) => {
     }
 });
 
-// LIKE API (Toggle / Add Like)
+// LIKE API (Toggle / Add Like or Unlike)
 router.put("/like/:id", async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
@@ -144,11 +144,15 @@ router.put("/like/:id", async (req, res) => {
             return res.status(404).send("Post not found");
         }
 
-        // Simplistic toggle or incremental like count. Let's increment
-        post.likes += 1;
+        const { action } = req.body || {};
+        if (action === "unlike") {
+            post.likes = Math.max(0, (post.likes || 1) - 1);
+        } else {
+            post.likes = (post.likes || 0) + 1;
+        }
         await post.save();
 
-        res.json({ likes: post.likes });
+        res.json({ likes: post.likes, isLiked: action !== "unlike" });
 
     } catch (error) {
         console.log(error);

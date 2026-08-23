@@ -9,6 +9,16 @@ router.post("/register", async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
 
+        if (!name || !email || !password) {
+            return res.status(400).json({ status: false, message: "Name, email and password are required" });
+        }
+
+        // Check if user already exists
+        const existing = await User.findOne({ email });
+        if (existing) {
+            return res.status(409).json({ status: false, message: "Email already registered" });
+        }
+
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -17,17 +27,17 @@ router.post("/register", async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role
+            role: role || "student"
         });
 
         // Save user
         await user.save();
 
-        res.send("User Registered Successfully");
+        res.status(201).json({ status: true, message: "User Registered Successfully" });
 
     } catch (error) {
         console.log(error);
-        res.send("Registration Failed");
+        res.status(500).json({ status: false, message: "Registration Failed" });
     }
 });
 
@@ -37,18 +47,22 @@ router.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        if (!email || !password) {
+            return res.status(400).json({ status: false, message: "Email and password are required" });
+        }
+
         // Check user exists
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.send("User not found");
+            return res.status(401).json({ status: false, message: "Invalid email or password" });
         }
 
         // Compare password
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return res.send("Invalid Password");
+            return res.status(401).json({ status: false, message: "Invalid email or password" });
         }
 
         // Generate JWT token
@@ -63,22 +77,22 @@ router.post("/login", async (req, res) => {
             }
         );
 
-res.json({
-    message: "Login Successful",
-    token,
-
-    user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-    }
-});
+        res.json({
+            status: true,
+            message: "Login Successful",
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
 
     } catch (error) {
         console.log(error);
-        res.send("Login Failed");
+        res.status(500).json({ status: false, message: "Login Failed" });
     }
 });
 
-module.exports = router;
+module.exports = router;
