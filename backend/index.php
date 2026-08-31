@@ -44,6 +44,12 @@ if (strlen($path) > 1 && substr($path, -1) === '/') {
 // API Routing Table
 // ==========================================================
 
+// Action-based protocol (frontend posts to /api_v2.php or /api.php) → api.php dispatcher
+if ($path === '/api_v2.php' || $path === '/api.php') {
+    require __DIR__ . '/api.php';
+    exit;
+}
+
 // Health Check
 if ($path === '/api/health' || $path === '/api') {
     sendJson([

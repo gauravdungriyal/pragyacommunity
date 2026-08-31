@@ -82,8 +82,17 @@ if ($action === 'check-token') {
     }
 
     $email = $decodedRefresh['email'] ?? '';
-    $newAccess = JWT::encode(['email' => $email, 'iat' => time(), 'exp' => time() + 86400]);
-    $newRefresh = JWT::encode(['email' => $email, 'iat' => time(), 'exp' => time() + (300 * 86400)]);
+    $db = Database::getConnection();
+    $stmt = $db->prepare("SELECT id FROM users WHERE email = :email LIMIT 1");
+    $stmt->execute([':email' => $email]);
+    $refreshUser = $stmt->fetch();
+    if (!$refreshUser) {
+        sendJson(['status' => false, 'message' => 'Account no longer exists. Please sign in again.']);
+    }
+
+    $userId = (int)$refreshUser['id'];
+    $newAccess = JWT::encode(['email' => $email, 'id' => $userId, 'iat' => time(), 'exp' => time() + 86400]);
+    $newRefresh = JWT::encode(['email' => $email, 'id' => $userId, 'iat' => time(), 'exp' => time() + (300 * 86400)]);
 
     sendJson([
         'status' => true,
@@ -158,6 +167,15 @@ if ($action === 'get-profile') {
     $fname = $nameParts[0] ?? 'User';
     $lname = $nameParts[1] ?? '';
 
+    // Notification preferences (defaults to all-on when no row exists yet)
+    $settingsStmt = $db->prepare("SELECT notify_whatsapp, notify_email, notify_push FROM user_settings WHERE user_id = :id");
+    $settingsStmt->execute([':id' => $user['id']]);
+    $settings = $settingsStmt->fetch() ?: ['notify_whatsapp' => 1, 'notify_email' => 1, 'notify_push' => 1];
+
+    $bookingsStmt = $db->prepare("SELECT COUNT(*) AS cnt FROM event_registrations WHERE user_id = :id");
+    $bookingsStmt->execute([':id' => $user['id']]);
+    $bookings = (int)($bookingsStmt->fetch()['cnt'] ?? 0);
+
     sendJson([
         'status' => true,
         'data' => [
@@ -180,10 +198,10 @@ if ($action === 'get-profile') {
             'hongkong_id' => 'A123******',
             'hkdf' => 'A1234567',
             'enroll_date' => date('d M Y', strtotime($user['created_at'] ?? 'now')),
-            'notify_whatsapp' => '1',
-            'notify_email' => '1',
-            'notify_push' => '1',
-            'bookings' => '3',
+            'notify_whatsapp' => (string)$settings['notify_whatsapp'],
+            'notify_email' => (string)$settings['notify_email'],
+            'notify_push' => (string)$settings['notify_push'],
+            'bookings' => (string)$bookings,
             'noshow_strikes' => 0,
             'late_checkin_strikes' => 0
         ]
@@ -204,24 +222,74 @@ if ($action === 'edit_user_details') {
 
 // 7. Action: update-notification-settings
 if ($action === 'update-notification-settings') {
+    $whatsapp = isset($input['notify_whatsapp']) ? (int)(bool)$input['notify_whatsapp'] : null;
+    $emailPref = isset($input['notify_email']) ? (int)(bool)$input['notify_email'] : null;
+    $push = isset($input['notify_push']) ? (int)(bool)$input['notify_push'] : null;
+
+    // Load current values so a partial update keeps the untouched flags
+    $stmt = $db->prepare("SELECT notify_whatsapp, notify_email, notify_push FROM user_settings WHERE user_id = :id");
+    $stmt->execute([':id' => $user['id']]);
+    $current = $stmt->fetch() ?: ['notify_whatsapp' => 1, 'notify_email' => 1, 'notify_push' => 1];
+
+    $w = $whatsapp ?? (int)$current['notify_whatsapp'];
+    $e = $emailPref ?? (int)$current['notify_email'];
+    $p = $push ?? (int)$current['notify_push'];
+
+    $up = $db->prepare("
+        INSERT INTO user_settings (user_id, notify_whatsapp, notify_email, notify_push)
+        VALUES (:id, :w, :e, :p)
+        ON DUPLICATE KEY UPDATE notify_whatsapp = :w2, notify_email = :e2, notify_push = :p2
+    ");
+    $up->execute([
+        ':id' => $user['id'],
+        ':w' => $w, ':e' => $e, ':p' => $p,
+        ':w2' => $w, ':e2' => $e, ':p2' => $p,
+    ]);
+
     sendJson(['status' => true, 'message' => 'Notification settings updated successfully.']);
 }
 
 // 8. Action: emergency-contact
 if ($action === 'emergency-contact') {
     $actionType = $input['action_type'] ?? 'get';
+
     if ($actionType === 'get') {
-        sendJson([
-            'status' => true,
-            'data' => [
-                ['id' => '1', 'user_id' => (string)$user['id'], 'photo' => 'blank.png', 'name' => 'Jane Doe', 'relation' => 'Sister', 'phone' => '+91 9123456780']
-            ]
-        ]);
+        $stmt = $db->prepare("SELECT id, user_id, photo, name, relation, phone FROM emergency_contacts WHERE user_id = :id ORDER BY id ASC");
+        $stmt->execute([':id' => $user['id']]);
+        $contacts = array_map(function ($c) {
+            return [
+                'id' => (string)$c['id'],
+                'user_id' => (string)$c['user_id'],
+                'photo' => $c['photo'],
+                'name' => $c['name'],
+                'relation' => $c['relation'],
+                'phone' => $c['phone'],
+            ];
+        }, $stmt->fetchAll());
+        sendJson(['status' => true, 'data' => $contacts]);
     }
+
     if ($actionType === 'add') {
+        $name = trim($input['name'] ?? '');
+        $relation = trim($input['relationship'] ?? ($input['relation'] ?? ''));
+        $phone = trim($input['phone'] ?? '');
+
+        if ($name === '' || $phone === '') {
+            sendJson(['status' => false, 'message' => 'Name and phone are required']);
+        }
+
+        $ins = $db->prepare("INSERT INTO emergency_contacts (user_id, name, relation, phone) VALUES (:uid, :name, :relation, :phone)");
+        $ins->execute([':uid' => $user['id'], ':name' => $name, ':relation' => $relation, ':phone' => $phone]);
         sendJson(['status' => true, 'message' => 'Contact added successfully']);
     }
+
     if ($actionType === 'delete') {
+        $contactId = intval($input['contact_id'] ?? 0);
+        $del = $db->prepare("DELETE FROM emergency_contacts WHERE id = :id AND user_id = :uid");
+        $del->execute([':id' => $contactId, ':uid' => $user['id']]);
+        if ($del->rowCount() === 0) {
+            sendJson(['status' => false, 'message' => 'Contact not found']);
+        }
         sendJson(['status' => true, 'message' => 'Contact deleted successfully']);
     }
 }
@@ -248,12 +316,15 @@ if ($action === 'unregister-device-token') {
 
 // 11. Action: upcoming-events
 if ($action === 'upcoming-events') {
-    $stmt = $db->query("
-        SELECT e.*, e.id AS _id, u.name AS creator_name 
+    $stmt = $db->prepare("
+        SELECT e.*, e.id AS _id, u.name AS creator_name,
+               (f.id IS NOT NULL) AS is_favorite
         FROM events e
         LEFT JOIN users u ON e.created_by = u.id
+        LEFT JOIN event_favorites f ON f.event_id = e.id AND f.user_id = :uid
         ORDER BY e.date ASC
     ");
+    $stmt->execute([':uid' => $user['id']]);
     $events = $stmt->fetchAll();
     $formatted = array_map(function($e) {
         return [
@@ -267,7 +338,7 @@ if ($action === 'upcoming-events') {
             'category' => $e['category'] ?? 'Yoga Workshops',
             'is_free' => (int)($e['is_free'] ?? 1),
             'amount' => (float)($e['amount'] ?? 0.00),
-            'is_favorite' => false,
+            'is_favorite' => (bool)$e['is_favorite'],
             'likes_count' => (int)($e['likes_count'] ?? 0),
             'creator_name' => $e['creator_name'] ?? 'Organizer'
         ];
@@ -279,12 +350,14 @@ if ($action === 'upcoming-events') {
 if ($action === 'upcoming-event-detail') {
     $eventId = intval($input['event_id'] ?? 0);
     $fetch = $db->prepare("
-        SELECT e.*, u.name AS creator_name 
-        FROM events e 
-        LEFT JOIN users u ON e.created_by = u.id 
+        SELECT e.*, u.name AS creator_name,
+               (f.id IS NOT NULL) AS is_favorite
+        FROM events e
+        LEFT JOIN users u ON e.created_by = u.id
+        LEFT JOIN event_favorites f ON f.event_id = e.id AND f.user_id = :uid
         WHERE e.id = :id
     ");
-    $fetch->execute([':id' => $eventId]);
+    $fetch->execute([':id' => $eventId, ':uid' => $user['id']]);
     $event = $fetch->fetch();
     if (!$event) {
         sendError('Event not found', 404);
@@ -302,6 +375,8 @@ if ($action === 'upcoming-event-detail') {
             'category' => $event['category'] ?? 'Yoga Workshops',
             'is_free' => (int)($event['is_free'] ?? 1),
             'amount' => (float)($event['amount'] ?? 0.00),
+            'is_favorite' => (bool)$event['is_favorite'],
+            'likes_count' => (int)($event['likes_count'] ?? 0),
             'creator_name' => $event['creator_name'] ?? 'Organizer'
         ]
     ]);
@@ -309,12 +384,102 @@ if ($action === 'upcoming-event-detail') {
 
 // 13. Action: event-toggle-favorite
 if ($action === 'event-toggle-favorite') {
-    sendJson(['status' => true, 'favorited' => true, 'message' => 'Event favorited']);
+    $eventId = intval($input['event_id'] ?? 0);
+
+    $check = $db->prepare("SELECT id FROM events WHERE id = :id");
+    $check->execute([':id' => $eventId]);
+    if (!$check->fetch()) {
+        sendError('Event not found', 404);
+    }
+
+    $existing = $db->prepare("SELECT id FROM event_favorites WHERE event_id = :eid AND user_id = :uid");
+    $existing->execute([':eid' => $eventId, ':uid' => $user['id']]);
+
+    if ($existing->fetch()) {
+        $del = $db->prepare("DELETE FROM event_favorites WHERE event_id = :eid AND user_id = :uid");
+        $del->execute([':eid' => $eventId, ':uid' => $user['id']]);
+        $favorited = false;
+        $message = 'Event removed from favorites';
+    } else {
+        $ins = $db->prepare("INSERT INTO event_favorites (event_id, user_id) VALUES (:eid, :uid)");
+        $ins->execute([':eid' => $eventId, ':uid' => $user['id']]);
+        $favorited = true;
+        $message = 'Event favorited';
+    }
+
+    // Keep the event's likes_count in sync with its favorite count
+    $sync = $db->prepare("
+        UPDATE events SET likes_count = (SELECT COUNT(*) FROM event_favorites WHERE event_id = :eid)
+        WHERE id = :eid2
+    ");
+    $sync->execute([':eid' => $eventId, ':eid2' => $eventId]);
+
+    $count = $db->prepare("SELECT likes_count FROM events WHERE id = :id");
+    $count->execute([':id' => $eventId]);
+    $likesCount = (int)($count->fetch()['likes_count'] ?? 0);
+
+    sendJson(['status' => true, 'favorited' => $favorited, 'likes_count' => $likesCount, 'message' => $message]);
 }
 
 // 14. Action: event-favorites
 if ($action === 'event-favorites') {
-    sendJson(['status' => true, 'data' => []]);
+    $stmt = $db->prepare("
+        SELECT e.*, e.id AS _id, u.name AS creator_name
+        FROM event_favorites f
+        INNER JOIN events e ON e.id = f.event_id
+        LEFT JOIN users u ON e.created_by = u.id
+        WHERE f.user_id = :uid
+        ORDER BY e.date ASC
+    ");
+    $stmt->execute([':uid' => $user['id']]);
+    $favorites = array_map(function($e) {
+        return [
+            'id' => (string)$e['id'],
+            '_id' => (string)$e['id'],
+            'title' => $e['title'],
+            'description' => $e['description'],
+            'date' => $e['date'],
+            'time' => $e['time'],
+            'location' => $e['location'],
+            'category' => $e['category'] ?? 'Yoga Workshops',
+            'is_free' => (int)($e['is_free'] ?? 1),
+            'amount' => (float)($e['amount'] ?? 0.00),
+            'is_favorite' => true,
+            'likes_count' => (int)($e['likes_count'] ?? 0),
+            'creator_name' => $e['creator_name'] ?? 'Organizer'
+        ];
+    }, $stmt->fetchAll());
+    sendJson(['status' => true, 'data' => $favorites]);
+}
+
+// 15. Action: get-notification (up to 10 unseen notifications)
+if ($action === 'get-notification') {
+    $stmt = $db->prepare("
+        SELECT id, title, type, content, created_at
+        FROM notifications
+        WHERE user = :name AND is_read = 0
+        ORDER BY created_at DESC
+        LIMIT 10
+    ");
+    $stmt->execute([':name' => $user['name']]);
+    $rows = array_map(function ($n) {
+        return [
+            'id' => (string)$n['id'],
+            'title' => $n['title'],
+            'type' => $n['type'],
+            'content' => $n['content'],
+            'created_at' => $n['created_at'],
+        ];
+    }, $stmt->fetchAll());
+    sendJson(['status' => true, 'data' => $rows]);
+}
+
+// 16. Action: del-notification (mark a single notification as seen)
+if ($action === 'del-notification') {
+    $notifId = intval($input['id'] ?? 0);
+    $up = $db->prepare("UPDATE notifications SET is_read = 1 WHERE id = :id AND user = :name");
+    $up->execute([':id' => $notifId, ':name' => $user['name']]);
+    sendJson(['status' => true]);
 }
 
 sendError("Invalid action type: $action", 400);

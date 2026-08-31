@@ -129,6 +129,39 @@ CREATE TABLE IF NOT EXISTS `resources` (
     FOREIGN KEY (`uploaded_by`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- 10. Event Favorites Table
+CREATE TABLE IF NOT EXISTS `event_favorites` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `event_id` INT NOT NULL,
+    `user_id` INT NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `uniq_event_user` (`event_id`, `user_id`),
+    FOREIGN KEY (`event_id`) REFERENCES `events`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 11. User Settings Table (notification preferences)
+CREATE TABLE IF NOT EXISTS `user_settings` (
+    `user_id` INT PRIMARY KEY,
+    `notify_whatsapp` TINYINT(1) DEFAULT 1,
+    `notify_email` TINYINT(1) DEFAULT 1,
+    `notify_push` TINYINT(1) DEFAULT 1,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 12. Emergency Contacts Table
+CREATE TABLE IF NOT EXISTS `emergency_contacts` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `name` VARCHAR(150) NOT NULL,
+    `relation` VARCHAR(100) NOT NULL,
+    `phone` VARCHAR(50) NOT NULL,
+    `photo` VARCHAR(255) DEFAULT 'blank.png',
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- ==========================================================
 -- SEED DATA (Default Password for all: password123 and admin@123 for demo admin)
 -- ==========================================================
