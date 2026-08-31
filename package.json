@@ -1,0 +1,17 @@
+{
+  "name": "pragya-connect-root",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Pragya Connect - React Frontend + PHP & MySQL Backend",
+  "scripts": {
+    "dev": "concurrently -n \"PHP_API,REACT_UI\" -c \"magenta,cyan\" \"php -S localhost:5000 -t backend backend/router.php\" \"npm run dev --prefix frontend\"",
+    "dev:backend": "php -S localhost:5000 -t backend backend/router.php",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "setup:db": "php backend/db/setup_db.php",
+    "install:all": "npm install --prefix frontend",
+    "build": "npm run build --prefix frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

@@ -1,5 +1,0 @@
-[33m5df3255[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Update dashboard UI and functionality
-[33m7f56fd6[m feat: refactor backend architecture and integrate Pragya dashboard quote API
-[33mb4672e5[m Resolved dashboard merge conflict
-[33m340e840[m fix: resolve tab switching issue in System Settings & RBAC
-[33me8a7852[m feat: complete 10-page Admin Portal, Admin-Platform data sync bridge, unified login, responsive design

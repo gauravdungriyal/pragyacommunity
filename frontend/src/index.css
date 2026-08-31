@@ -1,0 +1,209 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Font Faces */
+/* 1. Header Font: BN Cringe Serif */
+@font-face {
+  font-family: 'BNCringeSerif';
+  src: url('/fonts/header/BNCringeSerifRegular/BNCringeSerifRegular.woff2') format('woff2'),
+       url('/fonts/header/BNCringeSerifRegular/BNCringeSerifRegular.woff') format('woff'),
+       url('/fonts/header/BNCringeSerifRegular/BNCringeSerifRegular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BNCringeSerif';
+  src: url('/fonts/header/BNCringeSerifLight/BNCringeSerifLight.woff2') format('woff2'),
+       url('/fonts/header/BNCringeSerifLight/BNCringeSerifLight.woff') format('woff'),
+       url('/fonts/header/BNCringeSerifLight/BNCringeSerifLight.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BNCringeSerif';
+  src: url('/fonts/header/BNCringeSerifMedium/BNCringeSerifMedium.woff2') format('woff2'),
+       url('/fonts/header/BNCringeSerifMedium/BNCringeSerifMedium.woff') format('woff'),
+       url('/fonts/header/BNCringeSerifMedium/BNCringeSerifMedium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 2. Body Font: Neue Montreal */
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('/fonts/body/neue-montreal-free-demo-pangram-pangram-030418/NeueMontreal-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('/fonts/body/neue-montreal-free-demo-pangram-pangram-030418/NeueMontreal-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('/fonts/body/neue-montreal-free-demo-pangram-pangram-030418/NeueMontreal-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('/fonts/body/neue-montreal-free-demo-pangram-pangram-030418/NeueMontreal-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 3. Accent Font: Canela */
+@font-face {
+  font-family: 'Canela';
+  src: url('/fonts/accent/Canela_Collection/Canela Family/Canela-Light-Trial.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Canela';
+  src: url('/fonts/accent/Canela_Collection/Canela Family/Canela-Regular-Trial.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Canela';
+  src: url('/fonts/accent/Canela_Collection/Canela Family/Canela-Medium-Trial.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Canela';
+  src: url('/fonts/accent/Canela_Collection/Canela Family/Canela-Bold-Trial.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 4. Sanskrit / Hindi Accent Font: AMS Aakash */
+@font-face {
+  font-family: 'AMS Aakash';
+  src: url('/fonts/accent/AMS Aakash.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Exact Palette Variables from Color Guide */
+  --color-deep-bg: #00381f;       /* Deep Background / Text (#00381F) */
+  --color-main-bg: #f5efe5;       /* Main Background (#F5EFE5) */
+  --color-text: #272727;          /* Text Color (#272727) */
+  --color-highlight: #d9ae29;     /* Highlight Color (#D9AE29) */
+  --color-detail-1: #944426;      /* Detail Color 1 / Terracotta (#944426) */
+  --color-section-bg: #9d9d48;    /* Section Background / Olive (#9D9D48) */
+  --color-detail-2: #620513;      /* Detail Color 2 / Burgundy (#620513) */
+
+  --font-sans: 'Neue Montreal', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'BNCringeSerif', 'Canela', 'Outfit', Georgia, serif;
+  --font-accent: 'Canela', Georgia, serif;
+}
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-main-bg);
+  color: var(--color-text);
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: var(--font-display);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #dccfbd;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d9ae29;
+}
+
+/* Dark Mode Overrides */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="dark"] body {
+  background-color: #00120a;
+  color: #f5efe5;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #00381f;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: rgba(245, 239, 229, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(220, 207, 189, 0.6);
+}
+
+[data-theme="dark"] .glass-panel {
+  background: rgba(0, 30, 16, 0.85);
+  border-color: rgba(0, 56, 31, 0.8);
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #d9ae29 0%, #f7cb4b 50%, #c89d1f 100%);
+}
+
+.forest-gradient {
+  background: linear-gradient(135deg, #00381f 0%, #00522e 60%, #0b525b 100%);
+}
+
+.terracotta-gradient {
+  background: linear-gradient(135deg, #944426 0%, #dc8768 100%);
+}
+
+.olive-gradient {
+  background: linear-gradient(135deg, #9d9d48 0%, #b2b963 100%);
+}
+
+.burgundy-gradient {
+  background: linear-gradient(135deg, #620513 0%, #881223 100%);
+}
