@@ -7,3 +7,6 @@ dist
 .DS_Store
 Thumbs.db
 
+# Local environment files (keep .env.example in git)
+.env
+
