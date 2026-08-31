@@ -6,3 +6,4 @@ Pragya Connect & Community Platform.
 - **Frontend**: React, TypeScript, Tailwind CSS, Vite
 - **Backend**: PHP, MySQL
 # pragyacommunity
+# pragyacommunity
