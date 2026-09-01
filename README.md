@@ -6,15 +6,17 @@ Members can share posts in a community feed, discover mentors, register for yoga
 
 ## Features
 
-- 🔐 **Authentication** — registration and JWT login with access + refresh tokens
-- 📰 **Community Feed** — posts with images, likes, and comments
-- 🧘 **Mentors** — mentor directory with expertise, availability, and ratings
-- 📅 **Events** — workshop/camp calendar with RSVP and favorites
-- 📚 **Resources** — curated yoga guides and documents
-- 💬 **Messages** — direct chat with reactions, pins, and stars
-- 🔔 **Notifications** — alert feed with read/clear controls
-- 👤 **Profile & Settings** — profile editing, password change, notification preferences, dark mode
-- 🛡️ **Admin Panel** — user management, stats, reports, moderation, broadcasts
+- 🔐 **Authentication** — JWT login with access + refresh tokens. Accounts are created by the Pragya team; there is no public sign-up.
+- 🏠 **Dashboard** — the member's own day: classes they booked for today, next sessions, enrolled courses, a recent-activity trail and personal counters
+- 🎓 **Courses** — each course has its own resource shelf and group chat; admins create courses and assign mentors
+- 📚 **Resource Library** — course material grouped by course, plus an open "Extra Resources" shelf for everyone. Admins manage the category filters.
+- 📅 **Events** — browsed by scope (upcoming, today, my bookings, favourites, past), each with its own page and instant booking
+- 📰 **Community Feed** — posts with images, one like per member, comments and shareable links
+- 💬 **Messages** — course group chats and one-to-one conversations side by side
+- 🔔 **Notifications** — delivered in-app and as browser push; scoped platform-wide, per course (sent by mentors) or to one individual. Full history with search and CSV export.
+- 🧘 **Mentors** — directory with expertise and availability; session requests go straight to the mentor's inbox
+- 👤 **Profile & Settings** — profile editing synced with the API, password change, notification preferences, dark mode
+- 🛡️ **Admin Panel** — members, courses, content moderation and targeted announcements
 
 ## Tech Stack
 
@@ -92,11 +94,16 @@ Or run them separately with `npm run dev:backend` / `npm run dev:frontend`.
 
 ### Demo Accounts
 
-| Role | Email | Password |
-|------|-------|----------|
-| Student | `student@pragya.org` | `password123` |
-| Mentor | `mentor@pragya.org` | `password123` |
-| Admin | `admin@pragya.org` | `password123` |
+The seed data creates these accounts for local development (password `password123` for all):
+
+| Role | Email |
+|------|-------|
+| Student | `student@pragya.org` |
+| Mentor | `mentor@pragya.org` |
+| Teacher | `aarya@pragya.com` |
+| Admin | `admin@pragya.org` |
+
+Roles decide what is visible: mentors and teachers can publish events and upload course material, and admins additionally manage members, courses, library filters and announcements.
 
 ## API
 
