@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS `events` (
     `time` VARCHAR(50) NOT NULL,
     `location` VARCHAR(255) NOT NULL,
     `category` VARCHAR(100) DEFAULT 'Yoga Workshops',
+    `course_id` INT NULL,
     `is_free` TINYINT(1) DEFAULT 1,
     `amount` DECIMAL(10,2) DEFAULT 0.00,
     `image` VARCHAR(500) DEFAULT '',
@@ -94,7 +95,8 @@ CREATE TABLE IF NOT EXISTS `mentors` (
 CREATE TABLE IF NOT EXISTS `messages` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `sender` VARCHAR(191) NOT NULL,
-    `recipient` VARCHAR(191) NOT NULL,
+    `recipient` VARCHAR(191) NULL,
+    `course_id` INT NULL,
     `text` TEXT,
     `attachments` JSON NULL,
     `reactions` JSON NULL,
@@ -110,9 +112,14 @@ CREATE TABLE IF NOT EXISTS `messages` (
 CREATE TABLE IF NOT EXISTS `notifications` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `user` VARCHAR(191) NOT NULL,
+    `user_id` INT NULL,
+    `sender_id` INT NULL,
     `title` VARCHAR(255) NOT NULL,
     `type` VARCHAR(100) NOT NULL,
+    `scope` VARCHAR(20) NOT NULL DEFAULT 'individual',
+    `course_id` INT NULL,
     `content` TEXT,
+    `link` VARCHAR(255) NULL,
     `is_read` TINYINT(1) DEFAULT 0,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -125,6 +132,7 @@ CREATE TABLE IF NOT EXISTS `resources` (
     `file_url` VARCHAR(500) NOT NULL,
     `uploaded_by` INT NOT NULL,
     `category` VARCHAR(100) NOT NULL,
+    `course_id` INT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`uploaded_by`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -146,6 +154,7 @@ CREATE TABLE IF NOT EXISTS `user_settings` (
     `notify_whatsapp` TINYINT(1) DEFAULT 1,
     `notify_email` TINYINT(1) DEFAULT 1,
     `notify_push` TINYINT(1) DEFAULT 1,
+    `welcome_seen` TINYINT(1) NOT NULL DEFAULT 0,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -159,6 +168,69 @@ CREATE TABLE IF NOT EXISTS `emergency_contacts` (
     `phone` VARCHAR(50) NOT NULL,
     `photo` VARCHAR(255) DEFAULT 'blank.png',
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 13. Courses Table
+CREATE TABLE IF NOT EXISTS `courses` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(191) NOT NULL,
+    `description` TEXT NULL,
+    `mentor_id` INT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`mentor_id`) REFERENCES `users`(`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 14. Course Enrollments Table
+CREATE TABLE IF NOT EXISTS `course_enrollments` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `course_id` INT NOT NULL,
+    `user_id` INT NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `uniq_course_user` (`course_id`, `user_id`),
+    FOREIGN KEY (`course_id`) REFERENCES `courses`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 15. Resource Categories Table (admin-managed library filters)
+CREATE TABLE IF NOT EXISTS `resource_categories` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(120) NOT NULL UNIQUE,
+    `created_by` INT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 16. Post Likes Table (one like per user per post)
+CREATE TABLE IF NOT EXISTS `post_likes` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `post_id` INT NOT NULL,
+    `user_id` INT NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `uniq_post_user` (`post_id`, `user_id`),
+    FOREIGN KEY (`post_id`) REFERENCES `posts`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 17. Course Chat Reads Table (per-member read marker for group chats)
+CREATE TABLE IF NOT EXISTS `course_reads` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `course_id` INT NOT NULL,
+    `user_id` INT NOT NULL,
+    `last_read_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `uniq_course_reader` (`course_id`, `user_id`),
+    FOREIGN KEY (`course_id`) REFERENCES `courses`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 18. Activity Log Table (dashboard recent activity)
+CREATE TABLE IF NOT EXISTS `activity_log` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `type` VARCHAR(50) NOT NULL,
+    `description` VARCHAR(255) NOT NULL,
+    `link` VARCHAR(255) NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY `idx_activity_user` (`user_id`, `created_at`),
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -193,15 +265,30 @@ INSERT INTO `comments` (`id`, `post_id`, `user_id`, `comment_text`) VALUES
 (1, 1, 4, 'Thank you teacher! Looking forward to tomorrow session.')
 ON DUPLICATE KEY UPDATE `id`=`id`;
 
-INSERT INTO `events` (`id`, `title`, `description`, `date`, `time`, `location`, `category`, `is_free`, `amount`, `created_by`) VALUES
-(1, 'Kids Summer Yog Camp (Age 7-11 Batch 2)', 'A fun-filled, interactive yoga camp specially tailored for kids to learn breathing, postures, and focus.', '2026-07-06', '09:00 AM', 'Kids Hall', 'Yoga Workshops', 1, 0.00, 5),
-(2, 'ABC Workshop: Backbends for Beginners', 'An absolute beginners workshop covering correct spinal extension techniques and core activation.', '2026-07-18', '09:00 AM', 'Yoga Studio', 'Yoga Workshops', 0, 299.00, 5),
-(3, 'Sunset Beach Yog 2026', 'Relax, stretch, and breathe under the golden hour on the beach. Followed by a bonfire.', '2026-07-30', '05:30 PM', 'Beach Area', 'Meditation Retreats', 1, 0.00, 5)
+-- Dates are relative to the install date so the calendar always has believable
+-- past, present and future sessions to show.
+INSERT INTO `events` (`id`, `title`, `description`, `date`, `time`, `location`, `category`, `course_id`, `is_free`, `amount`, `created_by`) VALUES
+(1, 'Kids Summer Yog Camp (Age 7-11 Batch 2)', 'A fun-filled, interactive yoga camp specially tailored for kids to learn breathing, postures, and focus.', DATE_SUB(CURDATE(), INTERVAL 40 DAY), '09:00 AM', 'Kids Hall', 'Yoga Workshops', NULL, 1, 0.00, 5),
+(2, 'ABC Workshop: Backbends for Beginners', 'An absolute beginners workshop covering correct spinal extension techniques and core activation.', DATE_SUB(CURDATE(), INTERVAL 12 DAY), '09:00 AM', 'Yoga Studio', 'Yoga Workshops', 1, 0, 299.00, 5),
+(3, 'Sunset Beach Yog 2026', 'Relax, stretch, and breathe under the golden hour on the beach. Followed by a bonfire.', DATE_ADD(CURDATE(), INTERVAL 21 DAY), '05:30 PM', 'Beach Area', 'Meditation Retreats', NULL, 1, 0.00, 5),
+(4, 'Morning Hatha Practice — Week 5', 'Guided morning session working through the standing sequence with alignment corrections.', CURDATE(), '07:00 AM', 'Studio One', 'Yoga Workshops', 1, 1, 0.00, 5),
+(5, 'Evening Pranayama & Stillness', 'Wind-down breathwork followed by twenty minutes of silent sitting.', CURDATE(), '06:30 PM', 'Meditation Hall', 'Meditation Retreats', 3, 1, 0.00, 7),
+(6, 'Ayurvedic Kitchen Workshop', 'Cook three dosha-balancing meals and take home the recipe cards.', DATE_ADD(CURDATE(), INTERVAL 5 DAY), '11:00 AM', 'Community Kitchen', 'Ayurveda Masterclasses', 2, 0, 499.00, 6),
+(7, 'Vedic Philosophy Webinar: The Four Paths', 'Online lecture and Q&A exploring Karma, Bhakti, Raja and Jnana yoga.', DATE_ADD(CURDATE(), INTERVAL 9 DAY), '08:00 PM', 'Online (Zoom)', 'Vedic Science Webinars', NULL, 1, 0.00, 6)
 ON DUPLICATE KEY UPDATE `id`=`id`;
 
-INSERT INTO `resources` (`id`, `title`, `description`, `file_url`, `uploaded_by`, `category`) VALUES
-(1, 'Yoga Anatomy Reference Guide', 'A detailed visual dictionary explaining muscle engagement in key yoga postures.', 'resources/anatomy_guide.pdf', 5, 'Yoga Guides'),
-(2, 'Meditation and Breathing Exercises', 'Pranayama techniques and guidelines to improve lung capacity and clear mental fog.', 'resources/meditation_guide.pdf', 5, 'Meditation Audios')
+INSERT INTO `event_registrations` (`id`, `event_id`, `user_id`) VALUES
+(1, 4, 1), (2, 5, 1), (3, 3, 1), (4, 4, 4)
+ON DUPLICATE KEY UPDATE `id`=`id`;
+
+INSERT INTO `resources` (`id`, `title`, `description`, `file_url`, `uploaded_by`, `category`, `course_id`) VALUES
+(1, 'Yoga Anatomy Reference Guide', 'A detailed visual dictionary explaining muscle engagement in key yoga postures.', 'resources/anatomy_guide.pdf', 5, 'Yoga Guides', 1),
+(2, 'Meditation and Breathing Exercises', 'Pranayama techniques and guidelines to improve lung capacity and clear mental fog.', 'resources/meditation_guide.pdf', 5, 'Meditation Audios', 3),
+(3, 'Hatha Sequence Workbook (Weeks 1-4)', 'Printable practice sheets covering the first half of the Foundations of Hatha Yoga syllabus.', 'resources/hatha_workbook.pdf', 5, 'Yoga Guides', 1),
+(4, 'Dosha Self-Assessment Chart', 'Determine your constitution and the seasonal routine that suits it best.', 'resources/dosha_chart.pdf', 6, 'Ayurveda & Nutrition', 2),
+(5, 'Patanjali Yoga Sutras — Annotated', 'Full Sanskrit text with transliteration and plain-language commentary. Open to every member.', 'resources/yoga_sutras.pdf', 3, 'Ancient Sutras & E-Books', NULL),
+(6, 'Mindful Living Starter Pack', 'A short introduction to breath awareness and daily reflection for newcomers.', 'resources/mindful_starter.pdf', 3, 'Meditation Audios', NULL),
+(7, 'Research: Yoga and Stress Biomarkers', 'Peer-reviewed summary of cortisol response across an eight-week yoga intervention.', 'resources/yoga_stress_research.pdf', 6, 'Research Papers', NULL)
 ON DUPLICATE KEY UPDATE `id`=`id`;
 
 INSERT INTO `messages` (`id`, `sender`, `recipient`, `text`, `attachments`, `reactions`, `is_read`, `pinned`, `starred`) VALUES
@@ -212,4 +299,22 @@ ON DUPLICATE KEY UPDATE `id`=`id`;
 INSERT INTO `notifications` (`id`, `user`, `title`, `type`, `content`, `is_read`) VALUES
 (1, 'Demo Student', 'Welcome to Pragya Connect!', 'system', 'Explore workshops, community feed, and connect with mentors.', 0),
 (2, 'Demo Student', 'New Event: Backbends for Beginners', 'event', 'ABC Workshop: Backbends for Beginners is scheduled for July 18th.', 0)
+ON DUPLICATE KEY UPDATE `id`=`id`;
+
+INSERT INTO `courses` (`id`, `name`, `description`, `mentor_id`) VALUES
+(1, 'Foundations of Hatha Yoga', 'An eight-week grounding course covering the classical asana sequence, alignment, and breath awareness.', 5),
+(2, 'Ayurveda for Daily Living', 'Practical Ayurvedic routines, seasonal eating, and dosha-balancing lifestyle design.', 6),
+(3, 'Meditation & Mindfulness Intensive', 'Progressive concentration practices, pranayama, and mindful stress management.', 7)
+ON DUPLICATE KEY UPDATE `id`=`id`;
+
+INSERT INTO `course_enrollments` (`id`, `course_id`, `user_id`) VALUES
+(1, 1, 1), (2, 3, 1), (3, 1, 4), (4, 2, 4)
+ON DUPLICATE KEY UPDATE `id`=`id`;
+
+INSERT INTO `resource_categories` (`id`, `name`, `created_by`) VALUES
+(1, 'Yoga Guides', 3),
+(2, 'Ayurveda & Nutrition', 3),
+(3, 'Meditation Audios', 3),
+(4, 'Ancient Sutras & E-Books', 3),
+(5, 'Research Papers', 3)
 ON DUPLICATE KEY UPDATE `id`=`id`;

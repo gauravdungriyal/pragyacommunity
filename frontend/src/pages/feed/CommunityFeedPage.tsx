@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Flame,
   Heart,
@@ -7,11 +8,7 @@ import {
   Image as ImageIcon,
   Send,
   Trash2,
-  Filter,
-  Sparkles,
-  User as UserIcon,
-  Tag,
-  AlertCircle
+  Check,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { postsApi } from '../../api/services';
@@ -19,6 +16,9 @@ import { Post, Comment } from '../../types';
 
 export const CommunityFeedPage: React.FC = () => {
   const { user, isAdmin } = useAuth();
+  const [searchParams] = useSearchParams();
+  const highlightedPostId = searchParams.get('post');
+
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +33,8 @@ export const CommunityFeedPage: React.FC = () => {
   // Active Comment Box State (map of postId -> boolean/string)
   const [activeCommentPostId, setActiveCommentPostId] = useState<string | null>(null);
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
-  const [likedPosts, setLikedPosts] = useState<Record<string, boolean>>({});
+  const [sharedPostId, setSharedPostId] = useState<string | null>(null);
+  const highlightRef = useRef<HTMLElement | null>(null);
 
   const categories = [
     'All',
@@ -62,6 +63,13 @@ export const CommunityFeedPage: React.FC = () => {
     fetchPosts();
   }, []);
 
+  // Bring a shared post into view once the feed has rendered
+  useEffect(() => {
+    if (!loading && highlightedPostId && highlightRef.current) {
+      highlightRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [loading, highlightedPostId]);
+
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newContent.trim() || !user) return;
@@ -69,7 +77,6 @@ export const CommunityFeedPage: React.FC = () => {
     setSubmitting(true);
     try {
       await postsApi.create({
-        user_id: user.id || user._id || '',
         content: newContent,
         image: newImage.trim() ? newImage : undefined,
         category: postCategory,
@@ -78,31 +85,72 @@ export const CommunityFeedPage: React.FC = () => {
       setNewImage('');
       await fetchPosts();
     } catch (err) {
-      alert('Failed to publish post. Please try again.');
+      setError('Failed to publish your post. Please try again.');
     } finally {
       setSubmitting(false);
     }
   };
 
+  /**
+   * One like per member: the server owns the state, so the optimistic flip is
+   * immediately reconciled with the count it returns.
+   */
   const handleToggleLike = async (postId: string) => {
-    const isCurrentlyLiked = !!likedPosts[postId];
-    setLikedPosts((prev) => ({ ...prev, [postId]: !isCurrentlyLiked }));
+    const target = posts.find((p) => p._id === postId);
+    if (!target) return;
+    const wasLiked = !!target.liked_by_me;
 
-    // Optimistic UI update
     setPosts((prev) =>
       prev.map((p) =>
         p._id === postId
-          ? { ...p, likes: isCurrentlyLiked ? Math.max(0, p.likes - 1) : p.likes + 1 }
+          ? { ...p, liked_by_me: !wasLiked, likes: wasLiked ? Math.max(0, p.likes - 1) : p.likes + 1 }
           : p
       )
     );
 
     try {
-      await postsApi.toggleLike(postId, isCurrentlyLiked ? 'unlike' : 'like');
-    } catch (err) {
-      // Revert on error
-      setLikedPosts((prev) => ({ ...prev, [postId]: isCurrentlyLiked }));
-      await fetchPosts();
+      const res = await postsApi.toggleLike(postId);
+      setPosts((prev) =>
+        prev.map((p) => (p._id === postId ? { ...p, liked_by_me: res.liked_by_me, likes: res.likes } : p))
+      );
+    } catch {
+      setPosts((prev) =>
+        prev.map((p) =>
+          p._id === postId
+            ? { ...p, liked_by_me: wasLiked, likes: wasLiked ? p.likes + 1 : Math.max(0, p.likes - 1) }
+            : p
+        )
+      );
+    }
+  };
+
+  /**
+   * Share a direct link to this post, using the device share sheet where the
+   * browser offers one and falling back to the clipboard.
+   */
+  const handleShare = async (post: Post) => {
+    const url = `${window.location.origin}/feed?post=${post._id}`;
+    const shareData = {
+      title: `${post.user_id?.name || 'A member'} on Pragya Connect`,
+      text: post.content.slice(0, 120),
+      url,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch {
+        // Dismissed — fall through to copying the link
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setSharedPostId(post._id);
+      setTimeout(() => setSharedPostId((current) => (current === post._id ? null : current)), 2000);
+    } catch {
+      setError('Could not copy the link. You can copy it from the address bar.');
     }
   };
 
@@ -113,7 +161,6 @@ export const CommunityFeedPage: React.FC = () => {
     try {
       const newComment = await postsApi.addComment({
         post_id: postId,
-        user_id: user.id || user._id || '',
         comment_text: text,
       });
 
@@ -121,16 +168,22 @@ export const CommunityFeedPage: React.FC = () => {
         prev.map((p) => {
           if (p._id === postId) {
             const existingComments = p.comments || [];
+            // Prefer the author the server recorded; fall back to the signed-in member
+            const author =
+              typeof newComment.user_id === 'object' && newComment.user_id
+                ? newComment.user_id
+                : {
+                    _id: user.id || user._id || '',
+                    name: user.name,
+                    role: String(user.role),
+                  };
+
             const commentObj: Comment = {
               _id: newComment._id || Math.random().toString(),
               post_id: postId,
-              user_id: {
-                _id: user.id || user._id || '',
-                name: user.name,
-                role: user.role,
-              },
+              user_id: author,
               comment_text: text,
-              createdAt: new Date().toISOString(),
+              createdAt: newComment.createdAt || new Date().toISOString(),
             };
             return { ...p, comments: [...existingComments, commentObj] };
           }
@@ -140,7 +193,7 @@ export const CommunityFeedPage: React.FC = () => {
 
       setCommentInputs((prev) => ({ ...prev, [postId]: '' }));
     } catch (err) {
-      alert('Failed to add comment.');
+      setError('Failed to add your comment.');
     }
   };
 
@@ -150,7 +203,7 @@ export const CommunityFeedPage: React.FC = () => {
       await postsApi.delete(postId);
       setPosts((prev) => prev.filter((p) => p._id !== postId));
     } catch (err) {
-      alert('Failed to delete post.');
+      setError('Failed to delete the post.');
     }
   };
 
@@ -260,8 +313,17 @@ export const CommunityFeedPage: React.FC = () => {
         </form>
       </div>
 
-      {/* Feed Posts List */}
-      <div className="space-y-5">
+      {error && (
+        <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-xs font-semibold flex items-center justify-between gap-3">
+          <span>{error}</span>
+          <button onClick={() => setError(null)} className="font-bold underline whitespace-nowrap">
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Feed Posts List — generous spacing keeps each post distinct */}
+      <div className="space-y-8 sm:space-y-10">
         {loading ? (
           <div className="p-12 text-center">
             <div className="w-8 h-8 border-4 border-terracotta-600 border-t-gold-500 rounded-full animate-spin mx-auto mb-3" />
@@ -279,12 +341,18 @@ export const CommunityFeedPage: React.FC = () => {
             const authorRole = post.user_id?.role || 'Seeker';
             const isAuthor = user && (user.id === post.user_id?._id || user._id === post.user_id?._id);
             const canDelete = isAuthor || isAdmin;
-            const isLiked = !!likedPosts[post._id];
+            const isLiked = !!post.liked_by_me;
+            const isHighlighted = highlightedPostId === post._id;
 
             return (
               <article
                 key={post._id}
-                className="bg-white dark:bg-neutral-900 p-6 rounded-3xl border border-sand-200 dark:border-neutral-800 shadow-card space-y-4"
+                ref={isHighlighted ? highlightRef : undefined}
+                className={`bg-white dark:bg-neutral-900 p-5 sm:p-6 rounded-3xl border shadow-card space-y-4 transition-all ${
+                  isHighlighted
+                    ? 'border-gold-500 dark:border-gold-500 ring-2 ring-gold-500/30'
+                    : 'border-sand-200 dark:border-neutral-800'
+                }`}
               >
                 {/* Author Info */}
                 <div className="flex items-center justify-between">
@@ -338,19 +406,20 @@ export const CommunityFeedPage: React.FC = () => {
                 )}
 
                 {/* Actions Toolbar */}
-                <div className="pt-3 border-t border-sand-200 dark:border-neutral-800 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-6">
-                    {/* Like Button */}
+                <div className="pt-3 border-t border-sand-200 dark:border-neutral-800 flex items-center justify-between text-xs gap-3">
+                  <div className="flex items-center gap-4 sm:gap-6">
+                    {/* Like Button — a member may hold only one like per post */}
                     <button
                       onClick={() => handleToggleLike(post._id)}
-                      className={`flex items-center gap-1.5 font-bold transition-all ${
-                        isLiked
-                          ? 'text-rose-500 fill-rose-500 scale-105'
-                          : 'text-neutral-500 hover:text-rose-500'
+                      aria-pressed={isLiked}
+                      className={`flex items-center gap-1.5 font-bold transition-all cursor-pointer ${
+                        isLiked ? 'text-rose-500' : 'text-neutral-500 hover:text-rose-500'
                       }`}
                     >
                       <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
-                      <span>{post.likes || 0} Likes</span>
+                      <span>
+                        {post.likes || 0} {post.likes === 1 ? 'Like' : 'Likes'}
+                      </span>
                     </button>
 
                     {/* Comment Toggle Button */}
@@ -360,22 +429,30 @@ export const CommunityFeedPage: React.FC = () => {
                           activeCommentPostId === post._id ? null : post._id
                         )
                       }
-                      className="flex items-center gap-1.5 font-bold text-neutral-500 hover:text-terracotta-700 dark:hover:text-gold-400 transition-colors"
+                      className="flex items-center gap-1.5 font-bold text-neutral-500 hover:text-terracotta-700 dark:hover:text-gold-400 transition-colors cursor-pointer"
                     >
                       <MessageCircle className="w-4 h-4" />
-                      <span>{post.comments?.length || 0} Comments</span>
+                      <span className="whitespace-nowrap">
+                        {post.comments?.length || 0} {post.comments?.length === 1 ? 'Comment' : 'Comments'}
+                      </span>
                     </button>
                   </div>
 
                   <button
-                    onClick={() => {
-                      navigator.clipboard?.writeText(window.location.href);
-                      alert('Post link copied to clipboard!');
-                    }}
-                    className="flex items-center gap-1.5 font-bold text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
+                    onClick={() => handleShare(post)}
+                    className="flex items-center gap-1.5 font-bold text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 cursor-pointer whitespace-nowrap"
                   >
-                    <Share2 className="w-4 h-4" />
-                    Share
+                    {sharedPostId === post._id ? (
+                      <>
+                        <Check className="w-4 h-4 text-emerald-500" />
+                        <span className="text-emerald-600 dark:text-emerald-400">Link copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-4 h-4" />
+                        Share
+                      </>
+                    )}
                   </button>
                 </div>
 
@@ -385,31 +462,42 @@ export const CommunityFeedPage: React.FC = () => {
                     {/* Comments List */}
                     <div className="space-y-2.5 max-h-60 overflow-y-auto">
                       {post.comments && post.comments.length > 0 ? (
-                        post.comments.map((c) => (
-                          <div
-                            key={c._id}
-                            className="p-3 rounded-2xl bg-sand-50 dark:bg-neutral-800/60 text-xs flex items-start gap-2.5"
-                          >
-                            <div className="w-7 h-7 rounded-full bg-terracotta-600 text-white font-bold flex items-center justify-center text-[10px] flex-shrink-0">
-                              {typeof c.user_id === 'object'
-                                ? c.user_id.name?.charAt(0) || 'U'
-                                : 'U'}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-neutral-900 dark:text-white">
-                                  {typeof c.user_id === 'object' ? c.user_id.name : 'Seeker'}
-                                </span>
-                                <span className="text-[10px] text-neutral-400">
-                                  {new Date(c.createdAt).toLocaleDateString()}
-                                </span>
+                        post.comments.map((c) => {
+                          // Comments carry their author object; fall back to the
+                          // signed-in member for one just added optimistically.
+                          const commenter = typeof c.user_id === 'object' && c.user_id ? c.user_id : null;
+                          const commenterName = commenter?.name || user?.name || 'Member';
+                          const commenterRole = commenter?.role;
+
+                          return (
+                            <div
+                              key={c._id}
+                              className="p-3 rounded-2xl bg-sand-50 dark:bg-neutral-800/60 text-xs flex items-start gap-2.5"
+                            >
+                              <div className="w-7 h-7 rounded-full bg-terracotta-600 text-white font-bold flex items-center justify-center text-[10px] flex-shrink-0">
+                                {commenterName.charAt(0).toUpperCase()}
                               </div>
-                              <p className="text-neutral-700 dark:text-neutral-300 mt-0.5">
-                                {c.comment_text}
-                              </p>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                                  <span className="font-bold text-neutral-900 dark:text-white">
+                                    {commenterName}
+                                  </span>
+                                  {commenterRole && (
+                                    <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-sand-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300">
+                                      {commenterRole}
+                                    </span>
+                                  )}
+                                  <span className="text-[10px] text-neutral-400">
+                                    {new Date(c.createdAt).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                <p className="text-neutral-700 dark:text-neutral-300 mt-0.5 break-words">
+                                  {c.comment_text}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        ))
+                          );
+                        })
                       ) : (
                         <p className="text-xs text-neutral-400 text-center py-2">
                           No comments yet. Start the conversation!

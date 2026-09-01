@@ -6,6 +6,7 @@
 
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../helpers/response.php';
+require_once __DIR__ . '/../helpers/auth_middleware.php';
 
 class MessageController {
 
@@ -25,6 +26,8 @@ class MessageController {
             '_id' => (string)$msg['id'],
             'sender' => $msg['sender'],
             'recipient' => $msg['recipient'],
+            'course_id' => isset($msg['course_id']) && $msg['course_id'] !== null ? (int)$msg['course_id'] : null,
+            'sender_role' => $msg['sender_role'] ?? null,
             'text' => $msg['text'] ?? '',
             'attachments' => $attachments,
             'reactions' => $reactions,
@@ -51,9 +54,11 @@ class MessageController {
 
         $db = Database::getConnection();
 
+        // course_id IS NULL keeps course group chatter out of one-to-one threads
         $stmt = $db->prepare("
-            SELECT * FROM messages 
-            WHERE (sender = :u1 AND recipient = :u2) OR (sender = :u2_2 AND recipient = :u1_2)
+            SELECT * FROM messages
+            WHERE course_id IS NULL
+              AND ((sender = :u1 AND recipient = :u2) OR (sender = :u2_2 AND recipient = :u1_2))
             ORDER BY created_at ASC
         ");
         $stmt->execute([
@@ -80,8 +85,8 @@ class MessageController {
         $db = Database::getConnection();
 
         $stmt = $db->prepare("
-            SELECT * FROM messages 
-            WHERE sender = :u1 OR recipient = :u2
+            SELECT * FROM messages
+            WHERE course_id IS NULL AND (sender = :u1 OR recipient = :u2)
             ORDER BY created_at DESC
         ");
         $stmt->execute([':u1' => $user, ':u2' => $user]);
@@ -246,6 +251,140 @@ class MessageController {
         }
 
         sendJson(self::formatMessage($msg));
+    }
+
+    /**
+     * Course group chats the caller belongs to, with last message and unread count.
+     */
+    public static function getGroups(): void {
+        $user = requireUser();
+        $db = Database::getConnection();
+
+        $stmt = $db->prepare("
+            SELECT c.id, c.name,
+                   (SELECT COUNT(*) FROM course_enrollments ce WHERE ce.course_id = c.id) AS member_count,
+                   (SELECT m.text FROM messages m WHERE m.course_id = c.id ORDER BY m.created_at DESC LIMIT 1) AS last_message,
+                   (SELECT m.sender FROM messages m WHERE m.course_id = c.id ORDER BY m.created_at DESC LIMIT 1) AS last_sender,
+                   (SELECT m.created_at FROM messages m WHERE m.course_id = c.id ORDER BY m.created_at DESC LIMIT 1) AS last_at,
+                   (SELECT COUNT(*) FROM messages m
+                      WHERE m.course_id = c.id
+                        AND m.sender <> :uname
+                        AND m.created_at > COALESCE(
+                            (SELECT cr.last_read_at FROM course_reads cr WHERE cr.course_id = c.id AND cr.user_id = :uid),
+                            '1970-01-01 00:00:01'
+                        )
+                   ) AS unread_count
+            FROM courses c
+            WHERE c.id IN (SELECT course_id FROM course_enrollments WHERE user_id = :uid2)
+               OR c.mentor_id = :uid3
+            ORDER BY (last_at IS NULL), last_at DESC, c.name ASC
+        ");
+        $stmt->execute([
+            ':uname' => $user['name'],
+            ':uid' => $user['id'],
+            ':uid2' => $user['id'],
+            ':uid3' => $user['id']
+        ]);
+
+        $groups = array_map(function ($g) {
+            return [
+                'course_id' => (int)$g['id'],
+                'id' => (int)$g['id'],
+                'name' => $g['name'],
+                'member_count' => (int)$g['member_count'],
+                'lastMessage' => $g['last_message'] ?? '',
+                'lastSender' => $g['last_sender'] ?? null,
+                'timestamp' => $g['last_at'],
+                'unreadCount' => (int)$g['unread_count']
+            ];
+        }, $stmt->fetchAll());
+
+        sendJson($groups);
+    }
+
+    /**
+     * Full message history for one course group chat.
+     * Reading the thread also advances the caller's read marker.
+     */
+    public static function getGroupHistory(int $courseId): void {
+        $user = requireUser();
+        $db = Database::getConnection();
+
+        if (!self::canAccessCourse($db, (int)$user['id'], $courseId)) {
+            sendError('You are not a member of this course', 403);
+        }
+
+        $stmt = $db->prepare("
+            SELECT m.*, u.role AS sender_role
+            FROM messages m
+            LEFT JOIN users u ON u.name = m.sender
+            WHERE m.course_id = :cid
+            ORDER BY m.created_at ASC
+        ");
+        $stmt->execute([':cid' => $courseId]);
+        $messages = $stmt->fetchAll();
+
+        $mark = $db->prepare("
+            INSERT INTO course_reads (course_id, user_id, last_read_at)
+            VALUES (:cid, :uid, CURRENT_TIMESTAMP)
+            ON DUPLICATE KEY UPDATE last_read_at = CURRENT_TIMESTAMP
+        ");
+        $mark->execute([':cid' => $courseId, ':uid' => $user['id']]);
+
+        sendJson(array_map([self::class, 'formatMessage'], $messages));
+    }
+
+    /**
+     * Post a message into a course group chat.
+     */
+    public static function sendGroup(): void {
+        $user = requireUser();
+        $data = getJsonInput();
+
+        $courseId = (int)($data['course_id'] ?? 0);
+        $text = trim($data['text'] ?? '');
+
+        if ($courseId <= 0 || $text === '') {
+            sendError('course_id and text are required', 400);
+        }
+
+        $db = Database::getConnection();
+        if (!self::canAccessCourse($db, (int)$user['id'], $courseId)) {
+            sendError('You are not a member of this course', 403);
+        }
+
+        $stmt = $db->prepare("
+            INSERT INTO messages (sender, recipient, course_id, text, attachments, reactions, is_read, pinned, starred)
+            VALUES (:sender, NULL, :course_id, :text, '[]', '[]', 0, 0, 0)
+        ");
+        $stmt->execute([
+            ':sender' => $user['name'],
+            ':course_id' => $courseId,
+            ':text' => $text
+        ]);
+
+        $msgId = (int)$db->lastInsertId();
+        $fetch = $db->prepare("SELECT * FROM messages WHERE id = :id");
+        $fetch->execute([':id' => $msgId]);
+
+        sendJson(self::formatMessage($fetch->fetch()), 201);
+    }
+
+    /**
+     * A member may use a course chat if they are enrolled or they teach it.
+     */
+    private static function canAccessCourse(PDO $db, int $userId, int $courseId): bool {
+        $stmt = $db->prepare("
+            SELECT 1 FROM courses c
+            WHERE c.id = :cid
+              AND (c.mentor_id = :uid OR EXISTS (
+                    SELECT 1 FROM course_enrollments ce
+                    WHERE ce.course_id = c.id AND ce.user_id = :uid2
+              ))
+            LIMIT 1
+        ");
+        $stmt->execute([':cid' => $courseId, ':uid' => $userId, ':uid2' => $userId]);
+        return (bool)$stmt->fetchColumn();
     }
 
     /**

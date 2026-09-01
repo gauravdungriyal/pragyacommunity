@@ -1,4 +1,75 @@
-export type UserRole = 'student' | 'Student' | 'mentor' | 'Mentor' | 'admin' | 'Admin';
+export type UserRole =
+  | 'student' | 'Student'
+  | 'mentor' | 'Mentor'
+  | 'teacher' | 'Teacher'
+  | 'admin' | 'Admin';
+
+export interface Course {
+  id: number;
+  _id: string;
+  name: string;
+  description?: string;
+  mentor_id?: number | null;
+  mentor_name?: string | null;
+  is_enrolled?: boolean;
+  member_count?: number;
+  resource_count?: number;
+  createdAt?: string;
+}
+
+export interface ResourceCategory {
+  id: number;
+  _id: string;
+  name: string;
+}
+
+export interface TodayClass {
+  id: number;
+  _id: string;
+  title: string;
+  time: string;
+  date: string;
+  location: string;
+  category?: string;
+  course_name?: string | null;
+  instructor_name?: string;
+}
+
+export interface ActivityItem {
+  id: number;
+  type: string;
+  description: string;
+  link?: string | null;
+  createdAt: string;
+}
+
+export interface DashboardSummary {
+  status: boolean;
+  user: { id: string; name: string; role: string };
+  today_classes: TodayClass[];
+  upcoming_classes: TodayClass[];
+  courses: Course[];
+  recent_activity: ActivityItem[];
+  stats: {
+    courses: number;
+    bookings: number;
+    attended: number;
+    resources: number;
+    posts: number;
+    unread_notifications: number;
+  };
+}
+
+export interface CourseGroup {
+  course_id: number;
+  id: number;
+  name: string;
+  member_count: number;
+  lastMessage: string;
+  lastSender?: string | null;
+  timestamp?: string | null;
+  unreadCount: number;
+}
 
 export interface User {
   id: string;
@@ -109,6 +180,7 @@ export interface Post {
   content: string;
   image?: string;
   likes: number;
+  liked_by_me?: boolean;
   comments?: Comment[];
   category?: string;
   createdAt: string;
@@ -159,7 +231,7 @@ export interface EventPackage {
 
 export interface Event {
   _id: string;
-  id?: string;
+  id?: string | number;
   title: string;
   name?: string;
   description: string;
@@ -167,12 +239,16 @@ export interface Event {
   time: string;
   location: string;
   category?: string;
+  course_id?: number | null;
+  course_name?: string | null;
   image?: string;
   amount?: number;
   is_free?: number | boolean;
   starts_at?: string;
   ends_at?: string;
   is_favorite?: boolean;
+  is_registered?: boolean;
+  creator_name?: string;
   likes_count?: number;
   schedules?: EventSchedule[];
   packages?: EventPackage[];
@@ -200,7 +276,10 @@ export interface MessageReaction {
 export interface Message {
   _id: string;
   sender: string;
-  recipient: string;
+  /** Null for course group messages, which have a course_id instead. */
+  recipient: string | null;
+  course_id?: number | null;
+  sender_role?: string | null;
   text: string;
   attachments?: MessageAttachment[];
   reactions?: MessageReaction[];
@@ -229,11 +308,13 @@ export interface Resource {
   title: string;
   description: string;
   file_url: string;
-  uploaded_by: string;
+  uploaded_by: string | number;
+  author_name?: string;
   category?: string;
+  course_id?: number | null;
+  course_name?: string | null;
+  is_extra?: boolean;
   fileType?: string;
-  downloads?: number;
-  size?: string;
   createdAt: string;
 }
 
@@ -242,9 +323,14 @@ export interface Notification {
   user: string;
   title: string;
   message: string;
-  type?: 'mentorship' | 'community' | 'event' | 'system' | 'message';
+  content?: string;
+  type?: 'mentorship' | 'community' | 'event' | 'system' | 'message' | 'course';
+  scope?: 'all' | 'course' | 'individual';
+  course_id?: number | null;
+  course_name?: string | null;
+  sender_name?: string | null;
   is_read: boolean;
-  link?: string;
+  link?: string | null;
   createdAt: string;
 }
 

@@ -45,15 +45,23 @@ if ($action === 'login') {
 
     $accessToken = JWT::encode($tokenPayload);
     $refreshToken = JWT::encode($refreshPayload);
-    $nameParts = explode(' ', $user['name']);
 
+    // The full name is returned because notifications, messages and comment
+    // authorship are all matched on the user's display name.
     sendJson([
         'status' => true,
         'message' => 'Login successful',
         'access_token' => $accessToken,
         'refresh_token' => $refreshToken,
         'uid' => (string)$user['id'],
-        'name' => $nameParts[0] ?? 'User'
+        'name' => $user['name'],
+        'user' => [
+            'id' => (string)$user['id'],
+            '_id' => (string)$user['id'],
+            'name' => $user['name'],
+            'email' => $user['email'],
+            'role' => $user['role']
+        ]
     ]);
 }
 
@@ -168,42 +176,57 @@ if ($action === 'get-profile') {
     $lname = $nameParts[1] ?? '';
 
     // Notification preferences (defaults to all-on when no row exists yet)
-    $settingsStmt = $db->prepare("SELECT notify_whatsapp, notify_email, notify_push FROM user_settings WHERE user_id = :id");
+    $settingsStmt = $db->prepare("SELECT notify_whatsapp, notify_email, notify_push, welcome_seen FROM user_settings WHERE user_id = :id");
     $settingsStmt->execute([':id' => $user['id']]);
-    $settings = $settingsStmt->fetch() ?: ['notify_whatsapp' => 1, 'notify_email' => 1, 'notify_push' => 1];
+    $settings = $settingsStmt->fetch() ?: ['notify_whatsapp' => 1, 'notify_email' => 1, 'notify_push' => 1, 'welcome_seen' => 0];
 
     $bookingsStmt = $db->prepare("SELECT COUNT(*) AS cnt FROM event_registrations WHERE user_id = :id");
     $bookingsStmt->execute([':id' => $user['id']]);
     $bookings = (int)($bookingsStmt->fetch()['cnt'] ?? 0);
+
+    $skills = $user['skills'] ?? '';
+    if (is_string($skills) && $skills !== '') {
+        $decodedSkills = json_decode($skills, true);
+        $skills = is_array($decodedSkills)
+            ? $decodedSkills
+            : array_values(array_filter(array_map('trim', explode(',', $skills))));
+    } else {
+        $skills = [];
+    }
+
+    $coursesStmt = $db->prepare("SELECT COUNT(*) AS cnt FROM course_enrollments WHERE user_id = :id");
+    $coursesStmt->execute([':id' => $user['id']]);
+    $courseCount = (int)($coursesStmt->fetch()['cnt'] ?? 0);
+
+    $postsStmt = $db->prepare("SELECT COUNT(*) AS cnt FROM posts WHERE user_id = :id");
+    $postsStmt->execute([':id' => $user['id']]);
+    $postCount = (int)($postsStmt->fetch()['cnt'] ?? 0);
 
     sendJson([
         'status' => true,
         'data' => [
             'id' => (string)$user['id'],
             'username' => explode('@', $user['email'])[0],
-            'warning' => 0,
-            'profile' => 'https://pragya-yog.com/uploads/' . ($user['avatar'] ?? 'default.jpg'),
+            'profile' => $user['avatar'] ?? 'default.jpg',
+            'avatar' => $user['avatar'] ?? 'default.jpg',
             'fullname' => $user['name'],
+            'name' => $user['name'],
             'fname' => $fname,
             'lname' => $lname,
-            'wallet_balance' => '100.00',
-            'amount_expire' => '2026-12-31',
-            'chinese_name' => '普拉吉亚',
-            'dob' => '05-Jan',
-            'dob_month' => '01',
-            'dob_date' => '05',
-            'gender' => 'male',
+            'role' => $user['role'],
             'email' => $user['email'],
             'phone' => $user['phone'] ?? '',
-            'hongkong_id' => 'A123******',
-            'hkdf' => 'A1234567',
+            'bio' => $user['bio'] ?? '',
+            'expertise' => $user['expertise'] ?? '',
+            'skills' => $skills,
             'enroll_date' => date('d M Y', strtotime($user['created_at'] ?? 'now')),
             'notify_whatsapp' => (string)$settings['notify_whatsapp'],
             'notify_email' => (string)$settings['notify_email'],
             'notify_push' => (string)$settings['notify_push'],
+            'welcome_seen' => (int)($settings['welcome_seen'] ?? 0),
             'bookings' => (string)$bookings,
-            'noshow_strikes' => 0,
-            'late_checkin_strikes' => 0
+            'courses' => $courseCount,
+            'posts' => $postCount
         ]
     ]);
 }
@@ -213,10 +236,51 @@ if ($action === 'edit_user_details') {
     $fname = trim($input['fname'] ?? '');
     $lname = trim($input['lname'] ?? '');
     $newName = trim("$fname $lname");
-    if (!empty($newName)) {
-        $up = $db->prepare("UPDATE users SET name = :name WHERE id = :id");
-        $up->execute([':name' => $newName, ':id' => $user['id']]);
+
+    $fields = [];
+    $params = [':id' => $user['id']];
+
+    if ($newName !== '') {
+        $fields[] = 'name = :name';
+        $params[':name'] = $newName;
     }
+    if (isset($input['phone'])) {
+        $fields[] = 'phone = :phone';
+        $params[':phone'] = trim($input['phone']);
+    }
+    if (isset($input['bio'])) {
+        $fields[] = 'bio = :bio';
+        $params[':bio'] = trim($input['bio']);
+    }
+    if (isset($input['expertise'])) {
+        $fields[] = 'expertise = :expertise';
+        $params[':expertise'] = trim($input['expertise']);
+    }
+    if (isset($input['skills'])) {
+        $skills = $input['skills'];
+        $fields[] = 'skills = :skills';
+        $params[':skills'] = is_array($skills) ? json_encode(array_values($skills)) : (string)$skills;
+    }
+
+    if (!empty($fields)) {
+        $up = $db->prepare("UPDATE users SET " . implode(', ', $fields) . " WHERE id = :id");
+        $up->execute($params);
+    }
+
+    $fresh = $db->prepare("SELECT id, name, email, role, phone, bio, expertise, skills, avatar FROM users WHERE id = :id");
+    $fresh->execute([':id' => $user['id']]);
+    $updated = $fresh->fetch();
+
+    sendJson(['status' => true, 'message' => 'Profile updated successfully', 'data' => $updated]);
+}
+
+// 6b. Action: welcome-seen — records that the one-time welcome popup was shown
+if ($action === 'welcome-seen') {
+    $up = $db->prepare("
+        INSERT INTO user_settings (user_id, welcome_seen) VALUES (:id, 1)
+        ON DUPLICATE KEY UPDATE welcome_seen = 1
+    ");
+    $up->execute([':id' => $user['id']]);
     sendJson(['status' => true]);
 }
 

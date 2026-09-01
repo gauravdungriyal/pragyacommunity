@@ -6,6 +6,7 @@
 
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../helpers/response.php';
+require_once __DIR__ . '/../helpers/auth_middleware.php';
 
 class AdminController {
 
@@ -102,25 +103,62 @@ class AdminController {
     }
 
     /**
-     * Broadcast notification to all users
+     * Send an announcement. `target` is either "all" for a platform-wide
+     * broadcast or "user" to reach a single member.
      */
     public static function broadcast(): void {
+        $sender = requireAdmin();
         $data = getJsonInput();
         $title = trim($data['title'] ?? '');
         $message = trim($data['message'] ?? '');
+        $target = strtolower(trim($data['target'] ?? 'all'));
+        $targetUserId = (int)($data['user_id'] ?? 0);
 
         if (empty($title) || empty($message)) {
             sendError('Title and message are required', 400);
         }
 
         $db = Database::getConnection();
-        $users = $db->query("SELECT name FROM users")->fetchAll(PDO::FETCH_COLUMN);
 
-        $stmt = $db->prepare("INSERT INTO notifications (user, title, type, content, is_read) VALUES (:user, :title, 'system', :content, 0)");
-        foreach ($users as $userName) {
-            $stmt->execute([':user' => $userName, ':title' => $title, ':content' => $message]);
+        if ($target === 'user') {
+            if ($targetUserId <= 0) {
+                sendError('user_id is required when sending to a single member', 400);
+            }
+            $lookup = $db->prepare("SELECT id, name FROM users WHERE id = :id");
+            $lookup->execute([':id' => $targetUserId]);
+            $recipients = array_filter([$lookup->fetch()]);
+            if (empty($recipients)) {
+                sendError('Recipient not found', 404);
+            }
+            $scope = 'individual';
+        } else {
+            $recipients = $db->query("SELECT id, name FROM users")->fetchAll();
+            $scope = 'all';
         }
 
-        sendJson(['status' => true, 'message' => 'Broadcast sent to all users']);
+        $stmt = $db->prepare("
+            INSERT INTO notifications (user, user_id, sender_id, title, type, scope, content, link, is_read)
+            VALUES (:user, :user_id, :sender_id, :title, 'system', :scope, :content, :link, 0)
+        ");
+
+        foreach ($recipients as $r) {
+            $stmt->execute([
+                ':user' => $r['name'],
+                ':user_id' => (int)$r['id'],
+                ':sender_id' => (int)$sender['id'],
+                ':title' => $title,
+                ':scope' => $scope,
+                ':content' => $message,
+                ':link' => $data['link'] ?? null
+            ]);
+        }
+
+        sendJson([
+            'status' => true,
+            'message' => $scope === 'all'
+                ? 'Announcement sent to all ' . count($recipients) . ' members'
+                : 'Announcement sent to ' . ($recipients[array_key_first($recipients)]['name'] ?? 'the member'),
+            'recipients' => count($recipients)
+        ]);
     }
 }

@@ -60,3 +60,73 @@ function getAuthUser(): ?array {
     if (!$token) return null;
     return JWT::decode($token);
 }
+
+/**
+ * Resolve the full user row for the caller's token, or null when unauthenticated.
+ * The token may carry an id, an email, or both depending on which login issued it.
+ */
+function currentUser(): ?array {
+    static $cached = false;
+    static $user = null;
+
+    if ($cached) {
+        return $user;
+    }
+    $cached = true;
+
+    $payload = getAuthUser();
+    if (!$payload) {
+        return null;
+    }
+
+    require_once __DIR__ . '/../config/db.php';
+    $db = Database::getConnection();
+
+    if (!empty($payload['id'])) {
+        $stmt = $db->prepare("SELECT * FROM users WHERE id = :id LIMIT 1");
+        $stmt->execute([':id' => (int)$payload['id']]);
+        $user = $stmt->fetch() ?: null;
+    }
+
+    if (!$user && !empty($payload['email'])) {
+        $stmt = $db->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
+        $stmt->execute([':email' => $payload['email']]);
+        $user = $stmt->fetch() ?: null;
+    }
+
+    return $user;
+}
+
+/**
+ * Resolve the caller's user row, refusing the request when there is none.
+ */
+function requireUser(): array {
+    $user = currentUser();
+    if (!$user) {
+        sendError('Authentication required', 401);
+    }
+    return $user;
+}
+
+/**
+ * Resolve the caller's user row and require an Admin role.
+ */
+function requireAdmin(): array {
+    $user = requireUser();
+    if (strcasecmp($user['role'] ?? '', 'Admin') !== 0) {
+        sendError('Administrator access required', 403);
+    }
+    return $user;
+}
+
+/**
+ * Resolve the caller and require a role that may manage course content.
+ */
+function requireStaff(): array {
+    $user = requireUser();
+    $role = strtolower($user['role'] ?? '');
+    if (!in_array($role, ['admin', 'mentor', 'teacher'], true)) {
+        sendError('Mentor or administrator access required', 403);
+    }
+    return $user;
+}

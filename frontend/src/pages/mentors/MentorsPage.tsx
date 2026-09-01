@@ -12,7 +12,7 @@ import {
   Clock,
   ShieldCheck
 } from 'lucide-react';
-import { mentorsApi } from '../../api/services';
+import { mentorsApi, messagesApi } from '../../api/services';
 import { Mentor } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 
@@ -28,17 +28,18 @@ export const MentorsPage: React.FC = () => {
   // Booking Modal State
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [bookingDate, setBookingDate] = useState('');
-  const [bookingTime, setBookingTime] = useState('10:00 AM');
+  const [bookingTime, setBookingTime] = useState('09:00 AM');
   const [sessionType, setSessionType] = useState('30-min 1-on-1 Mentorship');
+  const [bookingNotes, setBookingNotes] = useState('');
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingSubmitting, setBookingSubmitting] = useState(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
 
+  // Filters are built from the expertise the mentors actually have on record,
+  // so every option returns results.
   const expertiseList = [
     'All',
-    'Yoga & Asana',
-    'Ayurveda & Herbology',
-    'Vedic Meditation',
-    'Pranayama & Breathwork',
-    'Mindful Career Growth',
+    ...Array.from(new Set(mentors.map((m) => m.expertise).filter(Boolean) as string[])).sort(),
   ];
 
   useEffect(() => {
@@ -47,17 +48,7 @@ export const MentorsPage: React.FC = () => {
         setLoading(true);
         const data = await mentorsApi.getAll();
         if (Array.isArray(data)) {
-          // If mentors from db don't have bio or ratings yet, provide enriched mock defaults
-          const enriched = data.map((m, idx) => ({
-            ...m,
-            rating: m.rating || 4.8 + (idx % 3) * 0.1,
-            expertise: m.expertise || ['Yoga & Asana', 'Ayurveda & Herbology', 'Vedic Meditation'][idx % 3],
-            bio: m.bio || 'Dedicated practitioner and educator passionate about holistic student empowerment and wellness.',
-            availability: m.availability || 'Weekdays & Weekends',
-            experience: `${5 + (idx % 6)} Years Experience`,
-            sessionCount: 40 + idx * 12,
-          }));
-          setMentors(enriched);
+          setMentors(data);
         }
       } catch (err) {
         console.error('Failed to load mentors:', err);
@@ -86,16 +77,44 @@ export const MentorsPage: React.FC = () => {
     setSelectedMentor(mentor);
     setBookingDate(new Date(Date.now() + 86400000).toISOString().split('T')[0]);
     setBookingSuccess(false);
+    setBookingError(null);
+    setBookingNotes('');
   };
 
-  const handleConfirmBooking = (e: React.FormEvent) => {
+  /**
+   * A session request is delivered to the mentor as a direct message, so it
+   * lands in a real inbox they can reply to.
+   */
+  const handleConfirmBooking = async (e: React.FormEvent) => {
     e.preventDefault();
-    setBookingSuccess(true);
-    setTimeout(() => {
-      setSelectedMentor(null);
-      setBookingSuccess(false);
-      alert(`Booking Confirmed with ${selectedMentor?.name}! A calendar invite has been sent to ${user?.email}.`);
-    }, 1200);
+    if (!selectedMentor || !user?.name) return;
+
+    setBookingSubmitting(true);
+    setBookingError(null);
+
+    const readableDate = new Date(bookingDate).toLocaleDateString(undefined, {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+
+    const requestText =
+      `Session request: ${sessionType}\n` +
+      `Preferred slot: ${readableDate} at ${bookingTime}\n` +
+      (bookingNotes.trim() ? `What I would like to cover: ${bookingNotes.trim()}` : 'No further notes.');
+
+    try {
+      await messagesApi.send({
+        sender: user.name,
+        recipient: selectedMentor.name,
+        text: requestText,
+      });
+      setBookingSuccess(true);
+    } catch {
+      setBookingError('Could not send your request. Please try again.');
+    } finally {
+      setBookingSubmitting(false);
+    }
   };
 
   const handleSendMessage = (mentorName: string) => {
@@ -103,16 +122,16 @@ export const MentorsPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in pb-12 w-full max-w-full">
+    <div className="space-y-6 sm:space-y-8 animate-fade-in pb-8 w-full max-w-full">
       {/* Header Banner */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-forest-600 via-forest-700 to-forest-800 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="p-5 sm:p-8 rounded-3xl bg-gradient-to-r from-forest-600 via-forest-700 to-forest-800 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-gold-500/20 text-gold-300 border border-gold-500/30">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-gold-500/20 text-gold-300 border border-gold-500/30">
             <Users className="w-3.5 h-3.5" />
             Verified Experts
           </div>
-          <h1 className="font-display font-extrabold text-2xl sm:text-3xl">
-            Mentors & Gurus Hub
+          <h1 className="font-display font-extrabold text-xl sm:text-3xl">
+            Mentors & Gurus
           </h1>
           <p className="text-sand-100/90 text-xs sm:text-sm max-w-xl">
             Connect 1-on-1 with certified masters in Yogic sciences, Ayurveda healing, and holistic mindful guidance.
@@ -135,7 +154,7 @@ export const MentorsPage: React.FC = () => {
         </div>
 
         {/* Categories */}
-        <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+        <div className="flex items-center gap-2 w-full lg:w-auto overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
           {expertiseList.map((exp) => (
             <button
               key={exp}
@@ -187,13 +206,14 @@ export const MentorsPage: React.FC = () => {
                     <p className="text-xs font-semibold text-forest-700 dark:text-gold-400 truncate mt-0.5">
                       {mentor.expertise}
                     </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="flex items-center gap-1 text-xs font-bold text-amber-500">
-                        <Star className="w-3.5 h-3.5 fill-amber-400" />
-                        {mentor.rating?.toFixed(1) || '4.9'}
-                      </span>
-                      <span className="text-[10px] text-neutral-400">• {mentor.sessionCount || 50}+ Sessions</span>
-                    </div>
+                    {mentor.rating ? (
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="flex items-center gap-1 text-xs font-bold text-amber-500">
+                          <Star className="w-3.5 h-3.5 fill-amber-400" />
+                          {Number(mentor.rating).toFixed(1)}
+                        </span>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
 
@@ -202,15 +222,15 @@ export const MentorsPage: React.FC = () => {
                   {mentor.bio}
                 </p>
 
-                {/* Info Badges */}
-                <div className="pt-2 flex flex-wrap items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-sand-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
-                    {mentor.experience || '6+ Yrs Exp'}
-                  </span>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                    Available for 1-on-1
-                  </span>
-                </div>
+                {/* Availability, as recorded on the mentor's profile */}
+                {mentor.availability && (
+                  <div className="pt-2 flex flex-wrap items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-sand-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 inline-flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {mentor.availability}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons */}
@@ -268,18 +288,27 @@ export const MentorsPage: React.FC = () => {
 
             {bookingSuccess ? (
               <div className="py-8 text-center space-y-3">
-                <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto animate-bounce">
+                <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
                   <CheckCircle className="w-8 h-8" />
                 </div>
-                <h4 className="font-bold text-lg text-neutral-900 dark:text-white">
-                  Session Successfully Reserved!
-                </h4>
-                <p className="text-xs text-neutral-500">
-                  Sending meeting details and Google Meet link to your registered email...
+                <h4 className="font-bold text-lg text-neutral-900 dark:text-white">Request sent</h4>
+                <p className="text-xs text-neutral-500 max-w-xs mx-auto">
+                  {selectedMentor.name} has your request in their inbox and will confirm the slot with you directly.
                 </p>
+                <button
+                  onClick={() => handleSendMessage(selectedMentor.name)}
+                  className="px-5 py-2.5 rounded-xl font-bold text-xs bg-forest-600 dark:bg-gold-500 text-white dark:text-charcoal-900 cursor-pointer"
+                >
+                  Open the conversation
+                </button>
               </div>
             ) : (
               <form onSubmit={handleConfirmBooking} className="space-y-4 text-xs">
+                {bookingError && (
+                  <p className="p-3 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 font-semibold text-red-700 dark:text-red-300">
+                    {bookingError}
+                  </p>
+                )}
                 <div>
                   <label className="block font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider mb-1.5">
                     Session Format
@@ -332,21 +361,23 @@ export const MentorsPage: React.FC = () => {
                   </label>
                   <textarea
                     rows={3}
-                    placeholder="E.g., Guidance on improving sleep through Ayurveda, or establishing a consistent morning meditation habit..."
-                    className="w-full p-2.5 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 resize-none"
+                    value={bookingNotes}
+                    onChange={(e) => setBookingNotes(e.target.value)}
+                    placeholder="E.g., Guidance on improving sleep through Ayurveda, or building a consistent morning practice…"
+                    className="w-full p-2.5 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 resize-none text-neutral-900 dark:text-white"
                   />
                 </div>
 
-                <div className="p-3 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 flex items-center justify-between text-[11px]">
-                  <span className="font-semibold text-neutral-500">Session Fee:</span>
-                  <span className="font-bold text-forest-700 dark:text-gold-400">Complimentary (Pragya Community Member)</span>
-                </div>
+                <p className="p-3 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 text-[11px] text-neutral-600 dark:text-neutral-400">
+                  Your request is sent to {selectedMentor.name} as a direct message. They confirm the final slot with you in chat.
+                </p>
 
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl font-bold text-sm bg-forest-600 hover:bg-forest-700 dark:bg-gold-500 dark:hover:bg-gold-600 text-white dark:text-charcoal-900 shadow-md transition-all cursor-pointer"
+                  disabled={bookingSubmitting}
+                  className="w-full py-3 rounded-xl font-bold text-sm bg-forest-600 hover:bg-forest-700 dark:bg-gold-500 dark:hover:bg-gold-600 text-white dark:text-charcoal-900 shadow-md transition-all cursor-pointer disabled:opacity-50"
                 >
-                  Confirm & Schedule Slot
+                  {bookingSubmitting ? 'Sending…' : 'Send Session Request'}
                 </button>
               </form>
             )}

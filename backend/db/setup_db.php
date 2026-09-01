@@ -43,10 +43,59 @@ try {
     $sql = file_get_contents($schemaFile);
     echo "      -> Schema loaded (" . strlen($sql) . " bytes).\n\n";
 
-    echo "[4/4] Executing database tables and seed records...\n";
+    echo "[4/5] Executing database tables and seed records...\n";
     // Execute SQL script
     $pdo->exec($sql);
     echo "      -> All tables created and seed data inserted successfully!\n\n";
+
+    echo "[5/5] Applying column migrations to existing tables...\n";
+
+    /**
+     * Add a column only when it is missing, so the script stays safe to re-run
+     * on databases created before these features existed.
+     */
+    $addColumn = function (string $table, string $column, string $definition) use ($pdo, $dbname) {
+        $check = $pdo->prepare("
+            SELECT COUNT(*) FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = :db AND TABLE_NAME = :tbl AND COLUMN_NAME = :col
+        ");
+        $check->execute([':db' => $dbname, ':tbl' => $table, ':col' => $column]);
+        if ((int)$check->fetchColumn() === 0) {
+            $pdo->exec("ALTER TABLE `{$table}` ADD COLUMN `{$column}` {$definition}");
+            echo "      -> Added {$table}.{$column}\n";
+        }
+    };
+
+    $addColumn('resources', 'course_id', 'INT NULL AFTER `category`');
+    $addColumn('events', 'course_id', 'INT NULL AFTER `category`');
+    $addColumn('messages', 'course_id', 'INT NULL AFTER `recipient`');
+    $addColumn('notifications', 'user_id', 'INT NULL AFTER `user`');
+    $addColumn('notifications', 'sender_id', 'INT NULL AFTER `user_id`');
+    $addColumn('notifications', 'scope', "VARCHAR(20) NOT NULL DEFAULT 'individual' AFTER `type`");
+    $addColumn('notifications', 'course_id', 'INT NULL AFTER `scope`');
+    $addColumn('notifications', 'link', 'VARCHAR(255) NULL AFTER `content`');
+    $addColumn('user_settings', 'welcome_seen', 'TINYINT(1) NOT NULL DEFAULT 0');
+
+    // Group messages have no single recipient, so the column must accept NULL
+    $pdo->exec("ALTER TABLE `messages` MODIFY `recipient` VARCHAR(191) NULL");
+
+    // Backfill notification owners that were only stored by display name
+    $pdo->exec("
+        UPDATE notifications n
+        INNER JOIN users u ON u.name = n.user
+        SET n.user_id = u.id
+        WHERE n.user_id IS NULL
+    ");
+
+    // Seed post_likes from the legacy counter so existing like totals stay believable
+    $pdo->exec("
+        INSERT IGNORE INTO post_likes (post_id, user_id)
+        SELECT p.id, p.user_id FROM posts p
+        WHERE p.likes > 0 AND p.user_id IS NOT NULL
+    ");
+    $pdo->exec("UPDATE posts p SET p.likes = (SELECT COUNT(*) FROM post_likes pl WHERE pl.post_id = p.id)");
+
+    echo "      -> Migrations applied.\n\n";
 
     echo "=====================================================\n";
     echo " SUCCESS! Database setup complete.\n";

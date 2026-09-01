@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { User, AuthResponse } from '../types';
 import { authApi, profileApi } from '../api/services';
 
@@ -10,10 +10,14 @@ interface AuthContextType {
   isAdmin: boolean;
   isMentor: boolean;
   isStudent: boolean;
+  isStaff: boolean;
+  /** null until the profile has been read; true once the welcome popup was shown. */
+  welcomeSeen: boolean | null;
+  dismissWelcome: () => Promise<void>;
   login: (credentials: { email: string; password: string }) => Promise<AuthResponse>;
-  register: (userData: { name: string; email: string; password: string; role?: string }) => Promise<AuthResponse>;
   logout: () => void;
   updateCurrentUser: (data: Partial<User>) => void;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -49,6 +53,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return !(savedUser && savedToken);
   });
 
+  const [welcomeSeen, setWelcomeSeen] = useState<boolean | null>(null);
+
+  /**
+   * Pull the authoritative profile from the API and merge it into local state.
+   * Role in particular must come from the server — it gates admin and mentor
+   * features, and a stale local copy would show the wrong navigation.
+   */
+  const syncProfile = useCallback(async (fallbackId?: string | null) => {
+    const userId = fallbackId || localStorage.getItem('uid');
+
+    const freshData = await profileApi.getProfile(userId || undefined);
+    if (!freshData) return;
+
+    setUser((prev) => {
+      const normalized: User = {
+        id: String(freshData.id || freshData._id || userId || prev?.id || ''),
+        _id: String(freshData.id || freshData._id || userId || prev?.id || ''),
+        name: freshData.fullname || freshData.name || prev?.name || 'User',
+        email: freshData.email || prev?.email || '',
+        role: (freshData.role as any) || prev?.role || 'Student',
+        avatar: freshData.profile || freshData.avatar || prev?.avatar,
+        phone: freshData.phone ?? prev?.phone,
+        bio: freshData.bio ?? prev?.bio,
+        expertise: freshData.expertise ?? prev?.expertise,
+        availability: prev?.availability,
+        rating: prev?.rating,
+        skills: (freshData as any).skills || prev?.skills,
+      };
+      localStorage.setItem('pragya_user', JSON.stringify(normalized));
+      localStorage.setItem('user', JSON.stringify(normalized));
+      return normalized;
+    });
+
+    if (typeof (freshData as any).welcome_seen !== 'undefined') {
+      setWelcomeSeen(Number((freshData as any).welcome_seen) === 1);
+    }
+  }, []);
+
   useEffect(() => {
     let isMounted = true;
 
@@ -72,29 +114,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
           }
 
-          // 2. Fetch fresh profile details in background if user has valid ID
-          const userId = user?.id || user?._id || localStorage.getItem('uid');
-          if (userId) {
-            const freshData = await profileApi.getProfile(userId);
-            if (freshData && isMounted) {
-              const normalized: User = {
-                id: String(freshData.id || freshData._id || userId),
-                _id: String(freshData.id || freshData._id || userId),
-                name: freshData.fullname || freshData.name || user?.name || 'User',
-                email: freshData.email || user?.email || '',
-                role: (freshData.role as any) || user?.role || 'Student',
-                avatar: freshData.profile || freshData.avatar || user?.avatar,
-                phone: freshData.phone || user?.phone,
-                bio: freshData.bio || user?.bio,
-                expertise: freshData.expertise || user?.expertise,
-                availability: freshData.availability || user?.availability,
-                rating: freshData.rating || user?.rating,
-                skills: freshData.skills || user?.skills,
-              };
-              setUser(normalized);
-              localStorage.setItem('pragya_user', JSON.stringify(normalized));
-              localStorage.setItem('user', JSON.stringify(normalized));
-            }
+          // 2. Pull the live profile so role and details are never stale
+          if (isMounted) {
+            await syncProfile(user?.id || user?._id);
           }
         } catch {
           // Non-blocking catch
@@ -111,7 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [syncProfile]);
 
   const login = async (credentials: { email: string; password: string }): Promise<AuthResponse> => {
     setIsLoading(true);
@@ -143,6 +165,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         localStorage.setItem('pragya_user', JSON.stringify(u));
         localStorage.setItem('user', JSON.stringify(u));
+
+        // Pull the full profile so the welcome flag and any extra details land
+        try {
+          await syncProfile(u.id);
+        } catch {
+          // Login still succeeds if the follow-up sync fails
+        }
       }
       return data;
     } finally {
@@ -150,19 +179,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (userData: { name: string; email: string; password: string; role?: string }): Promise<AuthResponse> => {
-    setIsLoading(true);
+  const dismissWelcome = async () => {
+    setWelcomeSeen(true);
     try {
-      const data = await authApi.register(userData);
-      return data;
-    } finally {
-      setIsLoading(false);
+      await profileApi.markWelcomeSeen();
+    } catch {
+      // The popup stays dismissed for this session even if the write fails
     }
   };
 
   const logout = () => {
     setUser(null);
     setToken(null);
+    setWelcomeSeen(null);
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('uid');
@@ -182,8 +211,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const role = user?.role?.toLowerCase() || '';
   const isAdmin = role === 'admin';
-  const isMentor = role === 'mentor';
+  const isMentor = role === 'mentor' || role === 'teacher';
   const isStudent = role === 'student' || (!isAdmin && !isMentor);
+  const isStaff = isAdmin || isMentor;
 
   return (
     <AuthContext.Provider
@@ -195,10 +225,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAdmin,
         isMentor,
         isStudent,
+        isStaff,
+        welcomeSeen,
+        dismissWelcome,
         login,
-        register,
         logout,
         updateCurrentUser,
+        refreshProfile: () => syncProfile(user?.id),
       }}
     >
       {children}

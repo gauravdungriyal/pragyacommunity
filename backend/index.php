@@ -21,6 +21,7 @@ require_once __DIR__ . '/controllers/ResourceController.php';
 require_once __DIR__ . '/controllers/ProfileController.php';
 require_once __DIR__ . '/controllers/AdminController.php';
 require_once __DIR__ . '/controllers/DashboardController.php';
+require_once __DIR__ . '/controllers/CourseController.php';
 
 // Normalize Request Path & Method
 $requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -95,11 +96,43 @@ if ($requestMethod === 'DELETE' && preg_match('#^/api/posts/comment/(\d+)$#', $p
 if ($requestMethod === 'GET' && ($path === '/api/events' || $path === '/api/events/calendar')) {
     EventController::getAll();
 }
+if ($requestMethod === 'GET' && $path === '/api/events/my-registrations') {
+    EventController::getMyRegistrations();
+}
 if ($requestMethod === 'POST' && $path === '/api/events/create') {
     EventController::create();
 }
 if ($requestMethod === 'POST' && $path === '/api/events/register') {
     EventController::register();
+}
+if ($requestMethod === 'DELETE' && preg_match('#^/api/events/register/(\d+)$#', $path, $matches)) {
+    EventController::cancelRegistration((int)$matches[1]);
+}
+if ($requestMethod === 'GET' && preg_match('#^/api/events/(\d+)$#', $path, $matches)) {
+    EventController::getOne((int)$matches[1]);
+}
+if ($requestMethod === 'DELETE' && preg_match('#^/api/events/(\d+)$#', $path, $matches)) {
+    EventController::delete((int)$matches[1]);
+}
+
+// 3b. Course Routes
+if ($requestMethod === 'GET' && $path === '/api/courses') {
+    CourseController::getAll();
+}
+if ($requestMethod === 'GET' && $path === '/api/courses/mine') {
+    CourseController::getMine();
+}
+if ($requestMethod === 'POST' && $path === '/api/courses/create') {
+    CourseController::create();
+}
+if ($requestMethod === 'PUT' && preg_match('#^/api/courses/(\d+)/enroll$#', $path, $matches)) {
+    CourseController::toggleEnrollment((int)$matches[1]);
+}
+if ($requestMethod === 'GET' && preg_match('#^/api/courses/(\d+)/members$#', $path, $matches)) {
+    CourseController::getMembers((int)$matches[1]);
+}
+if ($requestMethod === 'DELETE' && preg_match('#^/api/courses/(\d+)$#', $path, $matches)) {
+    CourseController::delete((int)$matches[1]);
 }
 
 // 4. Mentor Routes
@@ -136,6 +169,17 @@ if ($requestMethod === 'PUT' && preg_match('#^/api/messages/react/(\d+)$#', $pat
     MessageController::react((int)$matches[1]);
 }
 
+// 5b. Course Group Chat Routes
+if ($requestMethod === 'GET' && $path === '/api/messages/groups') {
+    MessageController::getGroups();
+}
+if ($requestMethod === 'GET' && preg_match('#^/api/messages/group/(\d+)$#', $path, $matches)) {
+    MessageController::getGroupHistory((int)$matches[1]);
+}
+if ($requestMethod === 'POST' && $path === '/api/messages/group/send') {
+    MessageController::sendGroup();
+}
+
 // 6. Notification Routes
 if ($requestMethod === 'GET' && $path === '/api/notifications') {
     NotificationController::getAll();
@@ -149,10 +193,22 @@ if ($requestMethod === 'PUT' && preg_match('#^/api/notifications/read/(\d+)$#', 
 if ($requestMethod === 'DELETE' && $path === '/api/notifications/clear-all') {
     NotificationController::clearAll();
 }
+if ($requestMethod === 'POST' && $path === '/api/notifications/course') {
+    NotificationController::sendToCourse();
+}
 
 // 7. Resource Routes
 if ($requestMethod === 'GET' && $path === '/api/resources') {
     ResourceController::getAll();
+}
+if ($requestMethod === 'GET' && $path === '/api/resources/categories') {
+    ResourceController::getCategories();
+}
+if ($requestMethod === 'POST' && $path === '/api/resources/categories') {
+    ResourceController::createCategory();
+}
+if ($requestMethod === 'DELETE' && preg_match('#^/api/resources/categories/(\d+)$#', $path, $matches)) {
+    ResourceController::deleteCategory((int)$matches[1]);
 }
 if ($requestMethod === 'POST' && $path === '/api/resources/create') {
     ResourceController::create();
@@ -196,6 +252,9 @@ if ($requestMethod === 'POST' && $path === '/api/admin/broadcast') {
 }
 
 // 10. Dashboard Routes
+if ($requestMethod === 'GET' && $path === '/api/dashboard/summary') {
+    DashboardController::getSummary();
+}
 if ($requestMethod === 'GET' && ($path === '/api/dashboard/quote' || $path === '/api/dashboard')) {
     DashboardController::getDailyQuote();
 }

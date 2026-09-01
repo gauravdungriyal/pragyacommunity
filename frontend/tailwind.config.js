@@ -108,10 +108,33 @@ export default {
         accent: ['Canela', '"AMS Aakash"', 'serif'],
         body: ['"Neue Montreal"', 'Plus Jakarta Sans', 'sans-serif'],
       },
+      spacing: {
+        18: '4.5rem',
+      },
       boxShadow: {
         'card': '0 4px 20px -2px rgba(0, 56, 31, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.04)',
         'card-hover': '0 12px 30px -4px rgba(0, 56, 31, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.06)',
         'gold-glow': '0 0 20px rgba(217, 174, 41, 0.25)',
+        // Subtle elevations used across cards, pills and toolbars
+        '2xs': '0 1px 2px 0 rgba(0, 0, 0, 0.04)',
+        'xs': '0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04)',
+      },
+      backdropBlur: {
+        xs: '2px',
+      },
+      keyframes: {
+        'fade-in': {
+          '0%': { opacity: '0', transform: 'translateY(6px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'scale-up': {
+          '0%': { opacity: '0', transform: 'scale(0.97)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+      },
+      animation: {
+        'fade-in': 'fade-in 0.25s ease-out',
+        'scale-up': 'scale-up 0.18s ease-out',
       },
     },
   },

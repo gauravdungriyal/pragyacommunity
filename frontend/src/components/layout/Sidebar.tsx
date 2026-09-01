@@ -10,10 +10,10 @@ import {
   Settings,
   ShieldCheck,
   HelpCircle,
-  Sparkles,
   ChevronLeft,
   ChevronRight,
-  Flame
+  Flame,
+  Bell
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import logoImg from '../../assets/logo.png';
@@ -38,8 +38,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { to: '/feed', label: 'Community Feed', icon: Flame },
     { to: '/mentors', label: 'Mentors & Gurus', icon: Users },
     { to: '/events', label: 'Events & Workshops', icon: Calendar },
-    { to: '/resources', label: 'Knowledge Hub', icon: BookOpen },
+    { to: '/resources', label: 'Resource Library', icon: BookOpen },
     { to: '/messages', label: 'Messages', icon: MessageSquare },
+    { to: '/notifications', label: 'Notifications', icon: Bell },
     { to: '/profile', label: 'My Profile', icon: UserCircle },
     { to: '/settings', label: 'Settings', icon: Settings },
   ];

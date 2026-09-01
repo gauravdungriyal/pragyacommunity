@@ -12,6 +12,10 @@ import {
   Message,
   Conversation,
   Resource,
+  ResourceCategory,
+  Course,
+  CourseGroup,
+  DashboardSummary,
   Notification,
   AdminStats,
   DailyQuote,
@@ -31,12 +35,14 @@ export const authApi = {
 
     if (res.status) {
       const token = res.access_token || res.token;
+      const apiUser = res.user as any;
       const normalizedUser: User = {
-        id: String(res.uid || (res.user as any)?.id || (res.user as any)?._id || ''),
-        _id: String(res.uid || (res.user as any)?.id || (res.user as any)?._id || ''),
-        name: res.name || (res.user as any)?.name || 'User',
-        email: credentials.email,
-        role: (res.user as any)?.role || 'Student',
+        id: String(res.uid || apiUser?.id || apiUser?._id || ''),
+        _id: String(res.uid || apiUser?.id || apiUser?._id || ''),
+        // The API returns the member's full name; it keys notifications and chat
+        name: apiUser?.name || res.name || 'User',
+        email: apiUser?.email || credentials.email,
+        role: apiUser?.role || 'Student',
       };
 
       return {
@@ -110,14 +116,6 @@ export const authApi = {
   unregisterDeviceToken: async (fcm_token: string): Promise<{ status: boolean; message: string }> => {
     return await apiPhpPost('unregister-device-token', { fcm_token });
   },
-
-  /**
-   * Register new user
-   */
-  register: async (userData: { name: string; email: string; password: string; role?: string }): Promise<AuthResponse> => {
-    const res = await apiClient.post<AuthResponse>('/auth/register', userData);
-    return res.data;
-  },
 };
 
 // ==================== POSTS / FEED API ====================
@@ -126,7 +124,7 @@ export const postsApi = {
     const res = await apiClient.get<Post[]>('/posts');
     return res.data;
   },
-  create: async (data: { user_id: string; content: string; image?: string; category?: string }): Promise<Post> => {
+  create: async (data: { user_id?: string; content: string; image?: string; category?: string }): Promise<Post> => {
     const res = await apiClient.post<Post>('/posts/create', data);
     return res.data;
   },
@@ -138,11 +136,15 @@ export const postsApi = {
     const res = await apiClient.delete<string>(`/posts/delete/${id}`);
     return res.data;
   },
-  toggleLike: async (id: string, action?: 'like' | 'unlike'): Promise<{ likes: number; isLiked: boolean }> => {
-    const res = await apiClient.put<{ likes: number; isLiked: boolean }>(`/posts/like/${id}`, { action });
+  /**
+   * Toggle this member's like. The server enforces one like per person and
+   * returns the authoritative count.
+   */
+  toggleLike: async (id: string): Promise<{ likes: number; isLiked: boolean; liked_by_me: boolean }> => {
+    const res = await apiClient.put(`/posts/like/${id}`);
     return res.data;
   },
-  addComment: async (data: { post_id: string; user_id: string; comment_text: string }): Promise<Comment> => {
+  addComment: async (data: { post_id: string; user_id?: string; comment_text: string }): Promise<Comment> => {
     const res = await apiClient.post<Comment>('/posts/comment', data);
     return res.data;
   },
@@ -161,94 +163,55 @@ export const mentorsApi = {
 };
 
 // ==================== EVENTS API ====================
+export type EventScope = 'upcoming' | 'today' | 'past' | 'mine' | 'favorites' | 'all';
+
 export const eventsApi = {
   /**
-   * Action: upcoming-events
-   * Purpose: List all currently-running/future "upcoming events" (workshops/special events), decorated for the app.
+   * List events for one scope only, so the calendar never shows every
+   * session at once. Booking and favourite state come back per viewer.
    */
-  getUpcomingEvents: async (): Promise<Event[]> => {
-    try {
-      const res = await apiPhpPost<{ status: boolean; data: Event[] }>('upcoming-events');
-      if (res.status && Array.isArray(res.data)) {
-        return res.data.map((evt) => ({
-          ...evt,
-          _id: String(evt.id || (evt as any)._id),
-          id: String(evt.id || (evt as any)._id),
-          date: evt.starts_at ? evt.starts_at.split(' ')[0] : evt.date || '',
-          time: evt.starts_at ? (evt.starts_at.split(' ')[1]?.slice(0, 5) || '') : evt.time || '',
-        }));
-      }
-    } catch {
-      // Fallback to legacy REST endpoint
-    }
+  getEvents: async (scope: EventScope = 'upcoming', limit?: number, offset?: number): Promise<Event[]> => {
+    const params: Record<string, any> = { scope };
+    if (limit !== undefined) params.limit = limit;
+    if (offset !== undefined) params.offset = offset;
 
-    try {
-      const res = await apiClient.get<Event[]>('/events/calendar');
-      return res.data;
-    } catch {
-      return [];
-    }
+    const res = await apiClient.get<Event[]>('/events', { params });
+    return Array.isArray(res.data) ? res.data : [];
   },
 
-  /**
-   * Action: upcoming-event-detail
-   * Purpose: Detail of one upcoming event. Free events return schedules; paid events return packages.
-   */
+  /** Upcoming sessions (default landing scope). */
+  getUpcomingEvents: async (): Promise<Event[]> => eventsApi.getEvents('upcoming'),
+
+  /** Sessions the member has booked. */
+  getMyRegistrations: async (): Promise<Event[]> => {
+    const res = await apiClient.get<Event[]>('/events/my-registrations');
+    return Array.isArray(res.data) ? res.data : [];
+  },
+
+  /** One event, for its own page. */
   getEventDetail: async (eventId: string | number): Promise<Event | null> => {
     try {
-      const res = await apiPhpPost<{ status: boolean; data: Event }>('upcoming-event-detail', {
-        event_id: eventId,
-      });
-      if (res.status && res.data) {
-        const evt = res.data;
-        return {
-          ...evt,
-          _id: String(evt.id || (evt as any)._id),
-          id: String(evt.id || (evt as any)._id),
-          date: evt.starts_at ? evt.starts_at.split(' ')[0] : evt.date || '',
-          time: evt.starts_at ? (evt.starts_at.split(' ')[1]?.slice(0, 5) || '') : evt.time || '',
-        };
-      }
+      const res = await apiClient.get<Event>(`/events/${eventId}`);
+      return res.data || null;
     } catch (err) {
       console.warn('Failed to load event detail:', err);
+      return null;
     }
-    return null;
   },
 
   /**
    * Action: event-toggle-favorite
-   * Purpose: Toggle the authenticated user's favorite status for an upcoming event.
    */
   toggleFavorite: async (
     eventId: string | number
   ): Promise<{ status: boolean; favorited?: boolean; likes_count?: number; message?: string }> => {
-    return await apiPhpPost('event-toggle-favorite', {
-      event_id: eventId,
-    });
+    return await apiPhpPost('event-toggle-favorite', { event_id: eventId });
   },
 
-  /**
-   * Action: event-favorites
-   * Purpose: List the authenticated user's favorited upcoming events (decorated).
-   */
-  getFavorites: async (): Promise<Event[]> => {
-    const res = await apiPhpPost<{ status: boolean; data: Event[] }>('event-favorites');
-    if (res.status && Array.isArray(res.data)) {
-      return res.data.map((evt) => ({
-        ...evt,
-        _id: String(evt.id || (evt as any)._id),
-        id: String(evt.id || (evt as any)._id),
-        date: evt.starts_at ? evt.starts_at.split(' ')[0] : evt.date || '',
-        time: evt.starts_at ? (evt.starts_at.split(' ')[1]?.slice(0, 5) || '') : evt.time || '',
-      }));
-    }
-    return [];
-  },
+  getFavorites: async (): Promise<Event[]> => eventsApi.getEvents('favorites'),
 
-  /** Alias for backward compatibility */
-  getAll: async (): Promise<Event[]> => {
-    return await eventsApi.getUpcomingEvents();
-  },
+  /** Alias kept for older call sites. */
+  getAll: async (): Promise<Event[]> => eventsApi.getEvents('upcoming'),
 
   create: async (data: {
     title: string;
@@ -256,17 +219,64 @@ export const eventsApi = {
     date: string;
     time: string;
     location: string;
-    created_by: string;
     category?: string;
+    course_id?: number | null;
     amount?: number;
     is_free?: number;
-  }): Promise<string> => {
-    const res = await apiClient.post<string>('/events/create', data);
+  }): Promise<{ message: string; event: Event }> => {
+    const res = await apiClient.post<{ message: string; event: Event }>('/events/create', data);
     return res.data;
   },
 
-  register: async (data: { event_id: string; user_id: string }): Promise<string> => {
-    const res = await apiClient.post<string>('/events/register', data);
+  register: async (eventId: string | number): Promise<{
+    status: boolean;
+    already_registered: boolean;
+    message: string;
+  }> => {
+    const res = await apiClient.post('/events/register', { event_id: eventId });
+    return res.data;
+  },
+
+  cancelRegistration: async (eventId: string | number): Promise<{ status: boolean; message: string }> => {
+    const res = await apiClient.delete(`/events/register/${eventId}`);
+    return res.data;
+  },
+
+  delete: async (eventId: string | number): Promise<{ message: string }> => {
+    const res = await apiClient.delete(`/events/${eventId}`);
+    return res.data;
+  },
+};
+
+// ==================== COURSES API ====================
+export const coursesApi = {
+  getAll: async (): Promise<Course[]> => {
+    const res = await apiClient.get<Course[]>('/courses');
+    return Array.isArray(res.data) ? res.data : [];
+  },
+
+  getMine: async (): Promise<Course[]> => {
+    const res = await apiClient.get<Course[]>('/courses/mine');
+    return Array.isArray(res.data) ? res.data : [];
+  },
+
+  create: async (data: { name: string; description?: string; mentor_id?: number }): Promise<Course> => {
+    const res = await apiClient.post<Course>('/courses/create', data);
+    return res.data;
+  },
+
+  toggleEnrollment: async (courseId: number | string): Promise<{ enrolled: boolean; message: string }> => {
+    const res = await apiClient.put(`/courses/${courseId}/enroll`);
+    return res.data;
+  },
+
+  getMembers: async (courseId: number | string): Promise<User[]> => {
+    const res = await apiClient.get<User[]>(`/courses/${courseId}/members`);
+    return Array.isArray(res.data) ? res.data : [];
+  },
+
+  delete: async (courseId: number | string): Promise<{ message: string }> => {
+    const res = await apiClient.delete(`/courses/${courseId}`);
     return res.data;
   },
 };
@@ -299,26 +309,62 @@ export const messagesApi = {
     const res = await apiClient.put<string>('/messages/read', data);
     return res.data;
   },
+
+  /** Course group chats the member belongs to. */
+  getGroups: async (): Promise<CourseGroup[]> => {
+    const res = await apiClient.get<CourseGroup[]>('/messages/groups');
+    return Array.isArray(res.data) ? res.data : [];
+  },
+
+  /** Full history for one course group chat. */
+  getGroupHistory: async (courseId: number | string): Promise<Message[]> => {
+    const res = await apiClient.get<Message[]>(`/messages/group/${courseId}`);
+    return Array.isArray(res.data) ? res.data : [];
+  },
+
+  /** Post into a course group chat. */
+  sendGroup: async (data: { course_id: number | string; text: string }): Promise<Message> => {
+    const res = await apiClient.post<Message>('/messages/group/send', data);
+    return res.data;
+  },
 };
 
 // ==================== RESOURCES API ====================
 export const resourcesApi = {
-  getAll: async (): Promise<Resource[]> => {
-    const res = await apiClient.get<Resource[]>('/resources');
-    return res.data;
+  getAll: async (filters?: { course_id?: number | string; category?: string; search?: string }): Promise<Resource[]> => {
+    const res = await apiClient.get<Resource[]>('/resources', { params: filters });
+    return Array.isArray(res.data) ? res.data : [];
   },
   create: async (data: {
     title: string;
     description: string;
     file_url: string;
-    uploaded_by: string;
     category?: string;
-  }): Promise<string> => {
-    const res = await apiClient.post<string>('/resources/create', data);
+    course_id?: number | null;
+  }): Promise<{ message: string; resource: Resource }> => {
+    const res = await apiClient.post('/resources/create', data);
+    return res.data;
+  },
+  update: async (id: string, data: Partial<Resource>): Promise<Resource> => {
+    const res = await apiClient.put<Resource>(`/resources/${id}`, data);
     return res.data;
   },
   delete: async (id: string): Promise<{ message: string }> => {
     const res = await apiClient.delete<{ message: string }>(`/resources/${id}`);
+    return res.data;
+  },
+
+  /** Library filters, managed by admins. */
+  getCategories: async (): Promise<ResourceCategory[]> => {
+    const res = await apiClient.get<ResourceCategory[]>('/resources/categories');
+    return Array.isArray(res.data) ? res.data : [];
+  },
+  createCategory: async (name: string): Promise<ResourceCategory> => {
+    const res = await apiClient.post<ResourceCategory>('/resources/categories', { name });
+    return res.data;
+  },
+  deleteCategory: async (id: number | string): Promise<{ message: string }> => {
+    const res = await apiClient.delete<{ message: string }>(`/resources/categories/${id}`);
     return res.data;
   },
 };
@@ -329,6 +375,17 @@ export const notificationsApi = {
     const res = await apiClient.get<Notification[]>('/notifications', {
       params: { user },
     });
+    return Array.isArray(res.data) ? res.data : [];
+  },
+
+  /** Mentors notify only the members enrolled on one of their courses. */
+  sendToCourse: async (data: {
+    course_id: number | string;
+    title: string;
+    message: string;
+    link?: string;
+  }): Promise<{ status: boolean; message: string; recipients: number }> => {
+    const res = await apiClient.post('/notifications/course', data);
     return res.data;
   },
   markAllRead: async (user: string): Promise<string> => {
@@ -355,7 +412,7 @@ export const profileApi = {
    */
   getProfile: async (id?: string): Promise<User & UserProfileData> => {
     try {
-      const res = await apiPhpPost<{ status: boolean; data: UserProfileData }>('get-profile');
+      const res = await apiPhpPost<{ status: boolean; data: UserProfileData & { role?: string } }>('get-profile');
       if (res.status && res.data) {
         const d = res.data;
         const mappedUser: User & UserProfileData = {
@@ -364,7 +421,8 @@ export const profileApi = {
           _id: String(d.id || id || ''),
           name: d.fullname || `${d.fname || ''} ${d.lname || ''}`.trim() || 'User',
           email: d.email,
-          role: 'Student',
+          // The role must come from the API — it decides admin and mentor access
+          role: (d.role as any) || 'Student',
           avatar: d.profile,
           phone: d.phone,
         };
@@ -477,6 +535,15 @@ export const profileApi = {
   getWallet: async (): Promise<WalletResponse> => {
     return await apiPhpPost<WalletResponse>('wallet');
   },
+
+  /**
+   * Action: welcome-seen
+   * Purpose: Record that the one-time welcome popup has been shown, so it
+   * stays dismissed across refreshes and devices.
+   */
+  markWelcomeSeen: async (): Promise<{ status: boolean }> => {
+    return await apiPhpPost('welcome-seen');
+  },
 };
 
 // ==================== ADMIN API ====================
@@ -505,8 +572,17 @@ export const adminApi = {
     const res = await apiClient.delete<string>(`/admin/comment/${id}`);
     return res.data;
   },
-  broadcast: async (data: { title: string; message: string }): Promise<{ status: boolean; message: string }> => {
-    const res = await apiClient.post<{ status: boolean; message: string }>('/admin/broadcast', data);
+  /**
+   * Announcements reach either every member (`target: 'all'`) or one
+   * individual (`target: 'user'` with a `user_id`).
+   */
+  broadcast: async (data: {
+    title: string;
+    message: string;
+    target?: 'all' | 'user';
+    user_id?: string | number;
+  }): Promise<{ status: boolean; message: string; recipients: number }> => {
+    const res = await apiClient.post('/admin/broadcast', data);
     return res.data;
   },
 };
@@ -523,6 +599,19 @@ export const dashboardApi = {
         quote: "Yoga is the journey of the self, through the self, to the self.",
         author: "The Bhagavad Gita",
       };
+    }
+  },
+
+  /**
+   * Everything the dashboard renders, in one request: today's booked classes,
+   * enrolled courses, recent activity and personal counters.
+   */
+  getSummary: async (): Promise<DashboardSummary | null> => {
+    try {
+      const res = await apiClient.get<DashboardSummary>('/dashboard/summary');
+      return res.data || null;
+    } catch {
+      return null;
     }
   },
 };

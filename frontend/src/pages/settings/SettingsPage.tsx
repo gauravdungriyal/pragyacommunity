@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Settings as SettingsIcon,
   Lock,
   Bell,
+  BellRing,
   Sun,
   Moon,
   Trash2,
@@ -12,14 +13,21 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import { authApi } from '../../api/services';
+import { useNotifications } from '../../context/NotificationContext';
+import { authApi, profileApi } from '../../api/services';
 
 export const SettingsPage: React.FC = () => {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { pushPermission, requestPushPermission } = useNotifications();
 
-  const [sessionReminders, setSessionReminders] = useState(true);
-  const [communityAlerts, setCommunityAlerts] = useState(true);
+  // Notification preferences are stored server-side, per member
+  const [notifyEmail, setNotifyEmail] = useState(true);
+  const [notifyWhatsapp, setNotifyWhatsapp] = useState(true);
+  const [notifyPush, setNotifyPush] = useState(true);
+  const [prefsLoading, setPrefsLoading] = useState(true);
+  const [prefsSaved, setPrefsSaved] = useState(false);
+  const [prefsError, setPrefsError] = useState<string | null>(null);
 
   const [currentPass, setCurrentPass] = useState('');
   const [newPass, setNewPass] = useState('');
@@ -27,6 +35,47 @@ export const SettingsPage: React.FC = () => {
   const [passwordSaved, setPasswordSaved] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [changingPass, setChangingPass] = useState(false);
+
+  // Load the stored preferences once
+  useEffect(() => {
+    let active = true;
+
+    profileApi
+      .getProfile(user?.id)
+      .then((data) => {
+        if (!active || !data) return;
+        setNotifyEmail(Number(data.notify_email ?? 1) === 1);
+        setNotifyWhatsapp(Number(data.notify_whatsapp ?? 1) === 1);
+        setNotifyPush(Number(data.notify_push ?? 1) === 1);
+      })
+      .catch(() => {
+        /* Defaults stay on if the profile cannot be read */
+      })
+      .finally(() => {
+        if (active) setPrefsLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /** Persist one preference immediately so nothing is lost on navigation. */
+  const savePreference = async (patch: {
+    notify_email?: number;
+    notify_whatsapp?: number;
+    notify_push?: number;
+  }) => {
+    setPrefsError(null);
+    try {
+      await profileApi.updateNotificationSettings(patch);
+      setPrefsSaved(true);
+      setTimeout(() => setPrefsSaved(false), 2500);
+    } catch {
+      setPrefsError('Could not save that preference. Please try again.');
+    }
+  };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,39 +173,94 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {/* 2. Notifications Settings */}
-      <div className="bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-3xl border border-sand-200 dark:border-neutral-800 shadow-card space-y-4">
-        <h2 className="font-display font-bold text-base text-neutral-900 dark:text-white flex items-center gap-2">
-          <Bell className="w-5 h-5 text-forest-600 dark:text-gold-400" />
-          Notification Preferences
-        </h2>
-
-        <div className="space-y-3 pt-2 text-xs">
-          <label className="flex items-center justify-between p-3.5 rounded-2xl bg-sand-50 dark:bg-neutral-800/40 border border-sand-200 dark:border-neutral-700 cursor-pointer">
-            <div>
-              <p className="font-bold text-neutral-900 dark:text-white">Email Session Reminders</p>
-              <p className="text-neutral-500 dark:text-neutral-400 text-[11px] mt-0.5">Receive reminders 1 hour before scheduled mentorship sessions</p>
-            </div>
-            <input
-              type="checkbox"
-              checked={sessionReminders}
-              onChange={(e) => setSessionReminders(e.target.checked)}
-              className="w-4 h-4 rounded text-forest-600 focus:ring-forest-500"
-            />
-          </label>
-
-          <label className="flex items-center justify-between p-3.5 rounded-2xl bg-sand-50 dark:bg-neutral-800/40 border border-sand-200 dark:border-neutral-700 cursor-pointer">
-            <div>
-              <p className="font-bold text-neutral-900 dark:text-white">Community Replies & Mentions</p>
-              <p className="text-neutral-500 dark:text-neutral-400 text-[11px] mt-0.5">Notify when someone comments on your discussion post</p>
-            </div>
-            <input
-              type="checkbox"
-              checked={communityAlerts}
-              onChange={(e) => setCommunityAlerts(e.target.checked)}
-              className="w-4 h-4 rounded text-forest-600 focus:ring-forest-500"
-            />
-          </label>
+      <div className="bg-white dark:bg-neutral-900 p-5 sm:p-8 rounded-3xl border border-sand-200 dark:border-neutral-800 shadow-card space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-display font-bold text-base text-neutral-900 dark:text-white flex items-center gap-2">
+            <Bell className="w-5 h-5 text-forest-600 dark:text-gold-400" />
+            Notification Preferences
+          </h2>
+          {prefsSaved && (
+            <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+              <CheckCircle className="w-3.5 h-3.5" /> Saved
+            </span>
+          )}
         </div>
+
+        {prefsError && (
+          <p className="p-3 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 text-xs font-semibold text-red-700 dark:text-red-300">
+            {prefsError}
+          </p>
+        )}
+
+        <div className="space-y-3 pt-1 text-xs">
+          {[
+            {
+              key: 'notify_email' as const,
+              label: 'Email Updates',
+              hint: 'Session reminders and announcements sent to your inbox',
+              checked: notifyEmail,
+              set: setNotifyEmail,
+            },
+            {
+              key: 'notify_whatsapp' as const,
+              label: 'WhatsApp Updates',
+              hint: 'Short reminders on WhatsApp before a booked session',
+              checked: notifyWhatsapp,
+              set: setNotifyWhatsapp,
+            },
+            {
+              key: 'notify_push' as const,
+              label: 'Push Notifications',
+              hint: 'Desktop and mobile alerts, even when the app is closed',
+              checked: notifyPush,
+              set: setNotifyPush,
+            },
+          ].map(({ key, label, hint, checked, set }) => (
+            <label
+              key={key}
+              className="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-sand-50 dark:bg-neutral-800/40 border border-sand-200 dark:border-neutral-700 cursor-pointer"
+            >
+              <div className="min-w-0">
+                <p className="font-bold text-neutral-900 dark:text-white">{label}</p>
+                <p className="text-neutral-500 dark:text-neutral-400 text-[11px] mt-0.5">{hint}</p>
+              </div>
+              <input
+                type="checkbox"
+                disabled={prefsLoading}
+                checked={checked}
+                onChange={(e) => {
+                  set(e.target.checked);
+                  savePreference({ [key]: e.target.checked ? 1 : 0 });
+                }}
+                className="w-4 h-4 rounded text-forest-600 focus:ring-forest-500 flex-shrink-0"
+              />
+            </label>
+          ))}
+        </div>
+
+        {/* The browser has the final say on whether push can be delivered */}
+        {notifyPush && pushPermission !== 'granted' && (
+          <div className="p-3.5 rounded-2xl bg-gold-50 dark:bg-gold-950/40 border border-gold-200 dark:border-gold-800/60 flex items-center justify-between gap-3">
+            <div className="flex items-start gap-2.5 min-w-0">
+              <BellRing className="w-4 h-4 text-gold-600 dark:text-gold-400 flex-shrink-0 mt-0.5" />
+              <p className="text-[11px] text-neutral-700 dark:text-neutral-300">
+                {pushPermission === 'denied'
+                  ? 'Your browser is blocking push notifications. Allow them in site settings to receive desktop alerts.'
+                  : pushPermission === 'unsupported'
+                  ? 'This browser does not support push notifications. In-app notifications still work.'
+                  : 'Allow push notifications in your browser to receive desktop alerts.'}
+              </p>
+            </div>
+            {pushPermission === 'default' && (
+              <button
+                onClick={requestPushPermission}
+                className="px-3 py-1.5 rounded-lg text-[11px] font-bold bg-gold-500 hover:bg-gold-600 text-charcoal-900 whitespace-nowrap cursor-pointer flex-shrink-0"
+              >
+                Allow
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* 3. Security / Password Update */}

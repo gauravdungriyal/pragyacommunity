@@ -6,24 +6,31 @@
 
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../helpers/response.php';
+require_once __DIR__ . '/../helpers/auth_middleware.php';
+require_once __DIR__ . '/CourseController.php';
 
 class PostController {
 
     /**
-     * Get all posts with author details and nested comments
+     * Get all posts with author details and nested comments.
+     * The like count is derived from post_likes so it can never drift from
+     * the number of people who actually liked the post.
      */
     public static function getAll(): void {
         $db = Database::getConnection();
+        $viewer = currentUser();
+        $viewerId = $viewer ? (int)$viewer['id'] : 0;
 
         $query = "
-            SELECT 
+            SELECT
                 p.id,
                 p.id AS _id,
                 p.user_id,
                 p.content,
                 p.image,
                 p.category,
-                p.likes,
+                (SELECT COUNT(*) FROM post_likes pl WHERE pl.post_id = p.id) AS likes,
+                (SELECT COUNT(*) FROM post_likes pl2 WHERE pl2.post_id = p.id AND pl2.user_id = :viewer) AS liked_by_me,
                 p.created_at,
                 p.updated_at,
                 u.name AS user_name,
@@ -33,7 +40,8 @@ class PostController {
             LEFT JOIN users u ON p.user_id = u.id
             ORDER BY p.created_at DESC
         ";
-        $stmt = $db->query($query);
+        $stmt = $db->prepare($query);
+        $stmt->execute([':viewer' => $viewerId]);
         $posts = $stmt->fetchAll();
 
         if (empty($posts)) {
@@ -96,6 +104,7 @@ class PostController {
                 'image' => $p['image'] ?? '',
                 'category' => $p['category'] ?? 'Yoga & Asana',
                 'likes' => (int)($p['likes'] ?? 0),
+                'liked_by_me' => (bool)($p['liked_by_me'] ?? false),
                 'created_at' => $p['created_at'],
                 'createdAt' => $p['created_at'],
                 'updated_at' => $p['updated_at'],
@@ -118,7 +127,9 @@ class PostController {
      */
     public static function create(): void {
         $data = getJsonInput();
-        $userId = intval($data['user_id'] ?? 0);
+        $author = currentUser();
+        // Trust the token over the request body when the caller is signed in
+        $userId = $author ? (int)$author['id'] : intval($data['user_id'] ?? 0);
         $content = trim($data['content'] ?? '');
         $image = trim($data['image'] ?? '');
         $category = trim($data['category'] ?? 'Yoga & Asana');
@@ -152,6 +163,8 @@ class PostController {
         $fetch->execute([':id' => $postId]);
         $post = $fetch->fetch();
 
+        ActivityLog::record($userId, 'post', 'Shared a post in the community feed', '/feed?post=' . $postId);
+
         sendJson([
             'id' => $postId,
             '_id' => (string)$postId,
@@ -159,6 +172,7 @@ class PostController {
             'image' => $post['image'] ?? '',
             'category' => $post['category'] ?? 'Yoga & Asana',
             'likes' => (int)$post['likes'],
+            'liked_by_me' => false,
             'created_at' => $post['created_at'],
             'createdAt' => $post['created_at'],
             'user_id' => [
@@ -235,32 +249,43 @@ class PostController {
     }
 
     /**
-     * Like or unlike a post
+     * Like or unlike a post. A user may only ever hold one like per post —
+     * the unique key on post_likes enforces that, and the stored counter is
+     * recomputed from the table afterwards.
      */
     public static function toggleLike(int $id): void {
-        $data = getJsonInput();
-        $action = $data['action'] ?? 'like';
-
+        $user = requireUser();
         $db = Database::getConnection();
 
-        if ($action === 'unlike') {
-            $stmt = $db->prepare("UPDATE posts SET likes = GREATEST(0, likes - 1) WHERE id = :id");
-        } else {
-            $stmt = $db->prepare("UPDATE posts SET likes = likes + 1 WHERE id = :id");
-        }
-        $stmt->execute([':id' => $id]);
-
-        $fetch = $db->prepare("SELECT likes FROM posts WHERE id = :id");
-        $fetch->execute([':id' => $id]);
-        $post = $fetch->fetch();
-
-        if (!$post) {
+        $check = $db->prepare("SELECT id FROM posts WHERE id = :id");
+        $check->execute([':id' => $id]);
+        if (!$check->fetch()) {
             sendError('Post not found', 404);
         }
 
+        $existing = $db->prepare("SELECT id FROM post_likes WHERE post_id = :pid AND user_id = :uid");
+        $existing->execute([':pid' => $id, ':uid' => $user['id']]);
+        $alreadyLiked = (bool)$existing->fetch();
+
+        if ($alreadyLiked) {
+            $del = $db->prepare("DELETE FROM post_likes WHERE post_id = :pid AND user_id = :uid");
+            $del->execute([':pid' => $id, ':uid' => $user['id']]);
+        } else {
+            $ins = $db->prepare("INSERT IGNORE INTO post_likes (post_id, user_id) VALUES (:pid, :uid)");
+            $ins->execute([':pid' => $id, ':uid' => $user['id']]);
+        }
+
+        $count = $db->prepare("SELECT COUNT(*) FROM post_likes WHERE post_id = :pid");
+        $count->execute([':pid' => $id]);
+        $likes = (int)$count->fetchColumn();
+
+        $sync = $db->prepare("UPDATE posts SET likes = :likes WHERE id = :id");
+        $sync->execute([':likes' => $likes, ':id' => $id]);
+
         sendJson([
-            'likes' => (int)$post['likes'],
-            'isLiked' => $action !== 'unlike'
+            'likes' => $likes,
+            'isLiked' => !$alreadyLiked,
+            'liked_by_me' => !$alreadyLiked
         ]);
     }
 
@@ -269,8 +294,9 @@ class PostController {
      */
     public static function addComment(): void {
         $data = getJsonInput();
+        $author = currentUser();
         $postId = intval($data['post_id'] ?? 0);
-        $userId = intval($data['user_id'] ?? 0);
+        $userId = $author ? (int)$author['id'] : intval($data['user_id'] ?? 0);
         $commentText = trim($data['comment_text'] ?? '');
 
         if ($postId <= 0 || $userId <= 0 || empty($commentText)) {
@@ -299,6 +325,8 @@ class PostController {
         ");
         $fetch->execute([':id' => $commentId]);
         $comment = $fetch->fetch();
+
+        ActivityLog::record($userId, 'comment', 'Commented on a community post', '/feed?post=' . $postId);
 
         sendJson([
             'id' => $commentId,

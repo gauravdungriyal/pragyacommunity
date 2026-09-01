@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Eye,
   EyeOff,
-  Sparkles,
   Lock,
   Mail,
   ArrowRight,
   AlertCircle,
-  ShieldCheck,
-  UserCheck,
-  Compass,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { authApi } from '../../api/services';
 import logoImg from '../../assets/logo.png';
 
 export const Login: React.FC = () => {
@@ -20,13 +17,38 @@ export const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [email, setEmail] = useState('admin@pragya.org');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   const from = (location.state as any)?.from?.pathname || '/dashboard';
+
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      setError('Enter your email address first, then choose "Forgot password?".');
+      return;
+    }
+
+    setError(null);
+    setNotice(null);
+    setResetting(true);
+    try {
+      const res = await authApi.resetPassword(email);
+      if (res.status) {
+        setNotice(res.message || 'A reset link is on its way to your inbox.');
+      } else {
+        setError(res.message || 'Could not start a password reset.');
+      }
+    } catch {
+      setError('Unable to reach the server. Please try again.');
+    } finally {
+      setResetting(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,12 +74,6 @@ export const Login: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const fillCredentials = (demoEmail: string, demoPass: string) => {
-    setEmail(demoEmail);
-    setPassword(demoPass);
-    setError(null);
   };
 
   return (
@@ -118,44 +134,17 @@ export const Login: React.FC = () => {
               </p>
             </div>
 
-            {/* Quick Demo Logins Bar */}
-            <div className="mb-6 p-3.5 rounded-2xl bg-sand-50 dark:bg-neutral-800/60 border border-sand-200 dark:border-neutral-700/70">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block mb-2">
-                Quick Demo Accounts (Click to fill)
-              </span>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => fillCredentials('admin@pragya.org', 'password123')}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-forest-50 hover:bg-forest-100 text-forest-800 dark:bg-forest-950/60 dark:text-forest-300 border border-forest-200 dark:border-forest-800 transition-colors cursor-pointer"
-                >
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  Admin
-                </button>
-                <button
-                  type="button"
-                  onClick={() => fillCredentials('student@pragya.org', 'password123')}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-sand-100 hover:bg-sand-200 text-neutral-800 dark:bg-neutral-700/60 dark:text-neutral-200 border border-sand-300 dark:border-neutral-600 transition-colors cursor-pointer"
-                >
-                  <UserCheck className="w-3.5 h-3.5" />
-                  Student
-                </button>
-                <button
-                  type="button"
-                  onClick={() => fillCredentials('mentor@pragya.org', 'password123')}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-sand-100 hover:bg-sand-200 text-neutral-800 dark:bg-neutral-700/60 dark:text-neutral-200 border border-sand-300 dark:border-neutral-600 transition-colors cursor-pointer"
-                >
-                  <Compass className="w-3.5 h-3.5" />
-                  Mentor
-                </button>
-              </div>
-            </div>
-
             {/* Error Banner */}
             {error && (
-              <div className="mb-6 p-4 rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/80 flex items-start gap-3 text-red-700 dark:text-red-300 text-sm animate-shake">
+              <div className="mb-6 p-4 rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/80 flex items-start gap-3 text-red-700 dark:text-red-300 text-sm">
                 <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                 <span className="flex-1">{error}</span>
+              </div>
+            )}
+
+            {notice && (
+              <div className="mb-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-sm">
+                {notice}
               </div>
             )}
 
@@ -185,16 +174,14 @@ export const Login: React.FC = () => {
                   <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
                     Password
                   </label>
-                  <a
-                    href="#forgot"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      alert('Default demo password is: password123');
-                    }}
-                    className="text-xs font-semibold text-forest-700 dark:text-gold-400 hover:underline"
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    disabled={resetting}
+                    className="text-xs font-semibold text-forest-700 dark:text-gold-400 hover:underline disabled:opacity-50 cursor-pointer"
                   >
-                    Forgot password?
-                  </a>
+                    {resetting ? 'Sending…' : 'Forgot password?'}
+                  </button>
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
@@ -234,10 +221,13 @@ export const Login: React.FC = () => {
             </form>
 
             <div className="mt-6 text-center text-xs text-neutral-500 dark:text-neutral-400">
-              Don't have an account?{' '}
-              <Link to="/register" className="font-bold text-forest-700 dark:text-gold-400 hover:underline">
-                Create one now
-              </Link>
+              Accounts are created by the Pragya team. Need access?{' '}
+              <a
+                href="mailto:support@pragya-yog.com"
+                className="font-bold text-forest-700 dark:text-gold-400 hover:underline"
+              >
+                Contact us
+              </a>
             </div>
           </div>
         </div>

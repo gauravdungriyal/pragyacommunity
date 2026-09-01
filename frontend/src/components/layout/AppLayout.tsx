@@ -4,6 +4,8 @@ import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { UserDrawer } from './UserDrawer';
 import { NotificationDrawer } from './NotificationDrawer';
+import { WelcomePopup } from './WelcomePopup';
+import { Footer } from './Footer';
 
 export const AppLayout: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
@@ -12,7 +14,7 @@ export const AppLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-sand-50 dark:bg-[#0c1410] text-neutral-800 dark:text-neutral-200 transition-colors w-full overflow-x-hidden relative">
-      {/* Sidebar */}
+      {/* Sidebar is fixed, so it stays put while the page scrolls */}
       <Sidebar
         collapsed={sidebarCollapsed}
         setCollapsed={setSidebarCollapsed}
@@ -26,23 +28,21 @@ export const AppLayout: React.FC = () => {
           sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'
         }`}
       >
-        {/* Sticky Topbar */}
         <Topbar
           onMenuClick={() => setMobileSidebarOpen(true)}
           onUserDrawerClick={() => setUserDrawerOpen(true)}
         />
 
-        {/* Dynamic Page Viewport */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto min-w-0">
           <Outlet />
         </main>
 
-        {/* Global Drawers */}
-        <UserDrawer
-          isOpen={userDrawerOpen}
-          onClose={() => setUserDrawerOpen(false)}
-        />
+        <Footer />
+
+        {/* Global overlays */}
+        <UserDrawer isOpen={userDrawerOpen} onClose={() => setUserDrawerOpen(false)} />
         <NotificationDrawer />
+        <WelcomePopup />
       </div>
     </div>
   );

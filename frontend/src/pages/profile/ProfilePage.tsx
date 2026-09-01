@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  User as UserIcon,
   Mail,
   Award,
   Sparkles,
@@ -8,48 +7,63 @@ import {
   CheckCircle,
   Save,
   Tag,
-  Calendar,
   BookOpen,
+  Shield,
+  GraduationCap,
+  CalendarCheck,
   MessageSquare,
-  Shield
+  Phone,
+  AlertCircle,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { profileApi } from '../../api/services';
+import { dashboardApi, profileApi } from '../../api/services';
+import { DashboardSummary } from '../../types';
 
 export const ProfilePage: React.FC = () => {
-  const { user, updateCurrentUser, isAdmin, isMentor } = useAuth();
+  const { user, updateCurrentUser, refreshProfile, isAdmin } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(user?.name || '');
   const [phone, setPhone] = useState(user?.phone || '');
-  const [bio, setBio] = useState(
-    user?.bio || 'Seeker on the path of mindful living, dedicated to practicing Yoga and exploring holistic Ayurveda.'
-  );
-  const [expertise, setExpertise] = useState(user?.expertise || 'Vedic Sciences & Asana');
-  const [skills, setSkills] = useState<string[]>(
-    user?.skills || ['Pranayama', 'Hatha Yoga', 'Ayurvedic Diet', 'Mindfulness', 'Sanskrit Basics']
-  );
+  const [bio, setBio] = useState(user?.bio || '');
+  const [expertise, setExpertise] = useState(user?.expertise || '');
+  const [skills, setSkills] = useState<string[]>(user?.skills || []);
   const [newSkill, setNewSkill] = useState('');
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
 
   useEffect(() => {
     if (user) {
       setName(user.name || '');
-      if (user.phone) setPhone(user.phone);
-      if (user.bio) setBio(user.bio);
-      if (user.expertise) setExpertise(user.expertise);
-      if (user.skills) setSkills(user.skills);
+      setPhone(user.phone || '');
+      setBio(user.bio || '');
+      setExpertise(user.expertise || '');
+      setSkills(user.skills || []);
     }
   }, [user]);
+
+  // Profile counters come from the same API the dashboard uses
+  useEffect(() => {
+    let active = true;
+    dashboardApi.getSummary().then((data) => {
+      if (active) setSummary(data);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user?.id && !user?._id) return;
 
     setSaving(true);
+    setError(null);
     try {
-      const updated = await profileApi.updateProfile(user.id || user._id || '', {
+      await profileApi.updateProfile(user.id || user._id || '', {
         name,
         phone,
         bio,
@@ -57,19 +71,15 @@ export const ProfilePage: React.FC = () => {
         skills,
       });
 
-      updateCurrentUser({
-        name,
-        phone,
-        bio,
-        expertise,
-        skills,
-      });
+      updateCurrentUser({ name, phone, bio, expertise, skills });
+      // Pull the saved record back so the page reflects what was stored
+      await refreshProfile();
 
       setSavedSuccess(true);
       setIsEditing(false);
       setTimeout(() => setSavedSuccess(false), 3000);
-    } catch (err) {
-      alert('Failed to update profile.');
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Failed to update your profile.');
     } finally {
       setSaving(false);
     }
@@ -89,26 +99,62 @@ export const ProfilePage: React.FC = () => {
     setSkills(skills.filter((s) => s !== skillToRemove));
   };
 
+  const stats = summary?.stats;
+
+  // Milestones are derived from real counters, not stored separately
+  const milestones = [
+    {
+      title: 'Prakriti Initiate',
+      body: 'Joined the Pragya community',
+      icon: Sparkles,
+      earned: true,
+      tone: 'bg-terracotta-50 dark:bg-terracotta-950/40 border-terracotta-200 dark:border-terracotta-800/60',
+      iconTone: 'bg-terracotta-600 text-gold-400',
+    },
+    {
+      title: 'Enrolled Learner',
+      body: 'Enrolled on your first course',
+      icon: GraduationCap,
+      earned: (stats?.courses ?? 0) > 0,
+      tone: 'bg-forest-50 dark:bg-forest-950/40 border-forest-200 dark:border-forest-800/60',
+      iconTone: 'bg-forest-600 text-white',
+    },
+    {
+      title: 'Mindful Practitioner',
+      body: 'Attended 3 or more sessions',
+      icon: Award,
+      earned: (stats?.attended ?? 0) >= 3,
+      tone: 'bg-gold-50 dark:bg-gold-950/40 border-gold-200 dark:border-gold-800/60',
+      iconTone: 'bg-gold-500 text-charcoal-900',
+    },
+    {
+      title: 'Community Voice',
+      body: 'Shared your first reflection',
+      icon: MessageSquare,
+      earned: (stats?.posts ?? 0) > 0,
+      tone: 'bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800/60',
+      iconTone: 'bg-purple-600 text-white',
+    },
+  ];
+
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-fade-in pb-12">
-      {/* Profile Header Banner */}
-      <div className="relative rounded-3xl bg-gradient-to-r from-terracotta-600 via-terracotta-700 to-burgundy-700 text-white p-6 sm:p-10 shadow-xl overflow-hidden">
+    <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8 animate-fade-in pb-8">
+      {/* Header */}
+      <div className="relative rounded-3xl bg-gradient-to-r from-terracotta-600 via-terracotta-700 to-burgundy-700 text-white p-5 sm:p-10 shadow-xl overflow-hidden">
         <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-80 h-80 rounded-full bg-gold-400/15 blur-3xl" />
 
-        <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-          {/* Avatar */}
-          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-br from-gold-400 to-gold-600 text-charcoal-900 font-extrabold text-4xl flex items-center justify-center shadow-xl shadow-gold-500/20 border-4 border-white/20 flex-shrink-0">
+        <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-6 text-center sm:text-left">
+          <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-br from-gold-400 to-gold-600 text-charcoal-900 font-extrabold text-3xl sm:text-4xl flex items-center justify-center shadow-xl shadow-gold-500/20 border-4 border-white/20 flex-shrink-0">
             {user?.name?.charAt(0).toUpperCase() || 'U'}
           </div>
 
-          {/* Details */}
           <div className="min-w-0 flex-1 space-y-2">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-              <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-white">
+              <h1 className="font-display font-extrabold text-xl sm:text-3xl text-white break-words">
                 {user?.name}
               </h1>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-gold-500 text-charcoal-900">
-                {user?.role || 'Seeker'}
+                {user?.role || 'Member'}
               </span>
               {isAdmin && (
                 <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-500/80 text-white flex items-center gap-1">
@@ -117,23 +163,30 @@ export const ProfilePage: React.FC = () => {
               )}
             </div>
 
-            <p className="text-xs sm:text-sm text-sand-100/90 flex items-center justify-center sm:justify-start gap-1.5">
-              <Mail className="w-4 h-4 text-gold-400" />
-              {user?.email}
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4 text-xs sm:text-sm text-sand-100/90">
+              <span className="flex items-center justify-center sm:justify-start gap-1.5 break-all">
+                <Mail className="w-4 h-4 text-gold-400 flex-shrink-0" />
+                {user?.email}
+              </span>
+              {user?.phone && (
+                <span className="flex items-center justify-center sm:justify-start gap-1.5">
+                  <Phone className="w-4 h-4 text-gold-400 flex-shrink-0" />
+                  {user.phone}
+                </span>
+              )}
+            </div>
 
-            <p className="text-xs sm:text-sm text-sand-100 max-w-xl leading-relaxed pt-1">
-              "{bio}"
-            </p>
+            {bio && (
+              <p className="text-xs sm:text-sm text-sand-100 max-w-xl leading-relaxed pt-1">"{bio}"</p>
+            )}
           </div>
 
-          {/* Edit Toggle */}
           <button
             onClick={() => setIsEditing(!isEditing)}
-            className="px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-white/15 hover:bg-white/25 text-white backdrop-blur-md border border-white/20 transition-all flex items-center gap-2 flex-shrink-0"
+            className="px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-white/15 hover:bg-white/25 text-white backdrop-blur-md border border-white/20 transition-all flex items-center gap-2 flex-shrink-0 cursor-pointer"
           >
             <Edit3 className="w-4 h-4" />
-            {isEditing ? 'Cancel Edit' : 'Edit Profile'}
+            {isEditing ? 'Cancel' : 'Edit Profile'}
           </button>
         </div>
       </div>
@@ -141,20 +194,24 @@ export const ProfilePage: React.FC = () => {
       {savedSuccess && (
         <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 flex items-center gap-2.5 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
           <CheckCircle className="w-4 h-4" />
-          Profile updated successfully!
+          Profile updated and synced.
         </div>
       )}
 
-      {/* Grid: Edit Form / Details + Badges & Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* Left Column: Edit Form or Biography Overview */}
+      {error && (
+        <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 flex items-center gap-2.5 text-red-700 dark:text-red-300 text-xs font-bold">
+          <AlertCircle className="w-4 h-4" />
+          {error}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
         <div className="lg:col-span-8 space-y-6">
           {isEditing ? (
-            <div className="bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-3xl border border-sand-200 dark:border-neutral-800 shadow-card space-y-6">
-              <h3 className="font-display font-bold text-lg text-neutral-900 dark:text-white">
+            <div className="bg-white dark:bg-neutral-900 p-5 sm:p-8 rounded-3xl border border-sand-200 dark:border-neutral-800 shadow-card space-y-5">
+              <h2 className="font-display font-bold text-lg text-neutral-900 dark:text-white">
                 Edit Personal Details
-              </h3>
+              </h2>
 
               <form onSubmit={handleSaveProfile} className="space-y-4 text-xs">
                 <div>
@@ -166,7 +223,7 @@ export const ProfilePage: React.FC = () => {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full p-3 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 font-medium"
+                    className="w-full p-3 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 font-medium text-neutral-900 dark:text-white"
                   />
                 </div>
 
@@ -180,33 +237,33 @@ export const ProfilePage: React.FC = () => {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+91 98765 43210"
-                      className="w-full p-3 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 font-medium"
+                      className="w-full p-3 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 font-medium text-neutral-900 dark:text-white"
                     />
                   </div>
                   <div>
                     <label className="block font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider mb-1.5">
-                      Specialization / Expertise
+                      Specialisation
                     </label>
                     <input
                       type="text"
                       value={expertise}
                       onChange={(e) => setExpertise(e.target.value)}
-                      placeholder="e.g. Ashtanga Yoga, Hatha & Ayurveda"
-                      className="w-full p-3 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 font-medium"
+                      placeholder="Ashtanga Yoga, Ayurveda…"
+                      className="w-full p-3 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 font-medium text-neutral-900 dark:text-white"
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="block font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider mb-1.5">
-                    Personal Bio / Philosophy
+                    About You
                   </label>
                   <textarea
                     rows={4}
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
-                    placeholder="Tell the community about your spiritual or yogic path..."
-                    className="w-full p-3 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 font-medium resize-none leading-relaxed"
+                    placeholder="Tell the community about your practice…"
+                    className="w-full p-3 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 font-medium resize-none leading-relaxed text-neutral-900 dark:text-white"
                   />
                 </div>
 
@@ -219,8 +276,8 @@ export const ProfilePage: React.FC = () => {
                     value={newSkill}
                     onChange={(e) => setNewSkill(e.target.value)}
                     onKeyDown={handleAddSkill}
-                    placeholder="Type skill name and press Enter..."
-                    className="w-full p-3 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 font-medium mb-2"
+                    placeholder="Type a skill and press Enter…"
+                    className="w-full p-3 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 font-medium mb-2 text-neutral-900 dark:text-white"
                   />
 
                   <div className="flex flex-wrap gap-2">
@@ -233,7 +290,8 @@ export const ProfilePage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => handleRemoveSkill(skill)}
-                          className="hover:text-red-500 font-bold"
+                          className="hover:text-red-500 font-bold cursor-pointer"
+                          aria-label={`Remove ${skill}`}
                         >
                           &times;
                         </button>
@@ -242,19 +300,19 @@ export const ProfilePage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-4 flex items-center gap-3">
+                <div className="pt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <button
                     type="submit"
                     disabled={saving}
-                    className="px-6 py-3 rounded-xl font-bold text-sm bg-terracotta-600 hover:bg-terracotta-700 dark:bg-gold-500 dark:hover:bg-gold-600 text-white dark:text-charcoal-900 transition-all flex items-center gap-2 cursor-pointer"
+                    className="px-6 py-3 rounded-xl font-bold text-sm bg-terracotta-600 hover:bg-terracotta-700 dark:bg-gold-500 dark:hover:bg-gold-600 text-white dark:text-charcoal-900 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     <Save className="w-4 h-4" />
-                    {saving ? 'Saving Changes...' : 'Save Profile'}
+                    {saving ? 'Saving…' : 'Save Profile'}
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsEditing(false)}
-                    className="px-5 py-3 rounded-xl font-bold text-sm bg-sand-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300"
+                    className="px-5 py-3 rounded-xl font-bold text-sm bg-sand-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -262,93 +320,98 @@ export const ProfilePage: React.FC = () => {
               </form>
             </div>
           ) : (
-            <div className="bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-3xl border border-sand-200 dark:border-neutral-800 shadow-card space-y-6">
+            <div className="bg-white dark:bg-neutral-900 p-5 sm:p-8 rounded-3xl border border-sand-200 dark:border-neutral-800 shadow-card space-y-6">
               <div>
-                <h3 className="font-display font-bold text-lg text-neutral-900 dark:text-white">
-                  About Me
-                </h3>
+                <h2 className="font-display font-bold text-lg text-neutral-900 dark:text-white">About Me</h2>
                 <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 mt-2 leading-relaxed whitespace-pre-line">
-                  {bio}
+                  {bio || 'No bio yet. Use "Edit Profile" to introduce yourself to the community.'}
                 </p>
               </div>
 
-              <div>
-                <h4 className="font-display font-bold text-sm text-neutral-900 dark:text-white mb-3 flex items-center gap-2">
-                  <Tag className="w-4 h-4 text-gold-500" />
-                  Practices & Skills
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-sand-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200"
-                    >
-                      {skill}
-                    </span>
-                  ))}
+              {expertise && (
+                <div>
+                  <h3 className="font-display font-bold text-sm text-neutral-900 dark:text-white mb-1.5">
+                    Specialisation
+                  </h3>
+                  <p className="text-xs text-neutral-600 dark:text-neutral-300">{expertise}</p>
                 </div>
-              </div>
+              )}
 
-              <div className="pt-6 border-t border-sand-200 dark:border-neutral-800 grid grid-cols-3 gap-4 text-center">
-                <div className="p-4 rounded-2xl bg-sand-50 dark:bg-neutral-800/40">
-                  <p className="font-display font-bold text-2xl text-terracotta-700 dark:text-gold-400">12</p>
-                  <p className="text-[11px] text-neutral-500 mt-0.5">Sessions Completed</p>
+              {skills.length > 0 && (
+                <div>
+                  <h3 className="font-display font-bold text-sm text-neutral-900 dark:text-white mb-3 flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-gold-500" />
+                    Practices & Skills
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {skills.map((skill) => (
+                      <span
+                        key={skill}
+                        className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-sand-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div className="p-4 rounded-2xl bg-sand-50 dark:bg-neutral-800/40">
-                  <p className="font-display font-bold text-2xl text-terracotta-700 dark:text-gold-400">28</p>
-                  <p className="text-[11px] text-neutral-500 mt-0.5">Discussions Shared</p>
-                </div>
-                <div className="p-4 rounded-2xl bg-sand-50 dark:bg-neutral-800/40">
-                  <p className="font-display font-bold text-2xl text-terracotta-700 dark:text-gold-400">5</p>
-                  <p className="text-[11px] text-neutral-500 mt-0.5">Badges Earned</p>
-                </div>
+              )}
+
+              {/* Counters straight from the API */}
+              <div className="pt-5 border-t border-sand-200 dark:border-neutral-800 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                {[
+                  { label: 'Courses', value: stats?.courses, icon: GraduationCap },
+                  { label: 'Sessions Booked', value: stats?.bookings, icon: CalendarCheck },
+                  { label: 'Sessions Attended', value: stats?.attended, icon: CheckCircle },
+                  { label: 'Posts Shared', value: stats?.posts, icon: MessageSquare },
+                ].map(({ label, value, icon: Icon }) => (
+                  <div key={label} className="p-3 sm:p-4 rounded-2xl bg-sand-50 dark:bg-neutral-800/40">
+                    <Icon className="w-4 h-4 text-terracotta-600 dark:text-gold-400 mx-auto mb-1" />
+                    <p className="font-display font-bold text-xl sm:text-2xl text-terracotta-700 dark:text-gold-400">
+                      {value ?? '—'}
+                    </p>
+                    <p className="text-[10px] sm:text-[11px] text-neutral-500 mt-0.5">{label}</p>
+                  </div>
+                ))}
               </div>
             </div>
           )}
         </div>
 
-        {/* Right Column: Achievements & Badges Showcase */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="bg-white dark:bg-neutral-900 p-6 rounded-3xl border border-sand-200 dark:border-neutral-800 shadow-card space-y-4">
-            <h3 className="font-display font-bold text-base text-neutral-900 dark:text-white flex items-center gap-2">
+        {/* Milestones */}
+        <div className="lg:col-span-4">
+          <div className="bg-white dark:bg-neutral-900 p-5 sm:p-6 rounded-3xl border border-sand-200 dark:border-neutral-800 shadow-card space-y-4">
+            <h2 className="font-display font-bold text-base text-neutral-900 dark:text-white flex items-center gap-2">
               <Award className="w-5 h-5 text-gold-500" />
-              Sadhana Milestones & Badges
-            </h3>
+              Milestones
+            </h2>
 
             <div className="space-y-3">
-              <div className="p-3.5 rounded-2xl bg-terracotta-50 dark:bg-terracotta-950/40 border border-terracotta-200 dark:border-terracotta-800/60 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-terracotta-600 text-gold-400 flex items-center justify-center flex-shrink-0 font-bold">
-                  <Sparkles className="w-5 h-5" />
+              {milestones.map(({ title, body, icon: Icon, earned, tone, iconTone }) => (
+                <div
+                  key={title}
+                  className={`p-3.5 rounded-2xl border flex items-center gap-3 transition-opacity ${tone} ${
+                    earned ? '' : 'opacity-40 grayscale'
+                  }`}
+                >
+                  <div className={`w-10 h-10 rounded-xl ${iconTone} flex items-center justify-center flex-shrink-0`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-xs text-neutral-900 dark:text-white">{title}</h3>
+                    <p className="text-[10px] text-neutral-500 dark:text-neutral-400">
+                      {earned ? body : `Locked · ${body}`}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-xs text-neutral-900 dark:text-white">Prakriti Initiate</h4>
-                  <p className="text-[10px] text-neutral-500">Joined the Pragya Community</p>
-                </div>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-gold-50 dark:bg-gold-950/40 border border-gold-200 dark:border-gold-800/60 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gold-500 text-charcoal-900 flex items-center justify-center flex-shrink-0 font-bold">
-                  <Award className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-xs text-neutral-900 dark:text-white">Mindful Practitioner</h4>
-                  <p className="text-[10px] text-neutral-500">Completed 10+ Workshop hours</p>
-                </div>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center flex-shrink-0 font-bold">
-                  <BookOpen className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-xs text-neutral-900 dark:text-white">Scripture Scholar</h4>
-                  <p className="text-[10px] text-neutral-500">Read 5+ Ayurveda Guides</p>
-                </div>
-              </div>
+              ))}
             </div>
+
+            <p className="text-[10px] text-neutral-400 pt-1 flex items-center gap-1.5">
+              <BookOpen className="w-3 h-3" />
+              Milestones update from your real activity.
+            </p>
           </div>
         </div>
-
       </div>
     </div>
   );
