@@ -1,0 +1,4692 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Every Pragya Yog API action called against the live server, documenting what each one actually returned.">
+<meta name="color-scheme" content="dark">
+<title>Pragya Yog API Test Reference</title>
+<style>html,body{margin:0}img{max-width:100%}</style>
+</head>
+<body>
+<style>
+  :root {
+    --bg:#0f1419; --bg-elevated:#1a2332; --bg-sidebar:#121a24; --border:#2a3648;
+    --text:#e7ecf3; --text-muted:#8b9bb4; --accent:#3d9a7a; --accent-soft:rgba(61,154,122,.15);
+    --link:#6ec9a8; --jwt:#e8a54b; --public:#5b9fd4; --optional:#9b8fd4; --sensitive:#e06c75;
+    --code-bg:#0b1016; --table-stripe:rgba(255,255,255,.03);
+    --ok:#4ec9a0; --err:#e06c75; --skip:#8b9bb4;
+    --radius:8px; --sidebar-w:300px;
+    --font:"Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono:"Cascadia Code","Fira Code",Consolas,ui-monospace,monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:var(--font); font-size:15px; line-height:1.6; }
+  code, pre { font-family:var(--mono); }
+  a { color:var(--link); }
+
+  /* ---------- layout ---------- */
+  .shell { display:flex; min-height:100vh; }
+  .sidebar {
+    width:var(--sidebar-w); flex:0 0 var(--sidebar-w); background:var(--bg-sidebar);
+    border-right:1px solid var(--border); position:sticky; top:0; height:100vh;
+    display:flex; flex-direction:column;
+  }
+  .sidebar-header { padding:20px 18px 14px; border-bottom:1px solid var(--border); }
+  .sidebar-header h1 { margin:0 0 4px; font-size:17px; font-weight:600; }
+  .sidebar-header p { margin:0; font-size:12px; color:var(--text-muted); }
+  .search-wrap { padding:12px 14px; border-bottom:1px solid var(--border); }
+  .search-wrap input {
+    width:100%; padding:8px 10px; background:var(--code-bg); color:var(--text);
+    border:1px solid var(--border); border-radius:6px; font-size:13px; font-family:var(--font);
+  }
+  .search-wrap input:focus { outline:none; border-color:var(--accent); }
+  .nav-scroll { overflow-y:auto; padding:10px 8px 30px; flex:1; }
+  .nav-group-title { padding:12px 10px 5px; font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--text-muted); font-weight:700; }
+  .nav-item {
+    display:flex; align-items:center; gap:7px; padding:5px 10px; border-radius:6px;
+    color:var(--text); text-decoration:none; font-size:13px; font-family:var(--mono);
+  }
+  .nav-item:hover { background:var(--accent-soft); color:var(--link); }
+  .nav-dot { width:6px; height:6px; border-radius:50%; flex:0 0 6px; }
+  .nav-dot.ok{background:var(--ok)} .nav-dot.auth{background:var(--jwt)}
+  .nav-dot.err{background:var(--err)} .nav-dot.skip{background:var(--skip)}
+
+  .main { flex:1; min-width:0; }
+  .topbar {
+    position:sticky; top:0; z-index:5; background:rgba(15,20,25,.94); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border); padding:14px 28px; display:flex; flex-wrap:wrap;
+    align-items:center; gap:14px;
+  }
+  .topbar-meta { font-size:12px; color:var(--text-muted); font-family:var(--mono); }
+  .content { padding:26px 28px 80px; max-width:1000px; }
+
+  /* ---------- filters ---------- */
+  .filters { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+  .filters .lbl { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); margin-right:2px; }
+  .chip {
+    padding:4px 10px; border-radius:999px; border:1px solid var(--border); background:transparent;
+    color:var(--text-muted); font-size:11px; font-weight:700; letter-spacing:.05em; cursor:pointer;
+    font-family:var(--font); text-transform:uppercase;
+  }
+  .chip:hover { color:var(--text); border-color:var(--text-muted); }
+  .chip.active { background:var(--accent-soft); border-color:var(--accent); color:var(--link); }
+
+  /* ---------- intro ---------- */
+  .intro { background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius); padding:20px 22px; margin-bottom:26px; }
+  .intro h2 { margin:0 0 8px; font-size:18px; }
+  .intro p { margin:0 0 10px; color:var(--text-muted); font-size:14px; }
+  .intro p:last-child { margin-bottom:0; }
+  .intro code { background:var(--code-bg); padding:1px 5px; border-radius:4px; font-size:12.5px; color:var(--link); }
+  .tally { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+  .tally div { background:var(--code-bg); border:1px solid var(--border); border-radius:6px; padding:9px 13px; min-width:96px; }
+  .tally b { display:block; font-size:19px; font-family:var(--mono); }
+  .tally span { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; }
+  .t-ok b{color:var(--ok)} .t-auth b{color:var(--jwt)} .t-err b{color:var(--err)} .t-skip b{color:var(--skip)}
+
+  /* ---------- endpoints ---------- */
+  .group-heading {
+    margin:34px 0 14px; padding-bottom:8px; border-bottom:1px solid var(--border);
+    font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); font-weight:700;
+  }
+  .endpoint { background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:14px; overflow:hidden; scroll-margin-top:80px; }
+  .endpoint-head { display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid var(--border); }
+  .endpoint-head h3 { margin:0; font-size:15px; font-family:var(--mono); font-weight:600; }
+  .method { background:var(--accent-soft); color:var(--link); border:1px solid var(--accent); border-radius:4px; padding:1px 7px; font-size:10.5px; font-weight:700; letter-spacing:.06em; }
+  .badge { border-radius:4px; padding:1px 7px; font-size:10px; font-weight:700; letter-spacing:.06em; border:1px solid; }
+  .badge-jwt{color:var(--jwt);border-color:var(--jwt)} .badge-public{color:var(--public);border-color:var(--public)}
+  .badge-optional{color:var(--optional);border-color:var(--optional)} .badge-sensitive{color:var(--sensitive);border-color:var(--sensitive)}
+  .status { margin-left:auto; border-radius:999px; padding:2px 10px; font-size:10.5px; font-weight:700; letter-spacing:.05em; }
+  .status-ok{background:rgba(78,201,160,.14);color:var(--ok)}
+  .status-auth{background:rgba(232,165,75,.14);color:var(--jwt)}
+  .status-err{background:rgba(224,108,117,.14);color:var(--err)}
+  .status-skip{background:rgba(139,155,180,.13);color:var(--skip)}
+
+  .endpoint-body { padding:16px; }
+  .purpose { margin:0 0 14px; color:var(--text); font-size:14px; }
+  .endpoint-body h4 { margin:18px 0 8px; font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--text-muted); font-weight:700; }
+  .endpoint-body h4:first-of-type { margin-top:0; }
+
+  .meta-row { display:flex; flex-wrap:wrap; gap:8px 26px; padding:10px 12px; background:var(--code-bg); border:1px solid var(--border); border-radius:6px; margin-bottom:6px; }
+  .meta-row .k { display:block; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); }
+  .meta-row .val2 { font-size:12.5px; font-family:var(--mono); }
+  .meta-row code { color:var(--link); }
+
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { text-align:left; padding:7px 10px; font-size:10.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--text-muted); border-bottom:1px solid var(--border); font-weight:700; }
+  td { padding:7px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
+  tbody tr:nth-child(odd) { background:var(--table-stripe); }
+  td code { color:var(--link); font-size:12.5px; }
+  td code.val { color:var(--text-muted); }
+  .req { color:var(--sensitive); font-size:11px; font-weight:700; }
+  .opt { color:var(--text-muted); font-size:11px; }
+  .tok { color:var(--jwt); font-size:11.5px; font-family:var(--mono); }
+
+  pre { background:var(--code-bg); border:1px solid var(--border); border-radius:6px; padding:12px 14px; overflow-x:auto; margin:0; font-size:12.5px; line-height:1.55; }
+  pre code { color:#a9c7e8; }
+
+  .result { display:flex; flex-wrap:wrap; align-items:baseline; gap:10px; padding:11px 13px; border-radius:6px; border:1px solid var(--border); background:var(--code-bg); }
+  .result code { font-size:12.5px; color:var(--text); word-break:break-word; }
+  .result-tag { font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; }
+  .result-ok{border-color:rgba(78,201,160,.4)} .result-ok .result-tag{color:var(--ok)}
+  .result-auth{border-color:rgba(232,165,75,.4)} .result-auth .result-tag{color:var(--jwt)}
+  .result-err{border-color:rgba(224,108,117,.4)} .result-err .result-tag{color:var(--err)}
+  .result-skip{border-color:rgba(139,155,180,.35)} .result-skip .result-tag{color:var(--skip)}
+
+  .variants { margin:0; padding-left:18px; font-size:13px; color:var(--text-muted); }
+  .variants code { color:var(--link); }
+  .note { margin-top:14px; padding:11px 13px; border-left:3px solid var(--jwt); background:rgba(232,165,75,.07); border-radius:0 6px 6px 0; font-size:13px; }
+  .note strong { color:var(--jwt); }
+  .muted { color:var(--text-muted); font-size:13px; margin:0; }
+  .empty-state { display:none; padding:40px; text-align:center; color:var(--text-muted); }
+
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media (max-width:900px) {
+    .sidebar { display:none; }
+    .content, .topbar { padding-left:16px; padding-right:16px; }
+  }
+</style>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1>Pragya Yog API</h1>
+      <p>Tested endpoint reference · 68 actions</p>
+    </div>
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="Filter actions…" aria-label="Filter actions">
+    </div>
+    <nav class="nav-scroll">
+      
+        <div class="nav-group">
+          <div class="nav-group-title">Auth &amp; Profile</div>
+          <a class="nav-item" href="#ep-login"><span class="nav-dot err"></span>login</a><a class="nav-item" href="#ep-get-profile"><span class="nav-dot auth"></span>get-profile</a><a class="nav-item" href="#ep-edit-user-details"><span class="nav-dot skip"></span>edit_user_details</a><a class="nav-item" href="#ep-check-token"><span class="nav-dot auth"></span>check-token</a><a class="nav-item" href="#ep-passwrod-change"><span class="nav-dot skip"></span>passwrod_change</a><a class="nav-item" href="#ep-reset-password"><span class="nav-dot skip"></span>reset-password</a><a class="nav-item" href="#ep-emergency-contact"><span class="nav-dot auth"></span>emergency-contact</a><a class="nav-item" href="#ep-update-notification-settings"><span class="nav-dot skip"></span>update-notification-settings</a><a class="nav-item" href="#ep-register-device-token"><span class="nav-dot skip"></span>register-device-token</a><a class="nav-item" href="#ep-app-version"><span class="nav-dot ok"></span>app-version</a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">Classes &amp; Schedule</div>
+          <a class="nav-item" href="#ep-today-class"><span class="nav-dot ok"></span>today-class</a><a class="nav-item" href="#ep-getclassbydate"><span class="nav-dot auth"></span>getClassByDate</a><a class="nav-item" href="#ep-publicclassbydate"><span class="nav-dot ok"></span>publicClassByDate</a><a class="nav-item" href="#ep-book"><span class="nav-dot skip"></span>book</a><a class="nav-item" href="#ep-book-dropin"><span class="nav-dot skip"></span>book_dropin</a><a class="nav-item" href="#ep-get-booked-classes"><span class="nav-dot auth"></span>get-booked-classes</a><a class="nav-item" href="#ep-bookings"><span class="nav-dot auth"></span>bookings</a><a class="nav-item" href="#ep-classestypedetail"><span class="nav-dot err"></span>classesTypeDetail</a><a class="nav-item" href="#ep-get-filters"><span class="nav-dot ok"></span>get-filters</a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">Reviews</div>
+          <a class="nav-item" href="#ep-get-pending-class-review"><span class="nav-dot auth"></span>get-pending-class-review</a><a class="nav-item" href="#ep-submit-class-review"><span class="nav-dot skip"></span>submit-class-review</a><a class="nav-item" href="#ep-get-instructor-reviews"><span class="nav-dot ok"></span>get-instructor-reviews</a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">Packages &amp; Bundles</div>
+          <a class="nav-item" href="#ep-get-packages"><span class="nav-dot ok"></span>get-packages</a><a class="nav-item" href="#ep-get-package-detail"><span class="nav-dot err"></span>get-package-detail</a><a class="nav-item" href="#ep-get-package-schedules"><span class="nav-dot err"></span>get-package-schedules</a><a class="nav-item" href="#ep-get-active-membership"><span class="nav-dot auth"></span>get-active-membership</a><a class="nav-item" href="#ep-bundle-list"><span class="nav-dot ok"></span>bundle-list</a><a class="nav-item" href="#ep-bundle-detail"><span class="nav-dot ok"></span>bundle-detail</a><a class="nav-item" href="#ep-bundle-track-event"><span class="nav-dot skip"></span>bundle-track-event</a><a class="nav-item" href="#ep-reserve-package"><span class="nav-dot skip"></span>reserve_package</a><a class="nav-item" href="#ep-reserve-bundle"><span class="nav-dot skip"></span>reserve_bundle</a><a class="nav-item" href="#ep-renew-package"><span class="nav-dot skip"></span>renew-package</a><a class="nav-item" href="#ep-toggle-auto-renew"><span class="nav-dot skip"></span>toggle-auto-renew</a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">Upcoming Events</div>
+          <a class="nav-item" href="#ep-upcoming-events"><span class="nav-dot ok"></span>upcoming-events</a><a class="nav-item" href="#ep-upcoming-event-detail"><span class="nav-dot err"></span>upcoming-event-detail</a><a class="nav-item" href="#ep-event-toggle-favorite"><span class="nav-dot skip"></span>event-toggle-favorite</a><a class="nav-item" href="#ep-event-favorites"><span class="nav-dot auth"></span>event-favorites</a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">Wallet &amp; Billings</div>
+          <a class="nav-item" href="#ep-wallet"><span class="nav-dot auth"></span>wallet</a><a class="nav-item" href="#ep-billings"><span class="nav-dot auth"></span>billings</a><a class="nav-item" href="#ep-billing-details"><span class="nav-dot err"></span>billing-details</a><a class="nav-item" href="#ep-billing-wallet-payment"><span class="nav-dot skip"></span>billing-wallet-payment</a><a class="nav-item" href="#ep-create-payment"><span class="nav-dot skip"></span>create_payment</a><a class="nav-item" href="#ep-create-invoice-payment"><span class="nav-dot skip"></span>create_invoice_payment</a><a class="nav-item" href="#ep-payment-status"><span class="nav-dot skip"></span>payment_status</a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">Check-In &amp; Attendance</div>
+          <a class="nav-item" href="#ep-check-in-eligible"><span class="nav-dot auth"></span>check-in-eligible</a><a class="nav-item" href="#ep-user-check-in"><span class="nav-dot skip"></span>user-check-in</a><a class="nav-item" href="#ep-checkin-config"><span class="nav-dot ok"></span>checkin-config</a><a class="nav-item" href="#ep-get-user-checkin-qr"><span class="nav-dot auth"></span>get-user-checkin-qr</a><a class="nav-item" href="#ep-check-in-status"><span class="nav-dot auth"></span>check-in-status</a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">Media Gallery</div>
+          <a class="nav-item" href="#ep-media-gallery-home"><span class="nav-dot ok"></span>media-gallery-home</a><a class="nav-item" href="#ep-media-category-detail"><span class="nav-dot ok"></span>media-category-detail</a><a class="nav-item" href="#ep-media-albums"><span class="nav-dot ok"></span>media-albums</a><a class="nav-item" href="#ep-media-album-detail"><span class="nav-dot err"></span>media-album-detail</a><a class="nav-item" href="#ep-media-videos"><span class="nav-dot ok"></span>media-videos</a><a class="nav-item" href="#ep-media-audio"><span class="nav-dot ok"></span>media-audio</a><a class="nav-item" href="#ep-media-documents"><span class="nav-dot ok"></span>media-documents</a><a class="nav-item" href="#ep-media-toggle-favorite"><span class="nav-dot skip"></span>media-toggle-favorite</a><a class="nav-item" href="#ep-media-search"><span class="nav-dot ok"></span>media-search</a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">Services &amp; Support</div>
+          <a class="nav-item" href="#ep-get-freeze-week-options"><span class="nav-dot ok"></span>get_freeze_week_options</a><a class="nav-item" href="#ep-get-service-types"><span class="nav-dot ok"></span>get_service_types</a><a class="nav-item" href="#ep-submit-service-request"><span class="nav-dot skip"></span>submit_service_request</a><a class="nav-item" href="#ep-my-service-requests"><span class="nav-dot auth"></span>my_service_requests</a><a class="nav-item" href="#ep-faqs"><span class="nav-dot ok"></span>faqs</a><a class="nav-item" href="#ep-ticketsubmit"><span class="nav-dot skip"></span>ticketSubmit</a><a class="nav-item" href="#ep-get-ticket"><span class="nav-dot auth"></span>get-ticket</a><a class="nav-item" href="#ep-get-notification"><span class="nav-dot auth"></span>get-notification</a><a class="nav-item" href="#ep-teachers"><span class="nav-dot ok"></span>teachers</a><a class="nav-item" href="#ep-get-yoga-poses"><span class="nav-dot err"></span>get-yoga-poses</a>
+        </div>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="filters">
+        <span class="lbl">Auth</span>
+        <button class="chip auth-chip active" data-auth="ALL">ALL</button><button class="chip auth-chip" data-auth="JWT">JWT</button><button class="chip auth-chip" data-auth="PUBLIC">PUBLIC</button><button class="chip auth-chip" data-auth="OPTIONAL">OPTIONAL</button><button class="chip auth-chip" data-auth="SENSITIVE">SENSITIVE</button>
+      </div>
+      <div class="filters">
+        <span class="lbl">Result</span>
+        <button class="chip verdict-chip active" data-verdict="ALL">All</button><button class="chip verdict-chip" data-verdict="OK">Working</button><button class="chip verdict-chip" data-verdict="AUTH REQUIRED">Auth required</button><button class="chip verdict-chip" data-verdict="ERROR">Error</button><button class="chip verdict-chip" data-verdict="NOT CALLED">Not called</button>
+      </div>
+      <span class="topbar-meta" id="shown">68 shown</span>
+    </div>
+
+    <div class="content">
+      <section class="intro">
+        <h2>What this is</h2>
+        <p>
+          Every action defined in the Pragya Yog API workbench, called against the live
+          <code>api.php</code> with the exact request body the workbench sends. Each entry records
+          what actually came back, not what the documentation predicts.
+        </p>
+        <p>
+          Actions that create real records — bookings, payments, reviews, tickets, device
+          registrations and favourite toggles — are listed but were deliberately
+          <strong>not called</strong>, so no live data was written. Endpoints marked
+          <em>Auth required</em> were confirmed to reject an invalid token; their response shapes
+          are unverified because no test account was available.
+        </p>
+        <div class="tally">
+          <div class="t-ok"><b>21</b><span>Working</span></div>
+          <div class="t-auth"><b>17</b><span>Auth required</span></div>
+          <div class="t-err"><b>8</b><span>Errors</span></div>
+          <div class="t-skip"><b>22</b><span>Not called</span></div>
+        </div>
+      </section>
+
+      
+        <h2 class="group-heading" data-group>Auth &amp; Profile</h2>
+        
+  <article class="endpoint" id="ep-login"
+           data-auth="PUBLIC" data-verdict="ERROR"
+           data-search="login authenticate a user and issue access + refresh tokens. auth &amp; profile">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>login</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-err">Error</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Authenticate a user and issue access + refresh tokens.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">login</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>email</code></td>
+              <td><code class="val"><em>empty</em></code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>password</code></td>
+              <td><code class="val"><em>empty</em></code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;login&quot;,
+  &quot;email&quot;: &quot;&quot;,
+  &quot;password&quot;: &quot;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-err">
+        <span class="result-tag">Error</span>
+        <code>status:false — Email and password required</code>
+      </div>
+
+      
+
+      <div class="note"><strong>Note from testing.</strong> Called with empty credentials to confirm validation. Not exercised with a real account — no test login was available.</div>
+    </div>
+  </article>
+  <article class="endpoint" id="ep-get-profile"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="get-profile return the authenticated user's profile plus this-month booking count and strike counts. auth &amp; profile">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get-profile</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Return the authenticated user's profile plus this-month booking count and strike counts.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get-profile</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get-profile&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-edit-user-details"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="edit_user_details update the authenticated user's profile, including optional avatar upload and notification preferences. auth &amp; profile">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>edit_user_details</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Update the authenticated user's profile, including optional avatar upload and notification preferences.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">edit_user_details</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>fname</code></td>
+              <td><code class="val">John</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>lname</code></td>
+              <td><code class="val">Doe</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>phone</code></td>
+              <td><code class="val">+852 9876 5432</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>street</code></td>
+              <td><code class="val">123 Nathan Road</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>city</code></td>
+              <td><code class="val">Kowloon</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>state</code></td>
+              <td><code class="val">HK</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>pincode</code></td>
+              <td><code class="val">999077</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>country</code></td>
+              <td><code class="val">Hong Kong</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>gender</code></td>
+              <td><code class="val">Male</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>dob</code></td>
+              <td><code class="val">1995-05-15</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;edit_user_details&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;fname&quot;: &quot;John&quot;,
+  &quot;lname&quot;: &quot;Doe&quot;,
+  &quot;phone&quot;: &quot;+852 9876 5432&quot;,
+  &quot;street&quot;: &quot;123 Nathan Road&quot;,
+  &quot;city&quot;: &quot;Kowloon&quot;,
+  &quot;state&quot;: &quot;HK&quot;,
+  &quot;pincode&quot;: &quot;999077&quot;,
+  &quot;country&quot;: &quot;Hong Kong&quot;,
+  &quot;gender&quot;: &quot;Male&quot;,
+  &quot;dob&quot;: &quot;1995-05-15&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-check-token"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="check-token validate an access token; if invalid, mint new tokens from a refresh token. auth &amp; profile">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>check-token</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Validate an access token; if invalid, mint new tokens from a refresh token.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">check-token</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>refresh_token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;check-token&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;refresh_token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired refresh token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-passwrod-change"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="passwrod_change change the authenticated user's password after verifying the old password. auth &amp; profile">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>passwrod_change</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Change the authenticated user's password after verifying the old password.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">passwrod_change</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>old_pass</code></td>
+              <td><code class="val">current_pass123</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>password</code></td>
+              <td><code class="val">new_secret_password</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>confirmpassword</code></td>
+              <td><code class="val">new_secret_password</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;passwrod_change&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;old_pass&quot;: &quot;current_pass123&quot;,
+  &quot;password&quot;: &quot;new_secret_password&quot;,
+  &quot;confirmpassword&quot;: &quot;new_secret_password&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-reset-password"
+           data-auth="PUBLIC" data-verdict="NOT CALLED"
+           data-search="reset-password send a password-reset link email to a registered user. auth &amp; profile">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>reset-password</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Send a password-reset link email to a registered user.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">reset-password</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>email</code></td>
+              <td><code class="val">student@example.com</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;reset-password&quot;,
+  &quot;email&quot;: &quot;student@example.com&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-emergency-contact"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="emergency-contact get, add, or delete the user's emergency contacts. auth &amp; profile">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>emergency-contact</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Get, add, or delete the user's emergency contacts.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">emergency-contact</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>action_type</code></td>
+              <td><code class="val">get</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;emergency-contact&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;action_type&quot;: &quot;get&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+      <h4>Other variants tested</h4>
+      <ul class="variants">
+        <li><code>action_type=add, name=Mary Jane, relationship=Spouse, phone=+852 9123 4567</code> &rarr; status:false — Invalid or expired token</li><li><code>action_type=delete, contact_id=1</code> &rarr; status:false — Invalid or expired token</li>
+      </ul>
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-update-notification-settings"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="update-notification-settings update the three notification preference flags. auth &amp; profile">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>update-notification-settings</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Update the three notification preference flags.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">update-notification-settings</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>notify_whatsapp</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>notify_email</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>notify_push</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;update-notification-settings&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;notify_whatsapp&quot;: &quot;1&quot;,
+  &quot;notify_email&quot;: &quot;1&quot;,
+  &quot;notify_push&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-register-device-token"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="register-device-token register (or update) an fcm push token for the authenticated user's device. auth &amp; profile">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>register-device-token</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Register (or update) an FCM push token for the authenticated user's device.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">register-device-token</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>fcm_token</code></td>
+              <td><code class="val">sample_fcm_token_device_abc123</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>platform</code></td>
+              <td><code class="val">android</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;register-device-token&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;fcm_token&quot;: &quot;sample_fcm_token_device_abc123&quot;,
+  &quot;platform&quot;: &quot;android&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-app-version"
+           data-auth="PUBLIC" data-verdict="OK"
+           data-search="app-version return the latest app version and whether an update is forced. auth &amp; profile">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>app-version</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Return the latest app version and whether an update is forced.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">app-version</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;app-version&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>latest_version=1.7.0 | force_update=true</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+      
+        <h2 class="group-heading" data-group>Classes &amp; Schedule</h2>
+        
+  <article class="endpoint" id="ep-today-class"
+           data-auth="PUBLIC" data-verdict="OK"
+           data-search="today-class return the next 5 upcoming active schedules. classes &amp; schedule">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>today-class</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Return the next 5 upcoming active schedules.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">today-class</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;today-class&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>today=Thu September, 3 | todaySchedules[5] keys=id,title,date,instructor,instructor_id</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-getclassbydate"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="getclassbydate return schedules for a given date that the authenticated user has package access to, with per-class booking button state. classes &amp; schedule">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>getClassByDate</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Return schedules for a given date that the authenticated user has package access to, with per-class booking button state.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">getClassByDate</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>date</code></td>
+              <td><code class="val">03/09/2026</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>instructor</code></td>
+              <td><code class="val"><em>empty</em></code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>level</code></td>
+              <td><code class="val"><em>empty</em></code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>pillar</code></td>
+              <td><code class="val"><em>empty</em></code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>room</code></td>
+              <td><code class="val"><em>empty</em></code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;getClassByDate&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;date&quot;: &quot;03/09/2026&quot;,
+  &quot;instructor&quot;: &quot;&quot;,
+  &quot;level&quot;: &quot;&quot;,
+  &quot;pillar&quot;: &quot;&quot;,
+  &quot;room&quot;: &quot;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-publicclassbydate"
+           data-auth="PUBLIC" data-verdict="OK"
+           data-search="publicclassbydate public (no-auth) list of active schedules for a date, view-only. classes &amp; schedule">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>publicClassByDate</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Public (no-auth) list of active schedules for a date, view-only.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">publicClassByDate</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>date</code></td>
+              <td><code class="val">03/09/2026</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>instructor</code></td>
+              <td><code class="val"><em>empty</em></code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>level</code></td>
+              <td><code class="val"><em>empty</em></code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>pillar</code></td>
+              <td><code class="val"><em>empty</em></code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>room</code></td>
+              <td><code class="val"><em>empty</em></code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;publicClassByDate&quot;,
+  &quot;date&quot;: &quot;03/09/2026&quot;,
+  &quot;instructor&quot;: &quot;&quot;,
+  &quot;level&quot;: &quot;&quot;,
+  &quot;pillar&quot;: &quot;&quot;,
+  &quot;room&quot;: &quot;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>today=Thu September, 3 | todaySchedules[5] keys=id,title,date,instructor,instructor_id</code>
+      </div>
+
+      
+
+      <div class="note"><strong>Note from testing.</strong> The workbench preset sends date, which silently returns zero schedules. event_date or selected_date both work, and omitting the parameter returns the next five sessions. A client using date would show an empty timetable with no error.</div>
+    </div>
+  </article>
+  <article class="endpoint" id="ep-book"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="book book a class using the user's membership/package, or route to a booking request / drop-in offer when direct membership booking is not possible. classes &amp; schedule">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>book</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Book a class using the user's membership/package, or route to a booking request / drop-in offer when direct membership booking is not possible.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">book</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>schedule_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>package_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;book&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;schedule_id&quot;: &quot;1&quot;,
+  &quot;package_id&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-book-dropin"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="book_dropin submit a drop-in booking request for a class the user has no covering package for. classes &amp; schedule">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>book_dropin</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Submit a drop-in booking request for a class the user has no covering package for.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">book_dropin</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>schedule_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>payment_method</code></td>
+              <td><code class="val">wallet</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;book_dropin&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;schedule_id&quot;: &quot;1&quot;,
+  &quot;payment_method&quot;: &quot;wallet&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-get-booked-classes"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="get-booked-classes list bookings associated with a given package (paginated). classes &amp; schedule">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get-booked-classes</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">List bookings associated with a given package (paginated).</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get-booked-classes</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get-booked-classes&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-bookings"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="bookings multiplexed booking listing/cancellation endpoint. behaviour depends on action_type: upcoming, past, past-with-limit-offset, or cancel. classes &amp; schedule">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>bookings</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Multiplexed booking listing/cancellation endpoint. Behaviour depends on action_type: upcoming, past, past-with-limit-offset, or cancel.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">bookings</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>type</code></td>
+              <td><code class="val">upcoming</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;bookings&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;type&quot;: &quot;upcoming&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-classestypedetail"
+           data-auth="PUBLIC" data-verdict="EMPTY"
+           data-search="classestypedetail fetch a policy row by its title. classes &amp; schedule">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>classesTypeDetail</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-err">Empty body</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Fetch a policy row by its title.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">classesTypeDetail</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;classesTypeDetail&quot;,
+  &quot;id&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-err">
+        <span class="result-tag">Empty body</span>
+        <code>empty body</code>
+      </div>
+
+      
+
+      <div class="note"><strong>Note from testing.</strong> Returned a completely empty body on every attempt: with no parameters, and with id, type_id, class_type_id and pillar_id. Not usable in its current state.</div>
+    </div>
+  </article>
+  <article class="endpoint" id="ep-get-filters"
+           data-auth="PUBLIC" data-verdict="OK"
+           data-search="get-filters provide dropdown filter options (instructors, pillars, levels, locations). classes &amp; schedule">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get-filters</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Provide dropdown filter options (instructors, pillars, levels, locations).</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get-filters</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get-filters&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>data{instructors,pillars,levels,locations}</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+      
+        <h2 class="group-heading" data-group>Reviews</h2>
+        
+  <article class="endpoint" id="ep-get-pending-class-review"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="get-pending-class-review  reviews">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get-pending-class-review</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get-pending-class-review</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get-pending-class-review&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-submit-class-review"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="submit-class-review  reviews">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>submit-class-review</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">submit-class-review</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>booking_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>schedule_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>instructor</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>rating</code></td>
+              <td><code class="val">5</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>review</code></td>
+              <td><code class="val">Great flow and very grounding meditation.</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>is_skipped</code></td>
+              <td><code class="val">0</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;submit-class-review&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;booking_id&quot;: &quot;1&quot;,
+  &quot;schedule_id&quot;: &quot;1&quot;,
+  &quot;instructor&quot;: &quot;1&quot;,
+  &quot;rating&quot;: &quot;5&quot;,
+  &quot;review&quot;: &quot;Great flow and very grounding meditation.&quot;,
+  &quot;is_skipped&quot;: &quot;0&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-get-instructor-reviews"
+           data-auth="PUBLIC" data-verdict="OK"
+           data-search="get-instructor-reviews  reviews">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get-instructor-reviews</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get-instructor-reviews</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>instructor_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>page</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get-instructor-reviews&quot;,
+  &quot;instructor_id&quot;: &quot;1&quot;,
+  &quot;page&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>data{instructor_id,instructor_name,instructor_image,instructor_post,avg_rating}</code>
+      </div>
+
+      
+
+      <div class="note"><strong>Note from testing.</strong> Needs a real staff id. The first entry in get-filters.instructors is the &quot;All Instructors&quot; placeholder with an empty id; passing it returns &quot;Invalid instructor ID&quot;. Verified with 360610 (Master Aarya).</div>
+    </div>
+  </article>
+      
+        <h2 class="group-heading" data-group>Packages &amp; Bundles</h2>
+        
+  <article class="endpoint" id="ep-get-packages"
+           data-auth="PUBLIC" data-verdict="OK"
+           data-search="get-packages list active, priced packages grouped by category. packages &amp; bundles">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get-packages</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">List active, priced packages grouped by category.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get-packages</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get-packages&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>data{Private,Regular,TTC,Workshop,Event} | member_discount_eligible=false | category_name=Member</code>
+      </div>
+
+      
+
+      <div class="note"><strong>Note from testing.</strong> Groups packages by category. Observed: Private 7, Regular 6, TTC 0, Workshop 7, Event 4, Retreat 2.</div>
+    </div>
+  </article>
+  <article class="endpoint" id="ep-get-package-detail"
+           data-auth="PUBLIC" data-verdict="ERROR"
+           data-search="get-package-detail return a single package with &quot;frequently bought together&quot; bundles. packages &amp; bundles">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get-package-detail</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-err">Error</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Return a single package with &quot;frequently bought together&quot; bundles.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get-package-detail</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>package_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get-package-detail&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;package_id&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-err">
+        <span class="result-tag">Error</span>
+        <code>status:false — Package not found</code>
+      </div>
+
+      
+
+      <div class="note"><strong>Note from testing.</strong> Takes package_id. Sending id returns &quot;Missing package id&quot;. Verified against package 12795.</div>
+    </div>
+  </article>
+  <article class="endpoint" id="ep-get-package-schedules"
+           data-auth="PUBLIC" data-verdict="ERROR"
+           data-search="get-package-schedules  packages &amp; bundles">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get-package-schedules</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-err">Error</span>
+    </header>
+
+    <div class="endpoint-body">
+      
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get-package-schedules</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>package_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get-package-schedules&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;package_id&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-err">
+        <span class="result-tag">Error</span>
+        <code>status:false — Package not found</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-get-active-membership"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="get-active-membership list the authenticated user's active memberships (user_package rows) with renewal info. packages &amp; bundles">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get-active-membership</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">List the authenticated user's active memberships (user_package rows) with renewal info.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get-active-membership</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get-active-membership&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-bundle-list"
+           data-auth="OPTIONAL" data-verdict="OK"
+           data-search="bundle-list list currently-active bundles with computed pricing; hides &quot;once per customer&quot; bundles already used by the (optional) logged-in user. packages &amp; bundles">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>bundle-list</h3>
+      <span class="badge badge-optional">OPTIONAL</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">List currently-active bundles with computed pricing; hides &quot;once per customer&quot; bundles already used by the (optional) logged-in user.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">Optional token</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">bundle-list</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;bundle-list&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>data[1] keys=id,name,description,discount_type,discount_value</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-bundle-detail"
+           data-auth="PUBLIC" data-verdict="OK"
+           data-search="bundle-detail return a single bundle with computed pricing. packages &amp; bundles">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>bundle-detail</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Return a single bundle with computed pricing.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">bundle-detail</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>bundle_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;bundle-detail&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;bundle_id&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>data{id,name,description,discount_type,discount_value}</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-bundle-track-event"
+           data-auth="PUBLIC" data-verdict="NOT CALLED"
+           data-search="bundle-track-event record a view or click analytics event for a bundle. packages &amp; bundles">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>bundle-track-event</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Record a view or click analytics event for a bundle.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">bundle-track-event</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>bundle_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>event_type</code></td>
+              <td><code class="val">view</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;bundle-track-event&quot;,
+  &quot;bundle_id&quot;: &quot;1&quot;,
+  &quot;event_type&quot;: &quot;view&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-reserve-package"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="reserve_package create a pending reservation request for a single package (authenticated user). packages &amp; bundles">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>reserve_package</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Create a pending reservation request for a single package (authenticated user).</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">reserve_package</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>package_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>start_date</code></td>
+              <td><code class="val">2026-09-02</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;reserve_package&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;package_id&quot;: &quot;1&quot;,
+  &quot;start_date&quot;: &quot;2026-09-02&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-reserve-bundle"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="reserve_bundle create pending reservation requests for the packages in a bundle (authenticated user). packages &amp; bundles">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>reserve_bundle</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Create pending reservation requests for the packages in a bundle (authenticated user).</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">reserve_bundle</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>bundle_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>start_date</code></td>
+              <td><code class="val">2026-09-02</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;reserve_bundle&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;bundle_id&quot;: &quot;1&quot;,
+  &quot;start_date&quot;: &quot;2026-09-02&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-renew-package"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="renew-package manually renew one of the user's memberships. packages &amp; bundles">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>renew-package</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Manually renew one of the user's memberships.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">renew-package</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>package_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;renew-package&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;package_id&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-toggle-auto-renew"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="toggle-auto-renew enable/disable auto-renew on a user's membership (only if the package supports renewal). packages &amp; bundles">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>toggle-auto-renew</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Enable/disable auto-renew on a user's membership (only if the package supports renewal).</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">toggle-auto-renew</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>membership_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>auto_renew</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;toggle-auto-renew&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;membership_id&quot;: &quot;1&quot;,
+  &quot;auto_renew&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+      
+        <h2 class="group-heading" data-group>Upcoming Events</h2>
+        
+  <article class="endpoint" id="ep-upcoming-events"
+           data-auth="OPTIONAL" data-verdict="OK"
+           data-search="upcoming-events list all currently-running/future &quot;upcoming events&quot; (workshops/special events), decorated for the app. upcoming events">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>upcoming-events</h3>
+      <span class="badge badge-optional">OPTIONAL</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">List all currently-running/future &quot;upcoming events&quot; (workshops/special events), decorated for the app.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">Optional token</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">upcoming-events</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;upcoming-events&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>data[3] keys=id,title,name,description,amount</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-upcoming-event-detail"
+           data-auth="OPTIONAL" data-verdict="ERROR"
+           data-search="upcoming-event-detail detail of one upcoming event. free events return their bookable schedules; paid events return their packages. upcoming events">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>upcoming-event-detail</h3>
+      <span class="badge badge-optional">OPTIONAL</span>
+      <span class="status status-err">Error</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Detail of one upcoming event. Free events return their bookable schedules; paid events return their packages.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">Optional token</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">upcoming-event-detail</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>event_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;upcoming-event-detail&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;event_id&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-err">
+        <span class="result-tag">Error</span>
+        <code>status:false — Event not found</code>
+      </div>
+
+      
+
+      <div class="note"><strong>Note from testing.</strong> Takes event_id. Verified against event 15.</div>
+    </div>
+  </article>
+  <article class="endpoint" id="ep-event-toggle-favorite"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="event-toggle-favorite toggle the authenticated user's favorite status for an upcoming event. upcoming events">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>event-toggle-favorite</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Toggle the authenticated user's favorite status for an upcoming event.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">event-toggle-favorite</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>event_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;event-toggle-favorite&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;event_id&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-event-favorites"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="event-favorites list the authenticated user's favorited upcoming events (decorated). upcoming events">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>event-favorites</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">List the authenticated user's favorited upcoming events (decorated).</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">event-favorites</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;event-favorites&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+      
+        <h2 class="group-heading" data-group>Wallet &amp; Billings</h2>
+        
+  <article class="endpoint" id="ep-wallet"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="wallet return the user's wallet balance and transaction history. wallet &amp; billings">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>wallet</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Return the user's wallet balance and transaction history.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">wallet</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;wallet&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-billings"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="billings list the authenticated user's invoices with status styling and computed totals/dues. wallet &amp; billings">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>billings</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">List the authenticated user's invoices with status styling and computed totals/dues.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">billings</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;billings&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-billing-details"
+           data-auth="SENSITIVE" data-verdict="ERROR"
+           data-search="billing-details return the full breakdown of a single invoice (customer, items, addons, discounts, payments). wallet &amp; billings">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>billing-details</h3>
+      <span class="badge badge-sensitive">SENSITIVE</span>
+      <span class="status status-err">Error</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Return the full breakdown of a single invoice (customer, items, addons, discounts, payments).</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT · sensitive data</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">billing-details</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>billing_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;billing-details&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;billing_id&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-err">
+        <span class="result-tag">Error</span>
+        <code>status:false — Invoice ID is required</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-billing-wallet-payment"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="billing-wallet-payment pay the full outstanding due of an invoice from the user's wallet balance. wallet &amp; billings">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>billing-wallet-payment</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Pay the full outstanding due of an invoice from the user's wallet balance.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">billing-wallet-payment</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>billing_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;billing-wallet-payment&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;billing_id&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-create-payment"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="create_payment create a pending payment record for a single package or a bundle, returning a hosted payment url. wallet &amp; billings">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>create_payment</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Create a pending payment record for a single package or a bundle, returning a hosted payment URL.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">create_payment</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>amount</code></td>
+              <td><code class="val">500</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>purpose</code></td>
+              <td><code class="val">package_purchase</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;create_payment&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;amount&quot;: &quot;500&quot;,
+  &quot;purpose&quot;: &quot;package_purchase&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-create-invoice-payment"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="create_invoice_payment  wallet &amp; billings">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>create_invoice_payment</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">create_invoice_payment</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>invoice_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;create_invoice_payment&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;invoice_id&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-payment-status"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="payment_status  wallet &amp; billings">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>payment_status</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">payment_status</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>payment_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;payment_status&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;payment_id&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+      
+        <h2 class="group-heading" data-group>Check-In &amp; Attendance</h2>
+        
+  <article class="endpoint" id="ep-check-in-eligible"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="check-in-eligible list the user's bookings currently within the pre-check-in window. check-in &amp; attendance">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>check-in-eligible</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">List the user's bookings currently within the pre-check-in window.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">check-in-eligible</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;check-in-eligible&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-user-check-in"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="user-check-in check the user into a specific booking after they scan the venue qr (validates the code against checkin_code). check-in &amp; attendance">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>user-check-in</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Check the user into a specific booking after they scan the venue QR (validates the code against checkin_code).</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">user-check-in</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>schedule_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>latitude</code></td>
+              <td><code class="val">22.3193</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>longitude</code></td>
+              <td><code class="val">114.1694</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;user-check-in&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;schedule_id&quot;: &quot;1&quot;,
+  &quot;latitude&quot;: &quot;22.3193&quot;,
+  &quot;longitude&quot;: &quot;114.1694&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-checkin-config"
+           data-auth="PUBLIC" data-verdict="OK"
+           data-search="checkin-config return the current check-in mode and timing config. check-in &amp; attendance">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>checkin-config</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Return the current check-in mode and timing config.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">checkin-config</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;checkin-config&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>checkin_mode=venue_qr | pre_checkin_minute=120 | qr_refresh_seconds=10</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-get-user-checkin-qr"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="get-user-checkin-qr issue a fresh short-lived check-in token (for the user to display as a qr that the front desk scans) - only when checkin_mode == user_qr. check-in &amp; attendance">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get-user-checkin-qr</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Issue a fresh short-lived check-in token (for the user to display as a QR that the front desk scans) - only when checkin_mode == user_qr.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get-user-checkin-qr</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get-user-checkin-qr&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-check-in-status"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="check-in-status polling endpoint: did the front desk just check this user in (via their scanned qr token)? check-in &amp; attendance">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>check-in-status</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Polling endpoint: did the front desk just check this user in (via their scanned QR token)?</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">check-in-status</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;check-in-status&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+      
+        <h2 class="group-heading" data-group>Media Gallery</h2>
+        
+  <article class="endpoint" id="ep-media-gallery-home"
+           data-auth="OPTIONAL" data-verdict="OK"
+           data-search="media-gallery-home home screen of the media gallery - featured albums/videos/audio/documents plus top-level categories. media gallery">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>media-gallery-home</h3>
+      <span class="badge badge-optional">OPTIONAL</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Home screen of the media gallery - featured albums/videos/audio/documents plus top-level categories.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">Optional token</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">media-gallery-home</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;media-gallery-home&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>featured_albums[2] keys=id,title,cover_image,view_count,visibility | featured_videos[0] | featured_audio[1] keys=id,title,cover_image,duration,play_count | featured_documents[0] | categories</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-media-category-detail"
+           data-auth="OPTIONAL" data-verdict="OK"
+           data-search="media-category-detail category page: the category, its subcategories, and its media (of the category's media_type). media gallery">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>media-category-detail</h3>
+      <span class="badge badge-optional">OPTIONAL</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Category page: the category, its subcategories, and its media (of the category's media_type).</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">Optional token</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">media-category-detail</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>category_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;media-category-detail&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;category_id&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>category{id,name,description,image,media_type} | subcategories[0] | albums[1] keys=id,title,description,cover_image,view_count | videos[0] | audio[0] | documents[0]</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-media-albums"
+           data-auth="OPTIONAL" data-verdict="OK"
+           data-search="media-albums paginated list of published photo albums, optionally filtered by category. media gallery">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>media-albums</h3>
+      <span class="badge badge-optional">OPTIONAL</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Paginated list of published photo albums, optionally filtered by category.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">Optional token</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">media-albums</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;media-albums&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>data[4] keys=id,title,description,cover_image,view_count | total=4 | page=1 | limit=20</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-media-album-detail"
+           data-auth="OPTIONAL" data-verdict="ERROR"
+           data-search="media-album-detail one album with all its images; increments the view count and logs a view. media gallery">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>media-album-detail</h3>
+      <span class="badge badge-optional">OPTIONAL</span>
+      <span class="status status-err">Error</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">One album with all its images; increments the view count and logs a view.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">Optional token</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">media-album-detail</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>album_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;media-album-detail&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;album_id&quot;: &quot;1&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-err">
+        <span class="result-tag">Error</span>
+        <code>status:false — Album not found or access denied</code>
+      </div>
+
+      
+
+      <div class="note"><strong>Note from testing.</strong> The workbench preset sends album_id, which returns &quot;Album not found or access denied&quot;. The parameter the API accepts is id. Verified against album 3.</div>
+    </div>
+  </article>
+  <article class="endpoint" id="ep-media-videos"
+           data-auth="OPTIONAL" data-verdict="OK"
+           data-search="media-videos paginated list of published videos, optionally by category; optionally tracks a single video view. media gallery">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>media-videos</h3>
+      <span class="badge badge-optional">OPTIONAL</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Paginated list of published videos, optionally by category; optionally tracks a single video view.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">Optional token</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">media-videos</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>category_id</code></td>
+              <td><code class="val"><em>empty</em></code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;media-videos&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;category_id&quot;: &quot;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>data[2] keys=id,title,description,youtube_id,youtube_url | total=2 | page=1 | limit=20</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-media-audio"
+           data-auth="OPTIONAL" data-verdict="OK"
+           data-search="media-audio paginated list of published audio tracks, optionally by category. media gallery">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>media-audio</h3>
+      <span class="badge badge-optional">OPTIONAL</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Paginated list of published audio tracks, optionally by category.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">Optional token</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">media-audio</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;media-audio&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>data[1] keys=id,title,description,filename,cover_image | total=1 | page=1 | limit=20</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-media-documents"
+           data-auth="OPTIONAL" data-verdict="OK"
+           data-search="media-documents paginated list of published documents (pdfs), optionally by category; optionally tracks a single document view. media gallery">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>media-documents</h3>
+      <span class="badge badge-optional">OPTIONAL</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Paginated list of published documents (PDFs), optionally by category; optionally tracks a single document view.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">Optional token</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">media-documents</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;media-documents&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>data[0] | total=0 | page=1 | limit=20</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-media-toggle-favorite"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="media-toggle-favorite toggle a favorite for any media item type. media gallery">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>media-toggle-favorite</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Toggle a favorite for any media item type.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">media-toggle-favorite</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>media_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>media_type</code></td>
+              <td><code class="val">video</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;media-toggle-favorite&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;media_id&quot;: &quot;1&quot;,
+  &quot;media_type&quot;: &quot;video&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-media-search"
+           data-auth="OPTIONAL" data-verdict="OK"
+           data-search="media-search title search across media types (up to 10 per type). media gallery">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>media-search</h3>
+      <span class="badge badge-optional">OPTIONAL</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Title search across media types (up to 10 per type).</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">Optional token</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">media-search</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>query</code></td>
+              <td><code class="val">vinyasa</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;media-search&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;query&quot;: &quot;vinyasa&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>albums[4] keys=id,title,cover_image,type,cover_url | videos[2] keys=id,title,youtube_id,thumbnail,type | audio[1] keys=id,title,cover_image,duration,filename | documents[0]</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+      
+        <h2 class="group-heading" data-group>Services &amp; Support</h2>
+        
+  <article class="endpoint" id="ep-get-freeze-week-options"
+           data-auth="PUBLIC" data-verdict="OK"
+           data-search="get_freeze_week_options  services &amp; support">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get_freeze_week_options</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get_freeze_week_options</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get_freeze_week_options&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>options[3] keys=id,weeks</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-get-service-types"
+           data-auth="PUBLIC" data-verdict="OK"
+           data-search="get_service_types  services &amp; support">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get_service_types</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get_service_types</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get_service_types&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>services[9] keys=id,service_key,service_label,charge_amount,category</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-submit-service-request"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="submit_service_request  services &amp; support">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>submit_service_request</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">submit_service_request</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>service_type_id</code></td>
+              <td><code class="val">1</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>reason</code></td>
+              <td><code class="val">Medical travel for 2 weeks</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>start_date</code></td>
+              <td><code class="val">2026-09-02</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>weeks</code></td>
+              <td><code class="val">2</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;submit_service_request&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;service_type_id&quot;: &quot;1&quot;,
+  &quot;reason&quot;: &quot;Medical travel for 2 weeks&quot;,
+  &quot;start_date&quot;: &quot;2026-09-02&quot;,
+  &quot;weeks&quot;: &quot;2&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-my-service-requests"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="my_service_requests  services &amp; support">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>my_service_requests</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">my_service_requests</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;my_service_requests&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-faqs"
+           data-auth="PUBLIC" data-verdict="OK"
+           data-search="faqs public list of faq question/answer pairs. services &amp; support">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>faqs</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Public list of FAQ question/answer pairs.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">faqs</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;faqs&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>data[10] keys=question,answer</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-ticketsubmit"
+           data-auth="JWT" data-verdict="NOT CALLED"
+           data-search="ticketsubmit submit a support ticket/enquiry, optionally with a screenshot. services &amp; support">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>ticketSubmit</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-skip">Not called</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Submit a support ticket/enquiry, optionally with a screenshot.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">ticketSubmit</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>subject</code></td>
+              <td><code class="val">Membership inquiry</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+            <tr>
+              <td><code>message</code></td>
+              <td><code class="val">Hello, I would like to ask about upgrading my pass.</code></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;ticketSubmit&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;,
+  &quot;subject&quot;: &quot;Membership inquiry&quot;,
+  &quot;message&quot;: &quot;Hello, I would like to ask about upgrading my pass.&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-skip">
+        <span class="result-tag">Not called</span>
+        <code>writes real data — skipped on purpose</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-get-ticket"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="get-ticket return the user's support tickets split into open and closed. services &amp; support">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get-ticket</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Return the user's support tickets split into open and closed.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get-ticket</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get-ticket&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-get-notification"
+           data-auth="JWT" data-verdict="AUTH REQUIRED"
+           data-search="get-notification return the user's up-to-10 unseen notifications (notes). services &amp; support">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get-notification</h3>
+      <span class="badge badge-jwt">JWT</span>
+      <span class="status status-auth">Auth required</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Return the user's up-to-10 unseen notifications (notes).</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">JWT in body field <code>token</code></span></div>
+        <div><span class="k">HTTP</span><span class="val2">401</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get-notification</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+            <tr>
+              <td><code>token</code></td>
+              <td><span class="tok">injected token</span></td>
+              <td><span class="opt">optional</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get-notification&quot;,
+  &quot;token&quot;: &quot;&lt;jwt&gt;&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-auth">
+        <span class="result-tag">Auth required</span>
+        <code>status:false — Invalid or expired token</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-teachers"
+           data-auth="PUBLIC" data-verdict="OK"
+           data-search="teachers public list of teachers/instructors with profile images. services &amp; support">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>teachers</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-ok">Working</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Public list of teachers/instructors with profile images.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">teachers</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;teachers&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-ok">
+        <span class="result-tag">Working</span>
+        <code>data[7] keys=staff_id,name,description,post,image</code>
+      </div>
+
+      
+
+      
+    </div>
+  </article>
+  <article class="endpoint" id="ep-get-yoga-poses"
+           data-auth="PUBLIC" data-verdict="ERROR"
+           data-search="get-yoga-poses return all yoga poses. services &amp; support">
+    <header class="endpoint-head">
+      <span class="method">POST</span>
+      <h3>get-yoga-poses</h3>
+      <span class="badge badge-public">PUBLIC</span>
+      <span class="status status-err">Error</span>
+    </header>
+
+    <div class="endpoint-body">
+      <p class="purpose">Return all yoga poses.</p>
+
+      <div class="meta-row">
+        <div><span class="k">Entry point</span><span class="val2">api.php</span></div>
+        <div><span class="k">Method</span><span class="val2">POST · action in body</span></div>
+        <div><span class="k">Auth</span><span class="val2">None</span></div>
+        <div><span class="k">HTTP</span><span class="val2">200</span></div>
+      </div>
+
+      <h4>Request parameters</h4>
+      
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Sent in test</th><th>Required</th></tr></thead>
+        <tbody>
+          
+            <tr>
+              <td><code>action</code></td>
+              <td><code class="val">get-yoga-poses</code></td>
+              <td><span class="req">required</span></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <h4>Example request</h4>
+      <pre><code>{
+  &quot;action&quot;: &quot;get-yoga-poses&quot;
+}</code></pre>
+
+      <h4>Tested result</h4>
+      <div class="result result-err">
+        <span class="result-tag">Error</span>
+        <code>status:false — Database error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'pyshk.yoga_pose</code>
+      </div>
+
+      
+
+      <div class="note"><strong>Note from testing.</strong> Fails outright: the yoga_poses table does not exist in the database. The action is routed but has no backing table.</div>
+    </div>
+  </article>
+      
+
+      <div class="empty-state" id="empty">No endpoints match the current filter.</div>
+    </div>
+  </main>
+</div>
+
+<script>
+  (function () {
+    var authFilter = 'ALL', verdictFilter = 'ALL', query = '';
+    var endpoints = Array.prototype.slice.call(document.querySelectorAll('.endpoint'));
+    var headings = Array.prototype.slice.call(document.querySelectorAll('[data-group]'));
+    var shown = document.getElementById('shown');
+    var empty = document.getElementById('empty');
+
+    function apply() {
+      var visible = 0;
+      endpoints.forEach(function (el) {
+        var okAuth = authFilter === 'ALL' || el.dataset.auth === authFilter;
+        var okVerdict = verdictFilter === 'ALL' || el.dataset.verdict === verdictFilter;
+        var okQuery = !query || el.dataset.search.indexOf(query) !== -1;
+        var show = okAuth && okVerdict && okQuery;
+        el.hidden = !show;
+        if (show) visible++;
+      });
+
+      // Hide a group heading when everything under it is filtered out
+      headings.forEach(function (h) {
+        var any = false, node = h.nextElementSibling;
+        while (node && node.classList.contains('endpoint')) {
+          if (!node.hidden) { any = true; break; }
+          node = node.nextElementSibling;
+        }
+        h.hidden = !any;
+      });
+
+      shown.textContent = visible + ' shown';
+      empty.style.display = visible ? 'none' : 'block';
+    }
+
+    document.querySelectorAll('.auth-chip').forEach(function (c) {
+      c.addEventListener('click', function () {
+        document.querySelectorAll('.auth-chip').forEach(function (x) { x.classList.remove('active'); });
+        c.classList.add('active');
+        authFilter = c.dataset.auth;
+        apply();
+      });
+    });
+
+    document.querySelectorAll('.verdict-chip').forEach(function (c) {
+      c.addEventListener('click', function () {
+        document.querySelectorAll('.verdict-chip').forEach(function (x) { x.classList.remove('active'); });
+        c.classList.add('active');
+        verdictFilter = c.dataset.verdict;
+        apply();
+      });
+    });
+
+    document.getElementById('search').addEventListener('input', function (e) {
+      query = e.target.value.trim().toLowerCase();
+      apply();
+    });
+  })();
+</script>
+
+</body>
+</html>

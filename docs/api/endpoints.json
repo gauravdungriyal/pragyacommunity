@@ -1,0 +1,2258 @@
+[
+  {
+    "key": "main_login",
+    "action": "login",
+    "url": "api.php",
+    "group": "Auth & Profile",
+    "auth": "PUBLIC",
+    "purpose": "Authenticate a user and issue access + refresh tokens.",
+    "params": [
+      {
+        "name": "action",
+        "example": "login",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "email",
+        "example": "",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "password",
+        "example": "",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "ERROR",
+    "http": 200,
+    "observed": "status:false — Email and password required",
+    "note": "Called with empty credentials to confirm validation. Not exercised with a real account — no test login was available."
+  },
+  {
+    "key": "main_get_profile",
+    "action": "get-profile",
+    "url": "api.php",
+    "group": "Auth & Profile",
+    "auth": "JWT",
+    "purpose": "Return the authenticated user's profile plus this-month booking count and strike counts.",
+    "params": [
+      {
+        "name": "action",
+        "example": "get-profile",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_edit_user_details",
+    "action": "edit_user_details",
+    "url": "api.php",
+    "group": "Auth & Profile",
+    "auth": "JWT",
+    "purpose": "Update the authenticated user's profile, including optional avatar upload and notification preferences.",
+    "params": [
+      {
+        "name": "action",
+        "example": "edit_user_details",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "fname",
+        "example": "John",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "lname",
+        "example": "Doe",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "phone",
+        "example": "+852 9876 5432",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "street",
+        "example": "123 Nathan Road",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "city",
+        "example": "Kowloon",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "state",
+        "example": "HK",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "pincode",
+        "example": "999077",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "country",
+        "example": "Hong Kong",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "gender",
+        "example": "Male",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "dob",
+        "example": "1995-05-15",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_check_token",
+    "action": "check-token",
+    "url": "api.php",
+    "group": "Auth & Profile",
+    "auth": "JWT",
+    "purpose": "Validate an access token; if invalid, mint new tokens from a refresh token.",
+    "params": [
+      {
+        "name": "action",
+        "example": "check-token",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "refresh_token",
+        "example": "{{REFRESH_TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 200,
+    "observed": "status:false — Invalid or expired refresh token",
+    "note": ""
+  },
+  {
+    "key": "main_password_change",
+    "action": "passwrod_change",
+    "url": "api.php",
+    "group": "Auth & Profile",
+    "auth": "JWT",
+    "purpose": "Change the authenticated user's password after verifying the old password.",
+    "params": [
+      {
+        "name": "action",
+        "example": "passwrod_change",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "old_pass",
+        "example": "current_pass123",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "password",
+        "example": "new_secret_password",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "confirmpassword",
+        "example": "new_secret_password",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_reset_password",
+    "action": "reset-password",
+    "url": "api.php",
+    "group": "Auth & Profile",
+    "auth": "PUBLIC",
+    "purpose": "Send a password-reset link email to a registered user.",
+    "params": [
+      {
+        "name": "action",
+        "example": "reset-password",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "email",
+        "example": "student@example.com",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_emergency_contact_get",
+    "action": "emergency-contact",
+    "url": "api.php",
+    "group": "Auth & Profile",
+    "auth": "JWT",
+    "purpose": "Get, add, or delete the user's emergency contacts.",
+    "params": [
+      {
+        "name": "action",
+        "example": "emergency-contact",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "action_type",
+        "example": "get",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": "",
+    "variants": [
+      {
+        "key": "main_emergency_contact_add",
+        "params": [
+          {
+            "name": "action",
+            "example": "emergency-contact",
+            "required": true,
+            "token": false
+          },
+          {
+            "name": "token",
+            "example": "{{TOKEN}}",
+            "required": false,
+            "token": true
+          },
+          {
+            "name": "action_type",
+            "example": "add",
+            "required": false,
+            "token": false
+          },
+          {
+            "name": "name",
+            "example": "Mary Jane",
+            "required": false,
+            "token": false
+          },
+          {
+            "name": "relationship",
+            "example": "Spouse",
+            "required": false,
+            "token": false
+          },
+          {
+            "name": "phone",
+            "example": "+852 9123 4567",
+            "required": false,
+            "token": false
+          }
+        ],
+        "observed": "status:false — Invalid or expired token"
+      },
+      {
+        "key": "main_emergency_contact_del",
+        "params": [
+          {
+            "name": "action",
+            "example": "emergency-contact",
+            "required": true,
+            "token": false
+          },
+          {
+            "name": "token",
+            "example": "{{TOKEN}}",
+            "required": false,
+            "token": true
+          },
+          {
+            "name": "action_type",
+            "example": "delete",
+            "required": false,
+            "token": false
+          },
+          {
+            "name": "contact_id",
+            "example": "1",
+            "required": false,
+            "token": false
+          }
+        ],
+        "observed": "status:false — Invalid or expired token"
+      }
+    ]
+  },
+  {
+    "key": "main_notification_settings",
+    "action": "update-notification-settings",
+    "url": "api.php",
+    "group": "Auth & Profile",
+    "auth": "JWT",
+    "purpose": "Update the three notification preference flags.",
+    "params": [
+      {
+        "name": "action",
+        "example": "update-notification-settings",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "notify_whatsapp",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "notify_email",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "notify_push",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_register_device_token",
+    "action": "register-device-token",
+    "url": "api.php",
+    "group": "Auth & Profile",
+    "auth": "JWT",
+    "purpose": "Register (or update) an FCM push token for the authenticated user's device.",
+    "params": [
+      {
+        "name": "action",
+        "example": "register-device-token",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "fcm_token",
+        "example": "sample_fcm_token_device_abc123",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "platform",
+        "example": "android",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_app_version",
+    "action": "app-version",
+    "url": "api.php",
+    "group": "Auth & Profile",
+    "auth": "PUBLIC",
+    "purpose": "Return the latest app version and whether an update is forced.",
+    "params": [
+      {
+        "name": "action",
+        "example": "app-version",
+        "required": true,
+        "token": false
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "latest_version=1.7.0 | force_update=true",
+    "note": ""
+  },
+  {
+    "key": "main_today_class",
+    "action": "today-class",
+    "url": "api.php",
+    "group": "Classes & Schedule",
+    "auth": "PUBLIC",
+    "purpose": "Return the next 5 upcoming active schedules.",
+    "params": [
+      {
+        "name": "action",
+        "example": "today-class",
+        "required": true,
+        "token": false
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "today=Thu September, 3 | todaySchedules[5] keys=id,title,date,instructor,instructor_id",
+    "note": ""
+  },
+  {
+    "key": "main_get_class_by_date",
+    "action": "getClassByDate",
+    "url": "api.php",
+    "group": "Classes & Schedule",
+    "auth": "JWT",
+    "purpose": "Return schedules for a given date that the authenticated user has package access to, with per-class booking button state.",
+    "params": [
+      {
+        "name": "action",
+        "example": "getClassByDate",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "date",
+        "example": "03/09/2026",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "instructor",
+        "example": "",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "level",
+        "example": "",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "pillar",
+        "example": "",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "room",
+        "example": "",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_public_class_by_date",
+    "action": "publicClassByDate",
+    "url": "api.php",
+    "group": "Classes & Schedule",
+    "auth": "PUBLIC",
+    "purpose": "Public (no-auth) list of active schedules for a date, view-only.",
+    "params": [
+      {
+        "name": "action",
+        "example": "publicClassByDate",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "date",
+        "example": "03/09/2026",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "instructor",
+        "example": "",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "level",
+        "example": "",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "pillar",
+        "example": "",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "room",
+        "example": "",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "today=Thu September, 3 | todaySchedules[5] keys=id,title,date,instructor,instructor_id",
+    "note": "The workbench preset sends date, which silently returns zero schedules. event_date or selected_date both work, and omitting the parameter returns the next five sessions. A client using date would show an empty timetable with no error."
+  },
+  {
+    "key": "main_book_class",
+    "action": "book",
+    "url": "api.php",
+    "group": "Classes & Schedule",
+    "auth": "JWT",
+    "purpose": "Book a class using the user's membership/package, or route to a booking request / drop-in offer when direct membership booking is not possible.",
+    "params": [
+      {
+        "name": "action",
+        "example": "book",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "schedule_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "package_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_book_dropin",
+    "action": "book_dropin",
+    "url": "api.php",
+    "group": "Classes & Schedule",
+    "auth": "JWT",
+    "purpose": "Submit a drop-in booking request for a class the user has no covering package for.",
+    "params": [
+      {
+        "name": "action",
+        "example": "book_dropin",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "schedule_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "payment_method",
+        "example": "wallet",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_booked_classes",
+    "action": "get-booked-classes",
+    "url": "api.php",
+    "group": "Classes & Schedule",
+    "auth": "JWT",
+    "purpose": "List bookings associated with a given package (paginated).",
+    "params": [
+      {
+        "name": "action",
+        "example": "get-booked-classes",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_bookings_history",
+    "action": "bookings",
+    "url": "api.php",
+    "group": "Classes & Schedule",
+    "auth": "JWT",
+    "purpose": "Multiplexed booking listing/cancellation endpoint. Behaviour depends on action_type: upcoming, past, past-with-limit-offset, or cancel.",
+    "params": [
+      {
+        "name": "action",
+        "example": "bookings",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "type",
+        "example": "upcoming",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_class_type_detail",
+    "action": "classesTypeDetail",
+    "url": "api.php",
+    "group": "Classes & Schedule",
+    "auth": "PUBLIC",
+    "purpose": "Fetch a policy row by its title.",
+    "params": [
+      {
+        "name": "action",
+        "example": "classesTypeDetail",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "id",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "EMPTY",
+    "http": 200,
+    "observed": "empty body",
+    "note": "Returned a completely empty body on every attempt: with no parameters, and with id, type_id, class_type_id and pillar_id. Not usable in its current state."
+  },
+  {
+    "key": "main_get_filters",
+    "action": "get-filters",
+    "url": "api.php",
+    "group": "Classes & Schedule",
+    "auth": "PUBLIC",
+    "purpose": "Provide dropdown filter options (instructors, pillars, levels, locations).",
+    "params": [
+      {
+        "name": "action",
+        "example": "get-filters",
+        "required": true,
+        "token": false
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "data{instructors,pillars,levels,locations}",
+    "note": ""
+  },
+  {
+    "key": "main_pending_review",
+    "action": "get-pending-class-review",
+    "url": "api.php",
+    "group": "Reviews",
+    "auth": "JWT",
+    "purpose": "",
+    "params": [
+      {
+        "name": "action",
+        "example": "get-pending-class-review",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_submit_review",
+    "action": "submit-class-review",
+    "url": "api.php",
+    "group": "Reviews",
+    "auth": "JWT",
+    "purpose": "",
+    "params": [
+      {
+        "name": "action",
+        "example": "submit-class-review",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "booking_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "schedule_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "instructor",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "rating",
+        "example": "5",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "review",
+        "example": "Great flow and very grounding meditation.",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "is_skipped",
+        "example": "0",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_instructor_reviews",
+    "action": "get-instructor-reviews",
+    "url": "api.php",
+    "group": "Reviews",
+    "auth": "PUBLIC",
+    "purpose": "",
+    "params": [
+      {
+        "name": "action",
+        "example": "get-instructor-reviews",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "instructor_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "page",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "data{instructor_id,instructor_name,instructor_image,instructor_post,avg_rating}",
+    "note": "Needs a real staff id. The first entry in get-filters.instructors is the \"All Instructors\" placeholder with an empty id; passing it returns \"Invalid instructor ID\". Verified with 360610 (Master Aarya)."
+  },
+  {
+    "key": "main_get_packages",
+    "action": "get-packages",
+    "url": "api.php",
+    "group": "Packages & Bundles",
+    "auth": "PUBLIC",
+    "purpose": "List active, priced packages grouped by category.",
+    "params": [
+      {
+        "name": "action",
+        "example": "get-packages",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "data{Private,Regular,TTC,Workshop,Event} | member_discount_eligible=false | category_name=Member",
+    "note": "Groups packages by category. Observed: Private 7, Regular 6, TTC 0, Workshop 7, Event 4, Retreat 2."
+  },
+  {
+    "key": "main_get_package_detail",
+    "action": "get-package-detail",
+    "url": "api.php",
+    "group": "Packages & Bundles",
+    "auth": "PUBLIC",
+    "purpose": "Return a single package with \"frequently bought together\" bundles.",
+    "params": [
+      {
+        "name": "action",
+        "example": "get-package-detail",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "package_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "ERROR",
+    "http": 200,
+    "observed": "status:false — Package not found",
+    "note": "Takes package_id. Sending id returns \"Missing package id\". Verified against package 12795."
+  },
+  {
+    "key": "main_package_schedules",
+    "action": "get-package-schedules",
+    "url": "api.php",
+    "group": "Packages & Bundles",
+    "auth": "PUBLIC",
+    "purpose": "",
+    "params": [
+      {
+        "name": "action",
+        "example": "get-package-schedules",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "package_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "ERROR",
+    "http": 200,
+    "observed": "status:false — Package not found",
+    "note": ""
+  },
+  {
+    "key": "main_active_membership",
+    "action": "get-active-membership",
+    "url": "api.php",
+    "group": "Packages & Bundles",
+    "auth": "JWT",
+    "purpose": "List the authenticated user's active memberships (user_package rows) with renewal info.",
+    "params": [
+      {
+        "name": "action",
+        "example": "get-active-membership",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_bundle_list",
+    "action": "bundle-list",
+    "url": "api.php",
+    "group": "Packages & Bundles",
+    "auth": "OPTIONAL",
+    "purpose": "List currently-active bundles with computed pricing; hides \"once per customer\" bundles already used by the (optional) logged-in user.",
+    "params": [
+      {
+        "name": "action",
+        "example": "bundle-list",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "data[1] keys=id,name,description,discount_type,discount_value",
+    "note": ""
+  },
+  {
+    "key": "main_bundle_detail",
+    "action": "bundle-detail",
+    "url": "api.php",
+    "group": "Packages & Bundles",
+    "auth": "PUBLIC",
+    "purpose": "Return a single bundle with computed pricing.",
+    "params": [
+      {
+        "name": "action",
+        "example": "bundle-detail",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "bundle_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "data{id,name,description,discount_type,discount_value}",
+    "note": ""
+  },
+  {
+    "key": "main_bundle_track_event",
+    "action": "bundle-track-event",
+    "url": "api.php",
+    "group": "Packages & Bundles",
+    "auth": "PUBLIC",
+    "purpose": "Record a view or click analytics event for a bundle.",
+    "params": [
+      {
+        "name": "action",
+        "example": "bundle-track-event",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "bundle_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "event_type",
+        "example": "view",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_reserve_package",
+    "action": "reserve_package",
+    "url": "api.php",
+    "group": "Packages & Bundles",
+    "auth": "JWT",
+    "purpose": "Create a pending reservation request for a single package (authenticated user).",
+    "params": [
+      {
+        "name": "action",
+        "example": "reserve_package",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "package_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "start_date",
+        "example": "2026-09-02",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_reserve_bundle",
+    "action": "reserve_bundle",
+    "url": "api.php",
+    "group": "Packages & Bundles",
+    "auth": "JWT",
+    "purpose": "Create pending reservation requests for the packages in a bundle (authenticated user).",
+    "params": [
+      {
+        "name": "action",
+        "example": "reserve_bundle",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "bundle_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "start_date",
+        "example": "2026-09-02",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_renew_package",
+    "action": "renew-package",
+    "url": "api.php",
+    "group": "Packages & Bundles",
+    "auth": "JWT",
+    "purpose": "Manually renew one of the user's memberships.",
+    "params": [
+      {
+        "name": "action",
+        "example": "renew-package",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "package_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_toggle_auto_renew",
+    "action": "toggle-auto-renew",
+    "url": "api.php",
+    "group": "Packages & Bundles",
+    "auth": "JWT",
+    "purpose": "Enable/disable auto-renew on a user's membership (only if the package supports renewal).",
+    "params": [
+      {
+        "name": "action",
+        "example": "toggle-auto-renew",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "membership_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "auto_renew",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_upcoming_events",
+    "action": "upcoming-events",
+    "url": "api.php",
+    "group": "Upcoming Events",
+    "auth": "OPTIONAL",
+    "purpose": "List all currently-running/future \"upcoming events\" (workshops/special events), decorated for the app.",
+    "params": [
+      {
+        "name": "action",
+        "example": "upcoming-events",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "data[3] keys=id,title,name,description,amount",
+    "note": ""
+  },
+  {
+    "key": "main_upcoming_event_detail",
+    "action": "upcoming-event-detail",
+    "url": "api.php",
+    "group": "Upcoming Events",
+    "auth": "OPTIONAL",
+    "purpose": "Detail of one upcoming event. Free events return their bookable schedules; paid events return their packages.",
+    "params": [
+      {
+        "name": "action",
+        "example": "upcoming-event-detail",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "event_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "ERROR",
+    "http": 200,
+    "observed": "status:false — Event not found",
+    "note": "Takes event_id. Verified against event 15."
+  },
+  {
+    "key": "main_event_toggle_favorite",
+    "action": "event-toggle-favorite",
+    "url": "api.php",
+    "group": "Upcoming Events",
+    "auth": "JWT",
+    "purpose": "Toggle the authenticated user's favorite status for an upcoming event.",
+    "params": [
+      {
+        "name": "action",
+        "example": "event-toggle-favorite",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "event_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_event_favorites",
+    "action": "event-favorites",
+    "url": "api.php",
+    "group": "Upcoming Events",
+    "auth": "JWT",
+    "purpose": "List the authenticated user's favorited upcoming events (decorated).",
+    "params": [
+      {
+        "name": "action",
+        "example": "event-favorites",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_wallet",
+    "action": "wallet",
+    "url": "api.php",
+    "group": "Wallet & Billings",
+    "auth": "JWT",
+    "purpose": "Return the user's wallet balance and transaction history.",
+    "params": [
+      {
+        "name": "action",
+        "example": "wallet",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_billings",
+    "action": "billings",
+    "url": "api.php",
+    "group": "Wallet & Billings",
+    "auth": "JWT",
+    "purpose": "List the authenticated user's invoices with status styling and computed totals/dues.",
+    "params": [
+      {
+        "name": "action",
+        "example": "billings",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_billing_details",
+    "action": "billing-details",
+    "url": "api.php",
+    "group": "Wallet & Billings",
+    "auth": "SENSITIVE",
+    "purpose": "Return the full breakdown of a single invoice (customer, items, addons, discounts, payments).",
+    "params": [
+      {
+        "name": "action",
+        "example": "billing-details",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "billing_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "ERROR",
+    "http": 200,
+    "observed": "status:false — Invoice ID is required",
+    "note": ""
+  },
+  {
+    "key": "main_billing_wallet_payment",
+    "action": "billing-wallet-payment",
+    "url": "api.php",
+    "group": "Wallet & Billings",
+    "auth": "JWT",
+    "purpose": "Pay the full outstanding due of an invoice from the user's wallet balance.",
+    "params": [
+      {
+        "name": "action",
+        "example": "billing-wallet-payment",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "billing_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_create_payment",
+    "action": "create_payment",
+    "url": "api.php",
+    "group": "Wallet & Billings",
+    "auth": "JWT",
+    "purpose": "Create a pending payment record for a single package or a bundle, returning a hosted payment URL.",
+    "params": [
+      {
+        "name": "action",
+        "example": "create_payment",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "amount",
+        "example": "500",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "purpose",
+        "example": "package_purchase",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_create_invoice_payment",
+    "action": "create_invoice_payment",
+    "url": "api.php",
+    "group": "Wallet & Billings",
+    "auth": "JWT",
+    "purpose": "",
+    "params": [
+      {
+        "name": "action",
+        "example": "create_invoice_payment",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "invoice_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_payment_status",
+    "action": "payment_status",
+    "url": "api.php",
+    "group": "Wallet & Billings",
+    "auth": "JWT",
+    "purpose": "",
+    "params": [
+      {
+        "name": "action",
+        "example": "payment_status",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "payment_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_checkin_eligible",
+    "action": "check-in-eligible",
+    "url": "api.php",
+    "group": "Check-In & Attendance",
+    "auth": "JWT",
+    "purpose": "List the user's bookings currently within the pre-check-in window.",
+    "params": [
+      {
+        "name": "action",
+        "example": "check-in-eligible",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_user_checkin",
+    "action": "user-check-in",
+    "url": "api.php",
+    "group": "Check-In & Attendance",
+    "auth": "JWT",
+    "purpose": "Check the user into a specific booking after they scan the venue QR (validates the code against checkin_code).",
+    "params": [
+      {
+        "name": "action",
+        "example": "user-check-in",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "schedule_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "latitude",
+        "example": "22.3193",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "longitude",
+        "example": "114.1694",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_checkin_config",
+    "action": "checkin-config",
+    "url": "api.php",
+    "group": "Check-In & Attendance",
+    "auth": "PUBLIC",
+    "purpose": "Return the current check-in mode and timing config.",
+    "params": [
+      {
+        "name": "action",
+        "example": "checkin-config",
+        "required": true,
+        "token": false
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "checkin_mode=venue_qr | pre_checkin_minute=120 | qr_refresh_seconds=10",
+    "note": ""
+  },
+  {
+    "key": "main_user_checkin_qr",
+    "action": "get-user-checkin-qr",
+    "url": "api.php",
+    "group": "Check-In & Attendance",
+    "auth": "JWT",
+    "purpose": "Issue a fresh short-lived check-in token (for the user to display as a QR that the front desk scans) - only when checkin_mode == user_qr.",
+    "params": [
+      {
+        "name": "action",
+        "example": "get-user-checkin-qr",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_checkin_status",
+    "action": "check-in-status",
+    "url": "api.php",
+    "group": "Check-In & Attendance",
+    "auth": "JWT",
+    "purpose": "Polling endpoint: did the front desk just check this user in (via their scanned QR token)?",
+    "params": [
+      {
+        "name": "action",
+        "example": "check-in-status",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_media_home",
+    "action": "media-gallery-home",
+    "url": "api.php",
+    "group": "Media Gallery",
+    "auth": "OPTIONAL",
+    "purpose": "Home screen of the media gallery - featured albums/videos/audio/documents plus top-level categories.",
+    "params": [
+      {
+        "name": "action",
+        "example": "media-gallery-home",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "featured_albums[2] keys=id,title,cover_image,view_count,visibility | featured_videos[0] | featured_audio[1] keys=id,title,cover_image,duration,play_count | featured_documents[0] | categories",
+    "note": ""
+  },
+  {
+    "key": "main_media_category_detail",
+    "action": "media-category-detail",
+    "url": "api.php",
+    "group": "Media Gallery",
+    "auth": "OPTIONAL",
+    "purpose": "Category page: the category, its subcategories, and its media (of the category's media_type).",
+    "params": [
+      {
+        "name": "action",
+        "example": "media-category-detail",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "category_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "category{id,name,description,image,media_type} | subcategories[0] | albums[1] keys=id,title,description,cover_image,view_count | videos[0] | audio[0] | documents[0]",
+    "note": ""
+  },
+  {
+    "key": "main_media_albums",
+    "action": "media-albums",
+    "url": "api.php",
+    "group": "Media Gallery",
+    "auth": "OPTIONAL",
+    "purpose": "Paginated list of published photo albums, optionally filtered by category.",
+    "params": [
+      {
+        "name": "action",
+        "example": "media-albums",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "data[4] keys=id,title,description,cover_image,view_count | total=4 | page=1 | limit=20",
+    "note": ""
+  },
+  {
+    "key": "main_media_album_detail",
+    "action": "media-album-detail",
+    "url": "api.php",
+    "group": "Media Gallery",
+    "auth": "OPTIONAL",
+    "purpose": "One album with all its images; increments the view count and logs a view.",
+    "params": [
+      {
+        "name": "action",
+        "example": "media-album-detail",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "album_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "ERROR",
+    "http": 200,
+    "observed": "status:false — Album not found or access denied",
+    "note": "The workbench preset sends album_id, which returns \"Album not found or access denied\". The parameter the API accepts is id. Verified against album 3."
+  },
+  {
+    "key": "main_media_videos",
+    "action": "media-videos",
+    "url": "api.php",
+    "group": "Media Gallery",
+    "auth": "OPTIONAL",
+    "purpose": "Paginated list of published videos, optionally by category; optionally tracks a single video view.",
+    "params": [
+      {
+        "name": "action",
+        "example": "media-videos",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "category_id",
+        "example": "",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "data[2] keys=id,title,description,youtube_id,youtube_url | total=2 | page=1 | limit=20",
+    "note": ""
+  },
+  {
+    "key": "main_media_audio",
+    "action": "media-audio",
+    "url": "api.php",
+    "group": "Media Gallery",
+    "auth": "OPTIONAL",
+    "purpose": "Paginated list of published audio tracks, optionally by category.",
+    "params": [
+      {
+        "name": "action",
+        "example": "media-audio",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "data[1] keys=id,title,description,filename,cover_image | total=1 | page=1 | limit=20",
+    "note": ""
+  },
+  {
+    "key": "main_media_documents",
+    "action": "media-documents",
+    "url": "api.php",
+    "group": "Media Gallery",
+    "auth": "OPTIONAL",
+    "purpose": "Paginated list of published documents (PDFs), optionally by category; optionally tracks a single document view.",
+    "params": [
+      {
+        "name": "action",
+        "example": "media-documents",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "data[0] | total=0 | page=1 | limit=20",
+    "note": ""
+  },
+  {
+    "key": "main_media_toggle_favorite",
+    "action": "media-toggle-favorite",
+    "url": "api.php",
+    "group": "Media Gallery",
+    "auth": "JWT",
+    "purpose": "Toggle a favorite for any media item type.",
+    "params": [
+      {
+        "name": "action",
+        "example": "media-toggle-favorite",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "media_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "media_type",
+        "example": "video",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_media_search",
+    "action": "media-search",
+    "url": "api.php",
+    "group": "Media Gallery",
+    "auth": "OPTIONAL",
+    "purpose": "Title search across media types (up to 10 per type).",
+    "params": [
+      {
+        "name": "action",
+        "example": "media-search",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "query",
+        "example": "vinyasa",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "albums[4] keys=id,title,cover_image,type,cover_url | videos[2] keys=id,title,youtube_id,thumbnail,type | audio[1] keys=id,title,cover_image,duration,filename | documents[0]",
+    "note": ""
+  },
+  {
+    "key": "main_freeze_week_options",
+    "action": "get_freeze_week_options",
+    "url": "api.php",
+    "group": "Services & Support",
+    "auth": "PUBLIC",
+    "purpose": "",
+    "params": [
+      {
+        "name": "action",
+        "example": "get_freeze_week_options",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "options[3] keys=id,weeks",
+    "note": ""
+  },
+  {
+    "key": "main_get_service_types",
+    "action": "get_service_types",
+    "url": "api.php",
+    "group": "Services & Support",
+    "auth": "PUBLIC",
+    "purpose": "",
+    "params": [
+      {
+        "name": "action",
+        "example": "get_service_types",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "services[9] keys=id,service_key,service_label,charge_amount,category",
+    "note": ""
+  },
+  {
+    "key": "main_submit_service_request",
+    "action": "submit_service_request",
+    "url": "api.php",
+    "group": "Services & Support",
+    "auth": "JWT",
+    "purpose": "",
+    "params": [
+      {
+        "name": "action",
+        "example": "submit_service_request",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "service_type_id",
+        "example": "1",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "reason",
+        "example": "Medical travel for 2 weeks",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "start_date",
+        "example": "2026-09-02",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "weeks",
+        "example": "2",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_my_service_requests",
+    "action": "my_service_requests",
+    "url": "api.php",
+    "group": "Services & Support",
+    "auth": "JWT",
+    "purpose": "",
+    "params": [
+      {
+        "name": "action",
+        "example": "my_service_requests",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_faqs",
+    "action": "faqs",
+    "url": "api.php",
+    "group": "Services & Support",
+    "auth": "PUBLIC",
+    "purpose": "Public list of FAQ question/answer pairs.",
+    "params": [
+      {
+        "name": "action",
+        "example": "faqs",
+        "required": true,
+        "token": false
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "data[10] keys=question,answer",
+    "note": ""
+  },
+  {
+    "key": "main_submit_ticket",
+    "action": "ticketSubmit",
+    "url": "api.php",
+    "group": "Services & Support",
+    "auth": "JWT",
+    "purpose": "Submit a support ticket/enquiry, optionally with a screenshot.",
+    "params": [
+      {
+        "name": "action",
+        "example": "ticketSubmit",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      },
+      {
+        "name": "subject",
+        "example": "Membership inquiry",
+        "required": false,
+        "token": false
+      },
+      {
+        "name": "message",
+        "example": "Hello, I would like to ask about upgrading my pass.",
+        "required": false,
+        "token": false
+      }
+    ],
+    "verdict": "NOT CALLED",
+    "http": null,
+    "observed": "writes real data — skipped on purpose",
+    "note": ""
+  },
+  {
+    "key": "main_get_tickets",
+    "action": "get-ticket",
+    "url": "api.php",
+    "group": "Services & Support",
+    "auth": "JWT",
+    "purpose": "Return the user's support tickets split into open and closed.",
+    "params": [
+      {
+        "name": "action",
+        "example": "get-ticket",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_get_notification",
+    "action": "get-notification",
+    "url": "api.php",
+    "group": "Services & Support",
+    "auth": "JWT",
+    "purpose": "Return the user's up-to-10 unseen notifications (notes).",
+    "params": [
+      {
+        "name": "action",
+        "example": "get-notification",
+        "required": true,
+        "token": false
+      },
+      {
+        "name": "token",
+        "example": "{{TOKEN}}",
+        "required": false,
+        "token": true
+      }
+    ],
+    "verdict": "AUTH REQUIRED",
+    "http": 401,
+    "observed": "status:false — Invalid or expired token",
+    "note": ""
+  },
+  {
+    "key": "main_teachers",
+    "action": "teachers",
+    "url": "api.php",
+    "group": "Services & Support",
+    "auth": "PUBLIC",
+    "purpose": "Public list of teachers/instructors with profile images.",
+    "params": [
+      {
+        "name": "action",
+        "example": "teachers",
+        "required": true,
+        "token": false
+      }
+    ],
+    "verdict": "OK",
+    "http": 200,
+    "observed": "data[7] keys=staff_id,name,description,post,image",
+    "note": ""
+  },
+  {
+    "key": "main_yoga_poses",
+    "action": "get-yoga-poses",
+    "url": "api.php",
+    "group": "Services & Support",
+    "auth": "PUBLIC",
+    "purpose": "Return all yoga poses.",
+    "params": [
+      {
+        "name": "action",
+        "example": "get-yoga-poses",
+        "required": true,
+        "token": false
+      }
+    ],
+    "verdict": "ERROR",
+    "http": 200,
+    "observed": "status:false — Database error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'pyshk.yoga_pose",
+    "note": "Fails outright: the yoga_poses table does not exist in the database. The action is routed but has no backing table."
+  }
+]
