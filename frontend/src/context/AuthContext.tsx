@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { User, AuthResponse } from '../types';
+import { User, AuthResponse, UserProfileData } from '../types';
 import { authApi, profileApi, setAuthSource, getAuthSource, AuthSource } from '../api/services';
 
 interface AuthContextType {
@@ -11,6 +11,8 @@ interface AuthContextType {
   isMentor: boolean;
   isStudent: boolean;
   isStaff: boolean;
+  /** The full profile record as the API returned it, for screens that show every field. */
+  profileData: (UserProfileData & { role?: string }) | null;
   /** Which system authenticated this session. */
   authSource: AuthSource;
   /** True when signed in against the live Pragya Yog API. */
@@ -59,6 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [welcomeSeen, setWelcomeSeen] = useState<boolean | null>(null);
   const [authSource, setAuthSourceState] = useState<AuthSource>(() => getAuthSource());
+  const [profileData, setProfileData] = useState<(UserProfileData & { role?: string }) | null>(null);
 
   /**
    * Pull the authoritative profile from the API and merge it into local state.
@@ -70,6 +73,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const freshData = await profileApi.getProfile(userId || undefined);
     if (!freshData) return;
+
+    // Keep the untouched record so the profile screen can show every field
+    setProfileData(freshData as UserProfileData & { role?: string });
 
     setUser((prev) => {
       const normalized: User = {
@@ -200,6 +206,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setToken(null);
     setWelcomeSeen(null);
+    setProfileData(null);
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('uid');
@@ -235,6 +242,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isMentor,
         isStudent,
         isStaff,
+        profileData,
         authSource,
         isLiveAccount: authSource === 'pragya',
         welcomeSeen,

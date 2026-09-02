@@ -25,15 +25,7 @@ export const MentorsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedExpertise, setSelectedExpertise] = useState('All');
 
-  // Booking Modal State
-  const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
-  const [bookingDate, setBookingDate] = useState('');
-  const [bookingTime, setBookingTime] = useState('09:00 AM');
-  const [sessionType, setSessionType] = useState('30-min 1-on-1 Mentorship');
-  const [bookingNotes, setBookingNotes] = useState('');
-  const [bookingSuccess, setBookingSuccess] = useState(false);
-  const [bookingSubmitting, setBookingSubmitting] = useState(false);
-  const [bookingError, setBookingError] = useState<string | null>(null);
+  const [failedAvatars, setFailedAvatars] = useState<Record<string, boolean>>({});
 
   // Filters are built from the expertise the mentors actually have on record,
   // so every option returns results.
@@ -72,50 +64,6 @@ export const MentorsPage: React.FC = () => {
 
     return matchSearch && matchCategory;
   });
-
-  const handleOpenBooking = (mentor: Mentor) => {
-    setSelectedMentor(mentor);
-    setBookingDate(new Date(Date.now() + 86400000).toISOString().split('T')[0]);
-    setBookingSuccess(false);
-    setBookingError(null);
-    setBookingNotes('');
-  };
-
-  /**
-   * A session request is delivered to the mentor as a direct message, so it
-   * lands in a real inbox they can reply to.
-   */
-  const handleConfirmBooking = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedMentor || !user?.name) return;
-
-    setBookingSubmitting(true);
-    setBookingError(null);
-
-    const readableDate = new Date(bookingDate).toLocaleDateString(undefined, {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-    });
-
-    const requestText =
-      `Session request: ${sessionType}\n` +
-      `Preferred slot: ${readableDate} at ${bookingTime}\n` +
-      (bookingNotes.trim() ? `What I would like to cover: ${bookingNotes.trim()}` : 'No further notes.');
-
-    try {
-      await messagesApi.send({
-        sender: user.name,
-        recipient: selectedMentor.name,
-        text: requestText,
-      });
-      setBookingSuccess(true);
-    } catch {
-      setBookingError('Could not send your request. Please try again.');
-    } finally {
-      setBookingSubmitting(false);
-    }
-  };
 
   const handleSendMessage = (mentorName: string) => {
     navigate(`/messages?user=${encodeURIComponent(mentorName)}`);
@@ -193,8 +141,18 @@ export const MentorsPage: React.FC = () => {
               <div className="space-y-4">
                 {/* Header Profile */}
                 <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-forest-600 to-forest-800 text-white font-bold text-xl flex items-center justify-center flex-shrink-0 shadow-md">
-                    {mentor.name?.charAt(0).toUpperCase() || 'M'}
+                  <div className="w-14 h-14 rounded-2xl overflow-hidden bg-gradient-to-br from-forest-600 to-forest-800 text-white font-bold text-xl flex items-center justify-center flex-shrink-0 shadow-md">
+                    {mentor.avatar && !failedAvatars[mentor._id] ? (
+                      <img
+                        src={mentor.avatar}
+                        alt={mentor.name}
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                        onError={() => setFailedAvatars((prev) => ({ ...prev, [mentor._id]: true }))}
+                      />
+                    ) : (
+                      mentor.name?.charAt(0).toUpperCase() || 'M'
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
@@ -233,21 +191,14 @@ export const MentorsPage: React.FC = () => {
                 )}
               </div>
 
-              {/* Action Buttons */}
-              <div className="pt-5 mt-5 border-t border-sand-200 dark:border-neutral-800 grid grid-cols-2 gap-2.5">
+              {/* Action */}
+              <div className="pt-5 mt-5 border-t border-sand-200 dark:border-neutral-800">
                 <button
                   onClick={() => handleSendMessage(mentor.name)}
-                  className="py-2 px-3 rounded-xl text-xs font-bold bg-sand-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-sand-200 dark:hover:bg-neutral-700 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2.5 px-3 rounded-xl text-xs font-bold bg-forest-600 hover:bg-forest-700 dark:bg-gold-500 dark:hover:bg-gold-600 text-white dark:text-charcoal-900 transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <MessageSquare className="w-3.5 h-3.5" />
                   Message
-                </button>
-                <button
-                  onClick={() => handleOpenBooking(mentor)}
-                  className="py-2 px-3 rounded-xl text-xs font-bold bg-forest-600 hover:bg-forest-700 dark:bg-gold-500 dark:hover:bg-gold-600 text-white dark:text-charcoal-900 transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <Calendar className="w-3.5 h-3.5" />
-                  Book Slot
                 </button>
               </div>
             </div>
@@ -255,135 +206,6 @@ export const MentorsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Booking Modal */}
-      {selectedMentor && (
-        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-xs"
-            onClick={() => setSelectedMentor(null)}
-          />
-
-          <div className="relative w-full max-w-lg bg-white dark:bg-neutral-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-sand-200 dark:border-neutral-800 z-10 space-y-5 animate-scale-up">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-forest-600 text-white font-bold flex items-center justify-center">
-                  {selectedMentor.name.charAt(0)}
-                </div>
-                <div>
-                  <h3 className="font-bold text-base text-neutral-900 dark:text-white">
-                    Book Session with {selectedMentor.name}
-                  </h3>
-                  <p className="text-xs text-gold-600 dark:text-gold-400">
-                    {selectedMentor.expertise}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setSelectedMentor(null)}
-                className="p-1.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {bookingSuccess ? (
-              <div className="py-8 text-center space-y-3">
-                <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
-                  <CheckCircle className="w-8 h-8" />
-                </div>
-                <h4 className="font-bold text-lg text-neutral-900 dark:text-white">Request sent</h4>
-                <p className="text-xs text-neutral-500 max-w-xs mx-auto">
-                  {selectedMentor.name} has your request in their inbox and will confirm the slot with you directly.
-                </p>
-                <button
-                  onClick={() => handleSendMessage(selectedMentor.name)}
-                  className="px-5 py-2.5 rounded-xl font-bold text-xs bg-forest-600 dark:bg-gold-500 text-white dark:text-charcoal-900 cursor-pointer"
-                >
-                  Open the conversation
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleConfirmBooking} className="space-y-4 text-xs">
-                {bookingError && (
-                  <p className="p-3 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 font-semibold text-red-700 dark:text-red-300">
-                    {bookingError}
-                  </p>
-                )}
-                <div>
-                  <label className="block font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider mb-1.5">
-                    Session Format
-                  </label>
-                  <select
-                    value={sessionType}
-                    onChange={(e) => setSessionType(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 font-medium"
-                  >
-                    <option value="30-min 1-on-1 Mentorship">30-min 1-on-1 Mentorship (Introductory Guidance)</option>
-                    <option value="60-min Deep Guidance & Diet Plan">60-min Deep Guidance & Personalized Sadhana Plan</option>
-                    <option value="45-min Yoga & Pranayama Review">45-min Yoga & Pranayama Technique Review</option>
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider mb-1.5">
-                      Select Date
-                    </label>
-                    <input
-                      type="date"
-                      required
-                      value={bookingDate}
-                      onChange={(e) => setBookingDate(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider mb-1.5">
-                      Select Time
-                    </label>
-                    <select
-                      value={bookingTime}
-                      onChange={(e) => setBookingTime(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700"
-                    >
-                      <option value="09:00 AM">09:00 AM - 09:30 AM</option>
-                      <option value="11:30 AM">11:30 AM - 12:00 PM</option>
-                      <option value="03:00 PM">03:00 PM - 03:30 PM</option>
-                      <option value="05:30 PM">05:30 PM - 06:00 PM</option>
-                      <option value="07:00 PM">07:00 PM - 07:30 PM</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider mb-1.5">
-                    What would you like to discuss?
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={bookingNotes}
-                    onChange={(e) => setBookingNotes(e.target.value)}
-                    placeholder="E.g., Guidance on improving sleep through Ayurveda, or building a consistent morning practice…"
-                    className="w-full p-2.5 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 resize-none text-neutral-900 dark:text-white"
-                  />
-                </div>
-
-                <p className="p-3 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 text-[11px] text-neutral-600 dark:text-neutral-400">
-                  Your request is sent to {selectedMentor.name} as a direct message. They confirm the final slot with you in chat.
-                </p>
-
-                <button
-                  type="submit"
-                  disabled={bookingSubmitting}
-                  className="w-full py-3 rounded-xl font-bold text-sm bg-forest-600 hover:bg-forest-700 dark:bg-gold-500 dark:hover:bg-gold-600 text-white dark:text-charcoal-900 shadow-md transition-all cursor-pointer disabled:opacity-50"
-                >
-                  {bookingSubmitting ? 'Sending…' : 'Send Session Request'}
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

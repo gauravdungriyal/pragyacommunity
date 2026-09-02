@@ -133,10 +133,10 @@ export const Dashboard: React.FC = () => {
 
           <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-white/20 flex flex-wrap items-center gap-2.5 sm:gap-3">
             <Link
-              to="/events?tab=mine"
+              to="/events"
               className="px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-gold-500 hover:bg-gold-600 text-charcoal-900 shadow-md shadow-gold-500/20 transition-all inline-flex items-center gap-2"
             >
-              My Bookings
+              Events & Workshops
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
@@ -180,7 +180,7 @@ export const Dashboard: React.FC = () => {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         {[
           { label: 'Enrolled Courses', value: stats?.courses, icon: GraduationCap, to: '/resources', tone: 'text-forest-700 dark:text-forest-300', bg: 'bg-forest-100 dark:bg-forest-950/60' },
-          { label: 'Sessions Booked', value: stats?.bookings, icon: CalendarCheck, to: '/events?tab=mine', tone: 'text-gold-700 dark:text-gold-300', bg: 'bg-gold-100 dark:bg-gold-950/60' },
+          { label: 'Classes Attended', value: stats?.attended, icon: CalendarCheck, to: '/events', tone: 'text-gold-700 dark:text-gold-300', bg: 'bg-gold-100 dark:bg-gold-950/60' },
           { label: 'Study Materials', value: stats?.resources, icon: BookOpen, to: '/resources', tone: 'text-brandTeal-600 dark:text-brandTeal-300', bg: 'bg-brandTeal-50 dark:bg-brandTeal-950/60' },
           { label: 'Unread Alerts', value: stats?.unread_notifications, icon: Bell, to: '/notifications', tone: 'text-purple-700 dark:text-purple-300', bg: 'bg-purple-100 dark:bg-purple-950/60' },
         ].map(({ label, value, icon: Icon, to, tone, bg }) => (

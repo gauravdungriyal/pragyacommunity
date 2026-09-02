@@ -14,13 +14,14 @@ import {
   MessageSquare,
   Phone,
   AlertCircle,
+  IdCard,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { dashboardApi, profileApi } from '../../api/services';
 import { DashboardSummary } from '../../types';
 
 export const ProfilePage: React.FC = () => {
-  const { user, updateCurrentUser, refreshProfile, isAdmin } = useAuth();
+  const { user, updateCurrentUser, refreshProfile, isAdmin, profileData } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(user?.name || '');
@@ -34,6 +35,11 @@ export const ProfilePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [avatarFailed, setAvatarFailed] = useState(false);
+
+  // The API returns a full URL; a bare filename means no photo was uploaded
+  const rawAvatar = profileData?.profile || user?.avatar || '';
+  const avatarUrl = !avatarFailed && /^https?:\/\//i.test(rawAvatar) ? rawAvatar : '';
 
   useEffect(() => {
     if (user) {
@@ -101,6 +107,65 @@ export const ProfilePage: React.FC = () => {
 
   const stats = summary?.stats;
 
+  /**
+   * Counters shown under "About Me". A live account reports its own booking
+   * figures, so those are preferred over the local dashboard summary.
+   */
+  const counters = [
+    { label: 'Courses', value: stats?.courses, icon: GraduationCap },
+    {
+      label: 'Classes This Month',
+      value: profileData?.bookings !== undefined ? Number(profileData.bookings) : stats?.bookings,
+      icon: CalendarCheck,
+    },
+    { label: 'Sessions Attended', value: stats?.attended, icon: CheckCircle },
+    { label: 'Posts Shared', value: stats?.posts, icon: MessageSquare },
+  ];
+
+  /** Every remaining field the profile API returned, with blanks dropped. */
+  const accountRows = (
+    [
+      ['Username', profileData?.username],
+      ['Full name', profileData?.fullname],
+      ['Chinese name', profileData?.chinese_name],
+      ['Email', profileData?.email],
+      ['Phone', profileData?.phone],
+      ['Gender', profileData?.gender],
+      ['Date of birth', profileData?.dob],
+      ['Member since', profileData?.enroll_date],
+      ['Hong Kong ID', profileData?.hongkong_id],
+      ['Street', profileData?.street],
+      ['City', profileData?.city],
+      ['State', profileData?.address_state],
+      ['Country', profileData?.country],
+      ['Postal code', profileData?.pincode],
+      [
+        'Wallet balance',
+        profileData?.wallet_balance !== undefined && profileData?.wallet_balance !== null
+          ? `₹${profileData.wallet_balance}`
+          : undefined,
+      ],
+      ['Wallet expires', profileData?.amount_expire],
+      [
+        'Notifications',
+        [
+          Number(profileData?.notify_email) === 1 ? 'Email' : null,
+          Number(profileData?.notify_whatsapp) === 1 ? 'WhatsApp' : null,
+          Number(profileData?.notify_push) === 1 ? 'Push' : null,
+        ]
+          .filter(Boolean)
+          .join(', ') || undefined,
+      ],
+      [
+        'Account warnings',
+        profileData?.warning !== undefined ? String(profileData.warning) : undefined,
+      ],
+    ] as Array<[string, unknown]>
+  )
+    .map(([label, value]) => ({ label, value: value === null || value === undefined ? '' : String(value).trim() }))
+    // Blank, zero-date and placeholder values add noise rather than information
+    .filter(({ value }) => value !== '' && value !== '0000-00-00' && value !== '-');
+
   // Milestones are derived from real counters, not stored separately
   const milestones = [
     {
@@ -144,8 +209,17 @@ export const ProfilePage: React.FC = () => {
         <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-80 h-80 rounded-full bg-gold-400/15 blur-3xl" />
 
         <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-6 text-center sm:text-left">
-          <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-br from-gold-400 to-gold-600 text-charcoal-900 font-extrabold text-3xl sm:text-4xl flex items-center justify-center shadow-xl shadow-gold-500/20 border-4 border-white/20 flex-shrink-0">
-            {user?.name?.charAt(0).toUpperCase() || 'U'}
+          <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-3xl overflow-hidden bg-gradient-to-br from-gold-400 to-gold-600 text-charcoal-900 font-extrabold text-3xl sm:text-4xl flex items-center justify-center shadow-xl shadow-gold-500/20 border-4 border-white/20 flex-shrink-0">
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={user?.name || 'Profile photo'}
+                className="w-full h-full object-cover"
+                onError={() => setAvatarFailed(true)}
+              />
+            ) : (
+              user?.name?.charAt(0).toUpperCase() || 'U'
+            )}
           </div>
 
           <div className="min-w-0 flex-1 space-y-2">
@@ -358,18 +432,78 @@ export const ProfilePage: React.FC = () => {
 
               {/* Counters straight from the API */}
               <div className="pt-5 border-t border-sand-200 dark:border-neutral-800 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                {[
-                  { label: 'Courses', value: stats?.courses, icon: GraduationCap },
-                  { label: 'Sessions Booked', value: stats?.bookings, icon: CalendarCheck },
-                  { label: 'Sessions Attended', value: stats?.attended, icon: CheckCircle },
-                  { label: 'Posts Shared', value: stats?.posts, icon: MessageSquare },
-                ].map(({ label, value, icon: Icon }) => (
+                {counters.map(({ label, value, icon: Icon }) => (
                   <div key={label} className="p-3 sm:p-4 rounded-2xl bg-sand-50 dark:bg-neutral-800/40">
                     <Icon className="w-4 h-4 text-terracotta-600 dark:text-gold-400 mx-auto mb-1" />
                     <p className="font-display font-bold text-xl sm:text-2xl text-terracotta-700 dark:text-gold-400">
                       {value ?? '—'}
                     </p>
                     <p className="text-[10px] sm:text-[11px] text-neutral-500 mt-0.5">{label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Everything else the profile API returned */}
+          {accountRows.length > 0 && (
+            <div className="bg-white dark:bg-neutral-900 p-5 sm:p-8 rounded-3xl border border-sand-200 dark:border-neutral-800 shadow-card space-y-4">
+              <div>
+                <h2 className="font-display font-bold text-lg text-neutral-900 dark:text-white flex items-center gap-2">
+                  <IdCard className="w-5 h-5 text-gold-500" />
+                  Account Details
+                </h2>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">
+                  As held on your Pragya Yog record.
+                </p>
+              </div>
+
+              <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-0">
+                {accountRows.map(({ label, value }) => (
+                  <div
+                    key={label}
+                    className="flex items-baseline justify-between gap-3 py-2.5 border-b border-sand-200 dark:border-neutral-800 last:border-0"
+                  >
+                    <dt className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 whitespace-nowrap">
+                      {label}
+                    </dt>
+                    <dd className="text-xs font-semibold text-neutral-900 dark:text-white text-right break-words min-w-0">
+                      {value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )}
+
+          {/* Attendance record, when the API reports strikes */}
+          {(profileData?.noshow_strikes !== undefined || profileData?.late_checkin_strikes !== undefined) && (
+            <div className="bg-white dark:bg-neutral-900 p-5 sm:p-6 rounded-3xl border border-sand-200 dark:border-neutral-800 shadow-card">
+              <h2 className="font-display font-bold text-base text-neutral-900 dark:text-white flex items-center gap-2 mb-3">
+                <AlertCircle className="w-4 h-4 text-terracotta-600 dark:text-gold-400" />
+                Attendance This Month
+              </h2>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: 'No-shows', value: Number(profileData?.noshow_strikes ?? 0) },
+                  { label: 'Late check-ins', value: Number(profileData?.late_checkin_strikes ?? 0) },
+                ].map(({ label, value }) => (
+                  <div
+                    key={label}
+                    className={`p-3 rounded-2xl border text-center ${
+                      value > 0
+                        ? 'bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-900/60'
+                        : 'bg-sand-50 dark:bg-neutral-800/40 border-sand-200 dark:border-neutral-700'
+                    }`}
+                  >
+                    <p
+                      className={`font-display font-bold text-xl ${
+                        value > 0 ? 'text-red-600 dark:text-red-400' : 'text-neutral-700 dark:text-neutral-200'
+                      }`}
+                    >
+                      {value}
+                    </p>
+                    <p className="text-[11px] text-neutral-500 mt-0.5">{label}</p>
                   </div>
                 ))}
               </div>

@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
+  ExternalLink,
   Calendar as CalendarIcon,
   Clock,
   MapPin,
   Users,
   Heart,
-  CheckCircle,
   AlertCircle,
-  Ticket,
   GraduationCap,
   Share2,
   Trash2,
@@ -27,7 +26,6 @@ export const EventDetailPage: React.FC = () => {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const [booking, setBooking] = useState(false);
   const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null);
   const [shareLabel, setShareLabel] = useState('Share');
 
@@ -50,37 +48,6 @@ export const EventDetailPage: React.FC = () => {
     loadEvent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventId]);
-
-  /** Booking state is owned by the API — the button reflects what the server says. */
-  const handleBooking = async () => {
-    if (!event || !eventId) return;
-
-    setBooking(true);
-    setMessage(null);
-    try {
-      if (event.is_registered) {
-        const res = await eventsApi.cancelRegistration(eventId);
-        setEvent({ ...event, is_registered: false, attendeesCount: Math.max(0, (event.attendeesCount || 1) - 1) });
-        setMessage({ kind: 'ok', text: res.message || 'Booking cancelled.' });
-      } else {
-        const res = await eventsApi.register(eventId);
-        setEvent({ ...event, is_registered: true, attendeesCount: (event.attendeesCount || 0) + 1 });
-        setMessage({
-          kind: 'ok',
-          text: res.already_registered
-            ? 'You were already booked on this session.'
-            : 'Your place is confirmed. A confirmation is in your notifications.',
-        });
-      }
-    } catch (err: any) {
-      setMessage({
-        kind: 'error',
-        text: err?.response?.data?.message || 'Could not update your booking. Please try again.',
-      });
-    } finally {
-      setBooking(false);
-    }
-  };
 
   const handleToggleFavorite = async () => {
     if (!event || !eventId) return;
@@ -179,11 +146,6 @@ export const EventDetailPage: React.FC = () => {
               ₹{event.amount} · Paid
             </span>
           )}
-          {event.is_registered && (
-            <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-white text-terracotta-700 inline-flex items-center gap-1">
-              <CheckCircle className="w-3.5 h-3.5" /> Booked
-            </span>
-          )}
           {isPast && (
             <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-black/25 border border-white/20">
               Past session
@@ -233,23 +195,13 @@ export const EventDetailPage: React.FC = () => {
       </div>
 
       {message && (
-        <div
-          className={`p-4 rounded-2xl border flex items-start gap-3 text-xs sm:text-sm font-semibold ${
-            message.kind === 'ok'
-              ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200'
-              : 'bg-red-50 dark:bg-red-950/50 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300'
-          }`}
-        >
-          {message.kind === 'ok' ? (
-            <CheckCircle className="w-5 h-5 flex-shrink-0" />
-          ) : (
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
-          )}
+        <div className="p-4 rounded-2xl border flex items-start gap-3 text-xs sm:text-sm font-semibold bg-red-50 dark:bg-red-950/50 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300">
+          <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <span>{message.text}</span>
         </div>
       )}
 
-      {/* Details + booking */}
+      {/* Details */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2 bg-white dark:bg-neutral-900 rounded-3xl border border-sand-200 dark:border-neutral-800 shadow-card p-5 sm:p-6 space-y-4">
           <h2 className="font-display font-bold text-base text-neutral-900 dark:text-white">Session details</h2>
@@ -259,7 +211,7 @@ export const EventDetailPage: React.FC = () => {
               { icon: CalendarIcon, label: 'Date', value: eventDate.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) },
               { icon: Clock, label: 'Time', value: event.time },
               { icon: MapPin, label: 'Location', value: event.location },
-              { icon: Users, label: 'Booked so far', value: `${event.attendeesCount || 0} member${event.attendeesCount === 1 ? '' : 's'}` },
+              { icon: Users, label: 'Interested', value: `${event.attendeesCount || event.likes_count || 0} member${(event.attendeesCount || event.likes_count) === 1 ? '' : 's'}` },
             ].map(({ icon: Icon, label, value }) => (
               <div key={label} className="flex items-start gap-3 p-3 rounded-2xl bg-sand-50 dark:bg-neutral-800/60 border border-sand-200 dark:border-neutral-700/60">
                 <div className="w-9 h-9 rounded-xl bg-white dark:bg-neutral-900 flex items-center justify-center text-terracotta-600 dark:text-gold-400 flex-shrink-0">
@@ -390,34 +342,47 @@ export const EventDetailPage: React.FC = () => {
             ) : null}
           </div>
 
-          <button
-            onClick={handleBooking}
-            disabled={booking || (isPast && !event.is_registered)}
-            className={`w-full py-3 rounded-xl font-bold text-sm transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2 ${
-              event.is_registered
-                ? 'bg-sand-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 border border-sand-300 dark:border-neutral-700'
-                : 'bg-terracotta-600 hover:bg-terracotta-700 dark:bg-gold-500 dark:hover:bg-gold-600 text-white dark:text-charcoal-900 shadow-md'
-            }`}
+          {/* Enquiries go to the school rather than booking in the app */}
+          <a
+            href={event.share_url || 'https://pragya-yog.com'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-3 rounded-xl font-bold text-sm bg-terracotta-600 hover:bg-terracotta-700 dark:bg-gold-500 dark:hover:bg-gold-600 text-white dark:text-charcoal-900 shadow-md transition-all inline-flex items-center justify-center gap-2"
           >
-            {booking ? (
-              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-            ) : event.is_registered ? (
-              'Cancel my booking'
-            ) : isPast ? (
-              'Booking closed'
-            ) : (
-              <>
-                <Ticket className="w-4 h-4" />
-                Book my place
-              </>
-            )}
-          </button>
+            <ExternalLink className="w-4 h-4" />
+            View on pragya-yog.com
+          </a>
 
           <p className="text-[11px] text-neutral-500 dark:text-neutral-400 text-center leading-relaxed">
-            {event.is_registered
-              ? 'You are on the list. Cancel any time before the session starts.'
-              : 'Your booking is confirmed instantly and appears in My Bookings.'}
+            Reservations are handled by the school. Save this session to keep it on your Favourites list.
           </p>
+
+          {/* Packages published for this event, for reference */}
+          {event.packages?.length ? (
+            <div className="pt-4 border-t border-sand-200 dark:border-neutral-800 space-y-2">
+              <h3 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                Packages
+              </h3>
+              {event.packages.map((pkg) => (
+                <div
+                  key={pkg.id}
+                  className="p-3 rounded-xl bg-sand-50 dark:bg-neutral-800/60 border border-sand-200 dark:border-neutral-700"
+                >
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="font-bold text-xs text-neutral-900 dark:text-white">{pkg.title}</span>
+                    <span className="font-bold text-xs text-terracotta-700 dark:text-gold-400 whitespace-nowrap">
+                      ₹{Number(pkg.amount).toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                  {pkg.original_amount ? (
+                    <p className="text-[10px] text-neutral-500 mt-0.5">
+                      <s>₹{pkg.original_amount.toLocaleString('en-IN')}</s> after discount
+                    </p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

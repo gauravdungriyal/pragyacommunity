@@ -6,7 +6,16 @@ import {
   pragyaTeachers,
   pragyaClasses,
   pragyaMisc,
+  pragyaSupport,
 } from './pragyaServices';
+
+// ==================== SUPPORT CONTENT ====================
+/** FAQs and policy documents published by the school. */
+export const supportApi = {
+  getFaqs: () => pragyaSupport.getFaqs(),
+  getPolicy: (id: number) => pragyaSupport.getPolicy(id),
+};
+export { POLICY_IDS } from './pragyaServices';
 import {
   AuthResponse,
   User,

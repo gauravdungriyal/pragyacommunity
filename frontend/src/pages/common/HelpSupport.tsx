@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { supportApi } from '../../api/services';
 import {
   HelpCircle,
   MessageSquare,
@@ -11,30 +12,50 @@ import {
   CheckCircle
 } from 'lucide-react';
 
+/** Shown only when the school's own FAQ list cannot be loaded. */
+const FALLBACK_FAQS = [
+  {
+    q: 'How do I find a mentor or teacher?',
+    a: 'Open "Mentors & Gurus" from the sidebar. You can search by name or filter by specialisation, and message any teacher directly from their card.',
+  },
+  {
+    q: 'How do I join a workshop or event?',
+    a: 'Open "Events & Workshops" to see what is coming up, grouped by month. Each session has its own page with the full details; reservations are handled by the school.',
+  },
+  {
+    q: 'How do I get an account?',
+    a: 'Accounts are created by the Pragya team. If you need access, contact the school and they will set one up for you.',
+  },
+  {
+    q: 'Where do I find course material?',
+    a: 'Open "Resource Library". Material for your enrolled courses is grouped by course at the top, with an open shelf of extra reading underneath.',
+  },
+];
+
 export const HelpSupport: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [ticketSent, setTicketSent] = useState(false);
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
 
-  const faqs = [
-    {
-      q: 'How do I book a 1-on-1 session with a Mentor or Guru?',
-      a: 'Navigate to the "Mentors & Gurus" page from the sidebar. You can filter by domain (e.g., Yoga, Ayurveda, Meditation) and click "Book Slot" to choose your preferred date, time, and session format.',
-    },
-    {
-      q: 'Are the live workshops and webinars free to attend?',
-      a: 'Yes, all Pragya Connect community workshops and webinars are complimentary for registered community members. Simply click "Register Now" on any event card.',
-    },
-    {
-      q: 'How can I apply to become a certified Mentor on Pragya Connect?',
-      a: 'During registration, choose the "Mentor / Guru" role. Our editorial team will review your qualifications and enable your mentor profile on the public directory.',
-    },
-    {
-      q: 'How do I download reference guides from the Digital Library?',
-      a: 'Open the "Knowledge Hub" tab, filter by your topic of interest, and click "Access Resource" to view or download high-resolution PDFs and study materials.',
-    },
-  ];
+  const [faqs, setFaqs] = useState<Array<{ q: string; a: string }>>(FALLBACK_FAQS);
+
+  // The school publishes its own FAQs; fall back to the built-in list if the
+  // API cannot be reached.
+  useEffect(() => {
+    let active = true;
+    supportApi
+      .getFaqs()
+      .then((live) => {
+        if (active && live.length) setFaqs(live);
+      })
+      .catch(() => {
+        /* keep the fallback list */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleTicketSubmit = (e: React.FormEvent) => {
     e.preventDefault();

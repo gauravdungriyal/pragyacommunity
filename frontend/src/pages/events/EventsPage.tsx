@@ -19,10 +19,25 @@ import { useAuth } from '../../context/AuthContext';
 const TABS: { key: EventScope; label: string }[] = [
   { key: 'upcoming', label: 'Upcoming' },
   { key: 'today', label: 'Today' },
-  { key: 'mine', label: 'My Bookings' },
   { key: 'favorites', label: 'Favourites' },
   { key: 'past', label: 'Past' },
 ];
+
+/** "2026-09-05 ..." -> "September 2026", used to group the list. */
+const monthKey = (event: Event): string => {
+  const raw = event.starts_at || event.date;
+  if (!raw) return 'Dates to be confirmed';
+  const d = new Date(String(raw).replace(' ', 'T'));
+  if (Number.isNaN(d.getTime())) return 'Dates to be confirmed';
+  return d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+};
+
+/** Sortable stamp for a month heading. */
+const monthOrder = (event: Event): number => {
+  const raw = event.starts_at || event.date;
+  const d = new Date(String(raw || '').replace(' ', 'T'));
+  return Number.isNaN(d.getTime()) ? Number.MAX_SAFE_INTEGER : d.getFullYear() * 12 + d.getMonth();
+};
 
 const PAGE_SIZE = 6;
 
@@ -177,10 +192,21 @@ export const EventsPage: React.FC = () => {
 
   const visibleEvents = filteredEvents.slice(0, visibleCount);
 
+  // Group what is on screen into months, oldest month first
+  const monthGroups = Array.from(
+    visibleEvents.reduce((acc, event) => {
+      const key = monthKey(event);
+      if (!acc.has(key)) acc.set(key, { order: monthOrder(event), events: [] as Event[] });
+      acc.get(key)!.events.push(event);
+      return acc;
+    }, new Map<string, { order: number; events: Event[] }>())
+  )
+    .map(([month, { order, events: list }]) => ({ month, order, events: list }))
+    .sort((a, b) => (activeTab === 'past' ? b.order - a.order : a.order - b.order));
+
   const emptyMessage: Record<string, string> = {
     upcoming: 'No upcoming sessions scheduled right now. Check back soon.',
     today: 'Nothing is scheduled for today.',
-    mine: 'You have not booked any sessions yet. Open the Upcoming tab to find one.',
     favorites: 'You have not saved any sessions yet. Tap the heart on a card to save it.',
     past: 'No past sessions to show.',
   };
@@ -198,7 +224,7 @@ export const EventsPage: React.FC = () => {
             Events & Workshops
           </h1>
           <p className="text-sand-100/90 text-xs sm:text-sm max-w-xl">
-            Browse by what is coming up, what you have booked, or what you have saved for later.
+            Workshops and retreats from the school, grouped by month.
           </p>
         </div>
 
@@ -265,8 +291,21 @@ export const EventsPage: React.FC = () => {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-            {visibleEvents.map((evt) => {
+          {monthGroups.map(({ month, events: monthEvents }) => (
+            <section key={month} className="space-y-4">
+              {/* Month heading, taken from the dates the API returned */}
+              <div className="flex items-center gap-3">
+                <h2 className="font-display font-bold text-lg sm:text-xl text-neutral-900 dark:text-white whitespace-nowrap">
+                  {month}
+                </h2>
+                <span className="h-px flex-1 bg-sand-200 dark:bg-neutral-800" />
+                <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-sand-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 whitespace-nowrap">
+                  {monthEvents.length} {monthEvents.length === 1 ? 'session' : 'sessions'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                {monthEvents.map((evt) => {
               const eventId = String(evt.id ?? evt._id);
               const isFreeEvent = Number(evt.is_free) === 1 || evt.is_free === true;
 
@@ -282,11 +321,6 @@ export const EventsPage: React.FC = () => {
                         <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-terracotta-50 dark:bg-terracotta-950/60 text-terracotta-800 dark:text-terracotta-300 border border-terracotta-200 dark:border-terracotta-800">
                           {evt.category || 'Workshop'}
                         </span>
-                        {evt.is_registered && (
-                          <span className="px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 inline-flex items-center gap-1">
-                            <CheckCircle className="w-3 h-3" /> Booked
-                          </span>
-                        )}
                       </div>
 
                       <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -359,8 +393,10 @@ export const EventsPage: React.FC = () => {
                   </div>
                 </Link>
               );
-            })}
-          </div>
+                })}
+              </div>
+            </section>
+          ))}
 
           {visibleCount < filteredEvents.length && (
             <div className="text-center">

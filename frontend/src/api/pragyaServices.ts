@@ -397,3 +397,57 @@ export const pragyaMisc = {
   appVersion: async () =>
     pragyaPost<{ latest_version: string; force_update: boolean }>('app-version', {}, { auth: false }),
 };
+
+// ==========================================================================
+// Support content  (actions: faqs, policies)
+// ==========================================================================
+
+/** Policy documents are addressed by a fixed id. */
+export const POLICY_IDS = {
+  booking: 1,
+  terms: 2,
+  privacy: 3,
+  about: 4,
+} as const;
+
+export const pragyaSupport = {
+  /** action: faqs — the school's published questions and answers. */
+  getFaqs: async (): Promise<Array<{ q: string; a: string }>> => {
+    const res = await pragyaPost<{ status: boolean; data: Array<{ question: string; answer: string }> }>(
+      'faqs',
+      {},
+      { auth: false }
+    );
+    if (!res?.status || !Array.isArray(res.data)) return [];
+    return res.data
+      .map((f) => ({ q: htmlToText(f.question), a: htmlToText(f.answer) }))
+      .filter((f) => f.q && f.a);
+  },
+
+  /**
+   * action: policies — one document per id. The API sends an empty body when
+   * the row is missing, which the client surfaces as an error, so this is
+   * wrapped to return null instead.
+   */
+  getPolicy: async (id: number): Promise<{ title: string; body: string } | null> => {
+    try {
+      const res = await pragyaPost<{ status: boolean; data: Record<string, any> }>(
+        'policies',
+        { id },
+        { auth: false }
+      );
+      const row = res?.data;
+      if (!res?.status || !row) return null;
+
+      // Column names vary; take the longest text field as the body
+      const body = Object.entries(row)
+        .filter(([key, v]) => typeof v === 'string' && key !== 'title' && v.length > 40)
+        .map(([, v]) => String(v))
+        .sort((a, b) => b.length - a.length)[0];
+
+      return { title: row.title || 'Policy', body: htmlToText(body || '') };
+    } catch {
+      return null;
+    }
+  },
+};
