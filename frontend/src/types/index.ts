@@ -223,10 +223,29 @@ export interface EventPackage {
   id: string;
   title: string;
   amount: string | number;
+  original_amount?: number;
   description?: string;
   is_featured?: number | boolean;
   classes_limit?: string;
   validity?: string;
+}
+
+/** Instructor block returned with a live event. */
+export interface EventInstructor {
+  staff_id?: string | number;
+  name: string;
+  post?: string;
+  image?: string;
+  rating?: number;
+  total_reviews?: number;
+  rating_text?: string;
+}
+
+/** Booking pressure shown on a live event. */
+export interface EventSocialProof {
+  bookings_count?: number;
+  spots_remaining?: number | null;
+  spots_label?: string | null;
 }
 
 export interface Event {
@@ -252,6 +271,18 @@ export interface Event {
   likes_count?: number;
   schedules?: EventSchedule[];
   packages?: EventPackage[];
+  // Extra detail carried by the live Pragya Yog API
+  instructor?: EventInstructor | null;
+  banner_url?: string;
+  original_amount?: number;
+  discount_active?: boolean;
+  difficulty_tags?: string[];
+  benefits?: string[];
+  what_to_bring?: string[];
+  theme_color?: string;
+  share_url?: string;
+  countdown_label?: string;
+  social_proof?: EventSocialProof;
   created_by?: {
     _id: string;
     name: string;

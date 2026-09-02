@@ -1,5 +1,13 @@
 import { apiClient, apiPhpPost } from './client';
 import {
+  pragyaAuth,
+  pragyaProfile,
+  pragyaEvents,
+  pragyaTeachers,
+  pragyaClasses,
+  pragyaMisc,
+} from './pragyaServices';
+import {
   AuthResponse,
   User,
   UserProfileData,
@@ -22,12 +30,51 @@ import {
 } from '../types';
 
 // ==================== AUTH API ====================
+
+/** Which system authenticated the current session. */
+export type AuthSource = 'pragya' | 'local';
+
+const AUTH_SOURCE_KEY = 'auth_source';
+
+/** Reads which system issued the stored session; defaults to the live API. */
+export const getAuthSource = (): AuthSource =>
+  (localStorage.getItem(AUTH_SOURCE_KEY) as AuthSource) || 'pragya';
+
+export const setAuthSource = (source: AuthSource): void => {
+  localStorage.setItem(AUTH_SOURCE_KEY, source);
+};
+
+/** True when the session came from the live Pragya Yog API. */
+export const isLiveSession = (): boolean => getAuthSource() === 'pragya';
+
 export const authApi = {
   /**
-   * Action: login
+   * Sign in against the live Pragya Yog API first, falling back to the local
+   * backend. Live accounts carry no role, so the staff-only tools (community
+   * feed moderation, courses, admin) stay behind local accounts.
+   */
+  login: async (
+    credentials: { email: string; password: string }
+  ): Promise<AuthResponse & { source: AuthSource }> => {
+    try {
+      const live = await pragyaAuth.login(credentials);
+      if (live.status) {
+        return { ...live, source: 'pragya' };
+      }
+      // Fall through so a staff account can still be tried locally
+    } catch (err) {
+      console.warn('Live API sign-in unavailable, trying the local backend:', err);
+    }
+
+    const local = await authApi.loginLocal(credentials);
+    return { ...local, source: 'local' };
+  },
+
+  /**
+   * Action: login (local backend)
    * Purpose: Authenticate user & issue access_token (24h) + refresh_token (300d)
    */
-  login: async (credentials: { email: string; password: string }): Promise<AuthResponse> => {
+  loginLocal: async (credentials: { email: string; password: string }): Promise<AuthResponse> => {
     const res = await apiPhpPost<AuthResponse>('login', {
       email: credentials.email.trim(),
       password: credentials.password,
@@ -69,10 +116,9 @@ export const authApi = {
     access_token?: string;
     refresh_token?: string;
   }> => {
-    return await apiPhpPost('check-token', {
-      token: token || undefined,
-      refresh_token: refresh_token || undefined,
-    });
+    const call = getAuthSource() === 'pragya' ? pragyaAuth.checkToken : (t?: string, r?: string) =>
+      apiPhpPost('check-token', { token: t || undefined, refresh_token: r || undefined });
+    return await call(token, refresh_token);
   },
 
   /**
@@ -80,11 +126,17 @@ export const authApi = {
    * Purpose: Send password-reset link to registered email
    */
   resetPassword: async (email: string): Promise<{ status: boolean; message: string }> => {
+    try {
+      const res = await pragyaAuth.resetPassword(email);
+      if (res?.status) return res;
+    } catch {
+      // Fall back to the local backend below
+    }
     return await apiPhpPost('reset-password', { email: email.trim() });
   },
 
   /**
-   * Action: passwrod_change (typo preserved as in backend API)
+   * Action: passwrod_change (spelling preserved as published by the API)
    * Purpose: Change authenticated user password
    */
   changePassword: async (data: {
@@ -92,6 +144,9 @@ export const authApi = {
     password: string;
     confirmpassword: string;
   }): Promise<{ status: boolean; message: string }> => {
+    if (getAuthSource() === 'pragya') {
+      return await pragyaAuth.changePassword(data);
+    }
     return await apiPhpPost('passwrod_change', data);
   },
 
@@ -156,27 +211,82 @@ export const postsApi = {
 
 // ==================== MENTORS API ====================
 export const mentorsApi = {
+  /** Instructors come from the live `teachers` action, which is public. */
   getAll: async (): Promise<Mentor[]> => {
-    const res = await apiClient.get<Mentor[]>('/mentors');
-    return res.data;
+    try {
+      const live = await pragyaTeachers.list();
+      if (live.length) return live;
+    } catch (err) {
+      console.warn('Live teachers unavailable, falling back to the local backend:', err);
+    }
+
+    try {
+      const res = await apiClient.get<Mentor[]>('/mentors');
+      return Array.isArray(res.data) ? res.data : [];
+    } catch {
+      return [];
+    }
   },
 };
 
 // ==================== EVENTS API ====================
 export type EventScope = 'upcoming' | 'today' | 'past' | 'mine' | 'favorites' | 'all';
 
+/** Is this ISO-ish date string today? */
+const isToday = (value?: string): boolean => {
+  if (!value) return false;
+  const d = new Date(String(value).replace(' ', 'T'));
+  if (Number.isNaN(d.getTime())) return false;
+  return d.toDateString() === new Date().toDateString();
+};
+
+const isPast = (value?: string): boolean => {
+  if (!value) return false;
+  const d = new Date(String(value).replace(' ', 'T'));
+  if (Number.isNaN(d.getTime())) return false;
+  return d < new Date(new Date().toDateString());
+};
+
 export const eventsApi = {
   /**
-   * List events for one scope only, so the calendar never shows every
-   * session at once. Booking and favourite state come back per viewer.
+   * Events come from the live Pragya Yog API. That endpoint returns the
+   * upcoming list in one call, so the scopes are narrowed here rather than
+   * by a query parameter.
    */
   getEvents: async (scope: EventScope = 'upcoming', limit?: number, offset?: number): Promise<Event[]> => {
-    const params: Record<string, any> = { scope };
-    if (limit !== undefined) params.limit = limit;
-    if (offset !== undefined) params.offset = offset;
+    try {
+      if (scope === 'favorites') {
+        return await pragyaEvents.favorites();
+      }
 
-    const res = await apiClient.get<Event[]>('/events', { params });
-    return Array.isArray(res.data) ? res.data : [];
+      const all = await pragyaEvents.list();
+      let list = all;
+
+      if (scope === 'today') list = all.filter((e) => isToday(e.starts_at || e.date));
+      else if (scope === 'past') list = all.filter((e) => isPast(e.starts_at || e.date));
+      else if (scope === 'upcoming') list = all.filter((e) => !isPast(e.starts_at || e.date));
+      else if (scope === 'mine') {
+        // The live API has no "my events" list; favourites are the closest signal
+        list = await pragyaEvents.favorites();
+      }
+
+      if (limit !== undefined) {
+        const start = offset || 0;
+        list = list.slice(start, start + limit);
+      }
+      return list;
+    } catch (err) {
+      console.warn('Live events unavailable, falling back to the local backend:', err);
+      const params: Record<string, any> = { scope };
+      if (limit !== undefined) params.limit = limit;
+      if (offset !== undefined) params.offset = offset;
+      try {
+        const res = await apiClient.get<Event[]>('/events', { params });
+        return Array.isArray(res.data) ? res.data : [];
+      } catch {
+        return [];
+      }
+    }
   },
 
   /** Upcoming sessions (default landing scope). */
@@ -191,20 +301,27 @@ export const eventsApi = {
   /** One event, for its own page. */
   getEventDetail: async (eventId: string | number): Promise<Event | null> => {
     try {
+      const live = await pragyaEvents.detail(eventId);
+      if (live) return live;
+    } catch (err) {
+      console.warn('Live event detail unavailable, trying the local backend:', err);
+    }
+
+    try {
       const res = await apiClient.get<Event>(`/events/${eventId}`);
       return res.data || null;
-    } catch (err) {
-      console.warn('Failed to load event detail:', err);
+    } catch {
       return null;
     }
   },
 
-  /**
-   * Action: event-toggle-favorite
-   */
+  /** Action: event-toggle-favorite */
   toggleFavorite: async (
     eventId: string | number
   ): Promise<{ status: boolean; favorited?: boolean; likes_count?: number; message?: string }> => {
+    if (isLiveSession()) {
+      return await pragyaEvents.toggleFavorite(eventId);
+    }
     return await apiPhpPost('event-toggle-favorite', { event_id: eventId });
   },
 
@@ -411,6 +528,12 @@ export const profileApi = {
    * Purpose: Return authenticated user profile, booking counts, strikes, wallet, etc.
    */
   getProfile: async (id?: string): Promise<User & UserProfileData> => {
+    // A live session reads its profile from the Pragya Yog API
+    if (isLiveSession()) {
+      const live = await pragyaProfile.get();
+      if (live) return live;
+    }
+
     try {
       const res = await apiPhpPost<{ status: boolean; data: UserProfileData & { role?: string } }>('get-profile');
       if (res.status && res.data) {
@@ -451,6 +574,28 @@ export const profileApi = {
    * Generic profile updater
    */
   updateProfile: async (id: string, data: Partial<User & UserProfileData>): Promise<User> => {
+    if (isLiveSession()) {
+      // The live API requires fname, lname and chinese_name on every save
+      const [first = '', ...rest] = String(data.name || '').trim().split(' ');
+      await pragyaProfile.update({
+        fname: data.fname || first || 'Member',
+        lname: data.lname || rest.join(' ') || '-',
+        chinese_name: data.chinese_name || data.name || first || '-',
+        email: data.email,
+        phone: data.phone,
+        dob_month: data.dob_month,
+        dob_date: data.dob_date,
+      });
+      return {
+        id,
+        _id: id,
+        name: data.name || '',
+        email: data.email || '',
+        role: data.role || 'Student',
+        ...data,
+      } as User;
+    }
+
     try {
       await apiPhpPost('edit_user_details', {
         fname: data.fname || (data.name ? data.name.split(' ')[0] : undefined),
@@ -485,6 +630,9 @@ export const profileApi = {
     notify_email?: number;
     notify_push?: number;
   }): Promise<{ status: boolean; message: string }> => {
+    if (isLiveSession()) {
+      return await pragyaProfile.updateNotificationSettings(settings);
+    }
     return await apiPhpPost('update-notification-settings', settings);
   },
 
@@ -589,16 +737,32 @@ export const adminApi = {
 
 // ==================== DASHBOARD API ====================
 export const dashboardApi = {
+  /** The live `get-daily-quote` action, with the local backend as backup. */
   getDailyQuote: async (): Promise<DailyQuote> => {
+    try {
+      const live = await pragyaMisc.dailyQuote();
+      if (live?.quote) return live;
+    } catch {
+      // Fall through to the local backend
+    }
+
     try {
       const res = await apiClient.get<DailyQuote>('/dashboard/quote');
       return res.data;
     } catch {
-      // Fallback inspirational quote
       return {
-        quote: "Yoga is the journey of the self, through the self, to the self.",
-        author: "The Bhagavad Gita",
+        quote: 'Yoga is the journey of the self, through the self, to the self.',
+        author: 'The Bhagavad Gita',
       };
+    }
+  },
+
+  /** Today's timetable from the live `today-class` action (public). */
+  getTodaySchedule: async () => {
+    try {
+      return await pragyaClasses.today();
+    } catch {
+      return { today: '', classes: [] };
     }
   },
 

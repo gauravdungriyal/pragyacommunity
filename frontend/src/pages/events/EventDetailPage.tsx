@@ -283,9 +283,75 @@ export const EventDetailPage: React.FC = () => {
             </div>
           )}
 
-          <p className="text-[11px] text-neutral-500 dark:text-neutral-400 pt-1">
-            Organised by {event.creator_name || 'Pragya Faculty'}
-          </p>
+          {/* Difficulty and what to bring, as published on the live event */}
+          {(event.difficulty_tags?.length || event.what_to_bring?.length || event.benefits?.length) ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              {event.difficulty_tags?.length ? (
+                <div>
+                  <h3 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">Level</h3>
+                  <div className="flex flex-wrap gap-1.5">
+                    {event.difficulty_tags.map((tag) => (
+                      <span key={tag} className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-sand-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {event.what_to_bring?.length ? (
+                <div>
+                  <h3 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">What to bring</h3>
+                  <ul className="text-xs text-neutral-600 dark:text-neutral-300 space-y-0.5">
+                    {event.what_to_bring.map((item) => (
+                      <li key={item}>• {item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+
+              {event.benefits?.length ? (
+                <div className="sm:col-span-2">
+                  <h3 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">You will gain</h3>
+                  <ul className="text-xs text-neutral-600 dark:text-neutral-300 space-y-0.5">
+                    {event.benefits.map((item) => (
+                      <li key={item}>• {item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
+          {/* Instructor, when the live event names one */}
+          {event.instructor?.name ? (
+            <div className="flex items-center gap-3 p-3 rounded-2xl bg-sand-50 dark:bg-neutral-800/60 border border-sand-200 dark:border-neutral-700/60">
+              {event.instructor.image ? (
+                <img
+                  src={event.instructor.image}
+                  alt={event.instructor.name}
+                  className="w-11 h-11 rounded-full object-cover flex-shrink-0"
+                  onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                />
+              ) : (
+                <div className="w-11 h-11 rounded-full bg-forest-600 text-white font-bold flex items-center justify-center flex-shrink-0">
+                  {event.instructor.name.charAt(0)}
+                </div>
+              )}
+              <div className="min-w-0">
+                <p className="font-bold text-xs sm:text-sm text-neutral-900 dark:text-white truncate">
+                  {event.instructor.name}
+                </p>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400 truncate">
+                  {[event.instructor.post, event.instructor.rating_text].filter(Boolean).join(' · ')}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-[11px] text-neutral-500 dark:text-neutral-400 pt-1">
+              Organised by {event.creator_name || 'Pragya Faculty'}
+            </p>
+          )}
         </div>
 
         {/* Booking panel */}
@@ -298,10 +364,30 @@ export const EventDetailPage: React.FC = () => {
               </>
             ) : (
               <>
-                <p className="font-display font-extrabold text-2xl text-neutral-900 dark:text-white">₹{event.amount}</p>
-                <p className="text-[11px] text-neutral-500 mt-0.5">per participant</p>
+                <p className="font-display font-extrabold text-2xl text-neutral-900 dark:text-white">
+                  ₹{Number(event.amount).toLocaleString('en-IN')}
+                </p>
+                {event.discount_active && event.original_amount && event.original_amount > Number(event.amount) ? (
+                  <p className="text-[11px] text-neutral-500 mt-0.5">
+                    <s>₹{event.original_amount.toLocaleString('en-IN')}</s> · save ₹
+                    {(event.original_amount - Number(event.amount)).toLocaleString('en-IN')}
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-neutral-500 mt-0.5">per participant</p>
+                )}
               </>
             )}
+
+            {/* Live booking pressure, when the API reports it */}
+            {event.social_proof?.spots_label ? (
+              <p className="text-[11px] font-semibold text-terracotta-700 dark:text-gold-400 mt-2">
+                {event.social_proof.spots_label}
+              </p>
+            ) : event.social_proof?.bookings_count ? (
+              <p className="text-[11px] text-neutral-500 mt-2">
+                {event.social_proof.bookings_count} already booked
+              </p>
+            ) : null}
           </div>
 
           <button

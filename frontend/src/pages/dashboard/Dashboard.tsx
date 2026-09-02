@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { dashboardApi } from '../../api/services';
-import { DailyQuote, DashboardSummary } from '../../types';
+import { DailyQuote, DashboardSummary, TodayClass } from '../../types';
 import { SkeletonBlock } from '../../components/common/PageLoader';
 
 /** Icon for each kind of row in the recent activity trail. */
@@ -65,15 +65,17 @@ export const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const [dailyQuote, setDailyQuote] = useState<DailyQuote | null>(null);
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [studioClasses, setStudioClasses] = useState<TodayClass[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
 
     const load = async () => {
-      const [quoteResult, summaryResult] = await Promise.allSettled([
+      const [quoteResult, summaryResult, scheduleResult] = await Promise.allSettled([
         dashboardApi.getDailyQuote(),
         dashboardApi.getSummary(),
+        dashboardApi.getTodaySchedule(),
       ]);
 
       if (!active) return;
@@ -83,6 +85,9 @@ export const Dashboard: React.FC = () => {
       }
       if (summaryResult.status === 'fulfilled' && summaryResult.value) {
         setSummary(summaryResult.value);
+      }
+      if (scheduleResult.status === 'fulfilled') {
+        setStudioClasses(scheduleResult.value.classes);
       }
       setLoading(false);
     };
@@ -273,6 +278,42 @@ export const Dashboard: React.FC = () => {
               </div>
             )}
           </section>
+
+          {/* The studio's live timetable, straight from the Pragya Yog API */}
+          {studioClasses.length > 0 && (
+            <section className="space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="font-display font-bold text-base sm:text-lg text-neutral-900 dark:text-white flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-terracotta-600 dark:text-gold-400" />
+                  On the studio timetable
+                </h3>
+                <span className="text-[11px] text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
+                  Open to all members
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {studioClasses.map((cls) => (
+                  <div
+                    key={cls._id}
+                    className="p-4 rounded-2xl bg-white dark:bg-neutral-900 border border-sand-200 dark:border-neutral-800 shadow-card flex items-start justify-between gap-3"
+                  >
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-xs sm:text-sm text-neutral-900 dark:text-white truncate">
+                        {cls.title}
+                      </h4>
+                      <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+                        {cls.date} · with {cls.instructor_name}
+                      </p>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-terracotta-50 dark:bg-terracotta-950/50 text-terracotta-800 dark:text-gold-300 whitespace-nowrap flex-shrink-0">
+                      {cls.time}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Next booked sessions */}
           {upcomingClasses.length > 0 && (

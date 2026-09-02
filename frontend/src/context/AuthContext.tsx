@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { User, AuthResponse } from '../types';
-import { authApi, profileApi } from '../api/services';
+import { authApi, profileApi, setAuthSource, getAuthSource, AuthSource } from '../api/services';
 
 interface AuthContextType {
   user: User | null;
@@ -11,6 +11,10 @@ interface AuthContextType {
   isMentor: boolean;
   isStudent: boolean;
   isStaff: boolean;
+  /** Which system authenticated this session. */
+  authSource: AuthSource;
+  /** True when signed in against the live Pragya Yog API. */
+  isLiveAccount: boolean;
   /** null until the profile has been read; true once the welcome popup was shown. */
   welcomeSeen: boolean | null;
   dismissWelcome: () => Promise<void>;
@@ -54,6 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [welcomeSeen, setWelcomeSeen] = useState<boolean | null>(null);
+  const [authSource, setAuthSourceState] = useState<AuthSource>(() => getAuthSource());
 
   /**
    * Pull the authoritative profile from the API and merge it into local state.
@@ -140,6 +145,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const data = await authApi.login(credentials);
       if (data.status) {
+        // Record which system issued the session; the API calls branch on it
+        setAuthSource(data.source);
+        setAuthSourceState(data.source);
         const authToken = data.access_token || data.token || '';
         const u: User = data.user || {
           id: String(data.uid || '1'),
@@ -199,6 +207,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('token');
     localStorage.removeItem('pragya_user');
     localStorage.removeItem('user');
+    localStorage.removeItem('auth_source');
   };
 
   const updateCurrentUser = (data: Partial<User>) => {
@@ -226,6 +235,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isMentor,
         isStudent,
         isStaff,
+        authSource,
+        isLiveAccount: authSource === 'pragya',
         welcomeSeen,
         dismissWelcome,
         login,

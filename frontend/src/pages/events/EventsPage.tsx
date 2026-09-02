@@ -24,14 +24,6 @@ const TABS: { key: EventScope; label: string }[] = [
   { key: 'past', label: 'Past' },
 ];
 
-const CATEGORIES = [
-  'All',
-  'Yoga Workshops',
-  'Ayurveda Masterclasses',
-  'Meditation Retreats',
-  'Vedic Science Webinars',
-];
-
 const PAGE_SIZE = 6;
 
 export const EventsPage: React.FC = () => {
@@ -171,6 +163,13 @@ export const EventsPage: React.FC = () => {
     }
   };
 
+  // Built from the categories the loaded events actually carry, so no filter
+  // is ever offered that would return nothing.
+  const categories = [
+    'All',
+    ...Array.from(new Set(events.map((e) => e.category).filter(Boolean) as string[])).sort(),
+  ];
+
   const filteredEvents =
     selectedCategory === 'All'
       ? events
@@ -235,7 +234,7 @@ export const EventsPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none border-t border-sand-200 dark:border-neutral-800 pt-3">
-          {CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
@@ -454,7 +453,7 @@ export const EventsPage: React.FC = () => {
                     onChange={(e) => setCategory(e.target.value)}
                     className="w-full p-2.5 rounded-xl bg-sand-50 dark:bg-neutral-800 border border-sand-200 dark:border-neutral-700 text-neutral-900 dark:text-white"
                   >
-                    {CATEGORIES.filter((c) => c !== 'All').map((c) => (
+                    {['Workshop', 'Yoga Workshops', 'Ayurveda Masterclasses', 'Meditation Retreats', 'Vedic Science Webinars'].map((c) => (
                       <option key={c} value={c}>{c}</option>
                     ))}
                   </select>
